@@ -1,0 +1,22 @@
+---
+title : Dynamic Optimisation using the Julia Programming Language
+author : Nathan Davey
+options :
+    doctype : md2pdf
+    out_path : pdf
+    template : julia_tex.tpl
+---
+
+```julia; echo=false
+struct Begin
+    text
+    title
+end
+
+struct End
+    text
+end
+Base.show(io::IO, m::MIME"text/latex", b::Begin) = write(io, "\\begin{$(b.text)}[fragile]\n\\frametitle{$(b.title)}\n")
+Base.show(io::IO, m::MIME"text/latex", e::End) = write(io, "\\end{$(e.text)}")
+```
+
