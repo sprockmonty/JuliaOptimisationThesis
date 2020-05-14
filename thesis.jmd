@@ -1,10 +1,6 @@
 ---
 title : Dynamic Optimisation using the Julia Programming Language
 author : Nathan Davey
-options :
-    doctype : md2pdf
-    out_path : pdf
-    template : julia_tex.tpl
 ---
 
 ```julia; echo=false
@@ -16,7 +12,36 @@ end
 struct End
     text
 end
-Base.show(io::IO, m::MIME"text/latex", b::Begin) = write(io, "\\begin{$(b.text)}[fragile]\n\\frametitle{$(b.title)}\n")
-Base.show(io::IO, m::MIME"text/latex", e::End) = write(io, "\\end{$(e.text)}")
+Base.show(io::IO, m::MIME"text/latex", b::Begin) = write(io, "\\begin{figure}[h]\n ")
+Base.show(io::IO, m::MIME"text/latex", e::End) = write(io, "\\caption{somecap}\n\\end{figure}")
 ```
 
+
+$$
+\begin{equation}
+f(a) = x^2 \label{eq:1}
+\end{equation}
+$$
+
+The equation uses ``\ref{eq:1}``
+
+```julia; echo=false
+x = 2;
+```
+
+```julia
+print(x)
+```
+
+this is some code `j x=x+2`
+this is some text
+! x = x+24
+
+! Begin("frame", "Random plot")
+
+```julia; out_width="0.5\\textwidth"
+using Plots
+scatter(randn(1000), randn(1000))
+```
+
+! End("frame")

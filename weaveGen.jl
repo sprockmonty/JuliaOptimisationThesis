@@ -1,2 +1,2 @@
-using weave
-weave("thesis.jmd", out_path=:pwd, doctype = "md2pdf")
+using Weave
+weave("thesis.jmd", out_path="pdf", doctype = "md2pdf")
