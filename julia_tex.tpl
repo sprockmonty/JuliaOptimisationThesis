@@ -7,6 +7,8 @@
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage{hyperref}
+\usepackage{nomencl}
+\makenomenclature
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1.2ex}
 
