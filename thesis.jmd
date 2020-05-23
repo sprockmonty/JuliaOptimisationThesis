@@ -147,10 +147,32 @@ If there already exists a general purpose visualisation package in Julia, hours 
 
 
 
-# Background
 
-## Mathematics
+## Mathematical Background
+## Dynamic optimisation problem formulation
 ! Label("dynamicsmath")
+Here we will outline the basic formulation of the dynamic optimisation problem.
+It is important to note that the main objective of dynamic optimisation is to find a set of optimal control inputs which results in the boundary constraints and system dynamics being satisfied, and a minimisation of the objective function.
+As such, we can break down the problem into 3 main components:
+```
+problemComponents = ["System dynamics",
+                     "Boundary and path constraints",
+                     "Objective function"];
+```
+1) `j print(problemComponents[1])`
+2) `j print(problemComponents[2])`
+3) `j print(problemComponents[3])`
+<!-- Illustrate this with a flow chart -->
+The following discussion assumes the direct method i.e. transcription.
+Transcription is the process of converting a continuous dynamic optimisation problem into an array of discrete constraints (which ensure system dynamics are consistent with the state as explained in section ``\ref{sysDyn}``) which can be solved by a nonlinear programming (NLP) solver.
+The direct methods are, well, direct, because we just try and solve the problem by breaking it up into smaller constraint equations.
+Indirect methods, on the other hand, solve the problem by reformulating (analytically) the problem using a set of first-order necessary conditions for optimality, which can then be solved.
+Direct methods are currently of more interest as these conditions are often difficult to formulate, and indirect methods are more sensitive to the accuracy of the initial state guess ``\cite{mit}``.
+Before we explore the direct method however, it may be beneficial to define what our dynamic optimisation problem will eventually become, a nonlinear programming problem.
+### Nonlinear programming problem
+
+###
+
 
 ## Julia Packages
 
@@ -162,7 +184,7 @@ aims = ["Code structure must be modular",
         "Code must be sufficiently verbose when handling errors",
         "Code must verify data before computation",
         "The final package must be user extensible and have the ability to support multiple solvers",
-        "Location of collocation points for each state must be independent of other states",
+        "Location of mesh points for each state must be independent of other states",
         "The MorePolynomials package must interface well with the existing Polynomials package"];
 ```
 1) `j print(aims[1])`
@@ -184,13 +206,46 @@ Examples of this can be found in section ``\ref{morepoly}``, where multiple disp
 This would be far more difficult in a traditional OOP based language.
 
 ## `j print(aims[2])`
+When describing the dynamic optimisation problem, the use of verbose error handling and user feedback is extremely useful in guiding the user to both a solvable and well constructed problem.
+This was particular apparent in the formulation of problems in the ICLOCS package.
+Often errors in the user defined problem (UDP) would result in error traces that lead deep into the core of the code, providing little help to the user who's only course of action would be to trace the flow of data through the sourcecode of ICLOCS.
+The aim of this new package is to catch errors elegantly, and give the user contextual feedback.
+
+## `j print(aims[3])`
+Closely related to well implemented error handling is the verification of the data in the first place.
+The phrase garbage in garbage out is relevant here.
+If we ensure the quality of the UDP before any computation, we can ensure the speed and freedom from errors in the results.
+The reverse is true, that if no verification takes place, the UDP could result in hard to debug errors embedded in the source code, which is not where we want them.
+By leveraging Julia's explicit type system, we can remove potential conversion errors further down the line by internally specifying the types of the components of the UDP.
+Further pre solve check can ensure the quality and compatibility of the UDP with internal solver interfaces.
+This also has the added benefit of speeding up computation when the compiles is aware of the types at runtime.
+
+## `j print(aims[4])`
+This is particular important for the longevity of the project.
+Bespoke programs could be created for each individual solver, but a more ideal solution would be to create a generic framework from which additional solvers can be plugged in.
+This is highly dependent on the nature of each solver, and additional solver specific syntax may need to be included in the UDP (e.g. if the solver is not black box, additional derivatives may need to be provided unless numerically calculated).
+However, this goal is more focused towards ease of future development, rather than the user interface.
+
+## `j print(aims[5])`
+By isolation of each state, we can vary the density of mesh points for each state.
+As such, states which can be approximated by a smaller mesh size do not occupy unnecessary space in memory due to other states requiring a larger mesh size to achieve an accurate approximation.
+This can be achieved by interpolating the state at collocation points when required.
+
+## `j print(aims[6])`
+As Polynomials.jl is a rapidly developing package, ensuring compatibility allows for easy integration of future features.
+As Julia is an ever evolving language, by building off prexisting packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on are part as Polynomials.jl is updated with Julia updates.
+The disadvantage being we are then at the mercy of the Polynomials.jl package developers.
+If they decided to change their framework entirely, our package may also need to change.
+This is not necessarily an issue however as we can specify backwards compatibility.
+
+
 
 # Results and Discussion
 
 ## User interface
 ### Error handling
 ## Benchmarking and performance gains
-
+# Documentation
 # Next steps
 ! BeginFig()
 
