@@ -1,1 +1,8 @@
-\nomenclatureentry{a$ \alpha $@[{$ \alpha $}]\begingroup b\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ J $@[{$ J $}]\begingroup Objective function\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{g} $@[{$ \pmb{g} $}]\begingroup Constraint functions\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{f} $@[{$ \pmb{f} $}]\begingroup System dynamics functions\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{x} $@[{$ \pmb{x} $}]\begingroup States\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{u} $@[{$ \pmb{u} $}]\begingroup Controls\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ t $@[{$ t $}]\begingroup Time\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ k $@[{$ k $}]\begingroup Location of a collocation point\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ N $@[{$ N $}]\begingroup Total number of collocation points\nomeqref {0}|nompageref}{2}
