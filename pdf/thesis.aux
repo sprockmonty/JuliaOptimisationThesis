@@ -28,31 +28,41 @@
 \@writefile{toc}{\contentsline {section}{\numberline {2}Mathematical Background}{4}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Dynamic optimisation problem formulation}{4}{subsection.2.1}\protected@file@percent }
 \newlabel{dynamicsmath}{{2.1}{4}{Dynamic optimisation problem formulation}{subsection.2.1}{}}
+\citation{ipopttut}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}Nonlinear programming problem}{5}{subsubsection.2.1.1}\protected@file@percent }
+\newlabel{gineq}{{2}{5}{Nonlinear programming problem}{equation.2.2}{}}
+\newlabel{xineq}{{3}{5}{Nonlinear programming problem}{equation.2.3}{}}
+\newlabel{gfunc}{{4}{5}{Nonlinear programming problem}{equation.2.4}{}}
+\newlabel{gfunceq}{{5}{5}{Nonlinear programming problem}{equation.2.5}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}System dynamics}{5}{subsubsection.2.1.2}\protected@file@percent }
-\newlabel{xState}{{5}{6}{System dynamics}{equation.2.5}{}}
-\newlabel{uControl}{{6}{6}{System dynamics}{equation.2.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Julia Packages}{7}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Project Ethos}{7}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Code structure must be modular}{7}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Code must be sufficiently verbose when handling errors}{8}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Code must verify data before computation}{8}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}The final package must be user extensible and have the ability to support multiple solvers}{8}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Location of mesh points for each state must be independent of other states}{8}{subsection.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}The MorePolynomials package must interface well with the existing Polynomials package}{9}{subsection.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results and Discussion}{9}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}User interface}{9}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Error handling}{9}{subsubsection.4.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Benchmarking and performance gains}{9}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Documentation}{9}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Next steps}{9}{section.6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces a}}{9}{figure.1}\protected@file@percent }
-\newlabel{b}{{1}{9}{a}{figure.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces a}}{10}{figure.2}\protected@file@percent }
-\newlabel{b}{{2}{10}{a}{figure.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces a}}{10}{figure.3}\protected@file@percent }
-\newlabel{b}{{3}{10}{a}{figure.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces a}}{11}{figure.4}\protected@file@percent }
-\newlabel{b}{{4}{11}{a}{figure.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces a}}{11}{figure.5}\protected@file@percent }
-\newlabel{b}{{5}{11}{a}{figure.5}{}}
+\newlabel{xState}{{7}{6}{System dynamics}{equation.2.7}{}}
+\newlabel{uControl}{{8}{6}{System dynamics}{equation.2.8}{}}
+\newlabel{euler}{{9}{7}{System dynamics}{equation.2.9}{}}
+\newlabel{trap}{{10}{7}{System dynamics}{equation.2.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.3}Boundary and path constraints}{8}{subsubsection.2.1.3}\protected@file@percent }
+\newlabel{xpath}{{11}{8}{Boundary and path constraints}{equation.2.11}{}}
+\newlabel{upath}{{12}{8}{Boundary and path constraints}{equation.2.12}{}}
+\newlabel{bpath}{{13}{8}{Boundary and path constraints}{equation.2.13}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.4}Objective function}{9}{subsubsection.2.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Julia Packages}{9}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Project Ethos}{9}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Code structure must be modular}{9}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Code must be sufficiently verbose when handling errors}{9}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Code must verify data before computation}{10}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}The final package must be user extensible and have the ability to support multiple solvers}{10}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Location of mesh points for each state must be independent of other states}{10}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}The MorePolynomials package must interface well with the existing Polynomials package}{10}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results and Discussion}{11}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}User interface}{11}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Error handling}{11}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Benchmarking and performance gains}{11}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Documentation}{11}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Next steps}{11}{section.6}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces a}}{11}{figure.1}\protected@file@percent }
+\newlabel{b}{{1}{11}{a}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces a}}{12}{figure.2}\protected@file@percent }
+\newlabel{b}{{2}{12}{a}{figure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces a}}{12}{figure.3}\protected@file@percent }
+\newlabel{b}{{3}{12}{a}{figure.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces a}}{13}{figure.4}\protected@file@percent }
+\newlabel{b}{{4}{13}{a}{figure.4}{}}
