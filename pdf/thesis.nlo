@@ -3,6 +3,9 @@
 \nomenclatureentry{a$ \pmb{f} $@[{$ \pmb{f} $}]\begingroup System dynamics functions\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{x} $@[{$ \pmb{x} $}]\begingroup States\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{u} $@[{$ \pmb{u} $}]\begingroup Controls\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{b} $@[{$ \pmb{b} $}]\begingroup Boundary constraint functions\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{h} $@[{$ \pmb{h} $}]\begingroup Path constraint functions\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ t $@[{$ t $}]\begingroup Time\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ k $@[{$ k $}]\begingroup Location of a collocation point\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ N $@[{$ N $}]\begingroup Total number of collocation points\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ i $@[{$ i $}]\begingroup State or control index\nomeqref {0}|nompageref}{2}

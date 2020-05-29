@@ -1,6 +1,16 @@
 
 \begin{thenomenclature} 
 \nomgroup{A}
-  \item [{$ \alpha $}]\begingroup b\nomeqref {0}\nompageref{2}
+  \item [{$ \pmb{b} $}]\begingroup Boundary constraint functions\nomeqref {0}\nompageref{2}
+  \item [{$ \pmb{f} $}]\begingroup System dynamics functions\nomeqref {0}\nompageref{2}
+  \item [{$ \pmb{g} $}]\begingroup Constraint functions\nomeqref {0}\nompageref{2}
+  \item [{$ \pmb{h} $}]\begingroup Path constraint functions\nomeqref {0}\nompageref{2}
+  \item [{$ \pmb{u} $}]\begingroup Controls\nomeqref {0}\nompageref{2}
+  \item [{$ \pmb{x} $}]\begingroup States\nomeqref {0}\nompageref{2}
+  \item [{$ i $}]\begingroup State or control index\nomeqref {0}\nompageref{2}
+  \item [{$ J $}]\begingroup Objective function\nomeqref {0}\nompageref{2}
+  \item [{$ k $}]\begingroup Location of a collocation point\nomeqref {0}\nompageref{2}
+  \item [{$ N $}]\begingroup Total number of collocation points\nomeqref {0}\nompageref{2}
+  \item [{$ t $}]\begingroup Time\nomeqref {0}\nompageref{2}
 
 \end{thenomenclature}

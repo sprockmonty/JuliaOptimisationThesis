@@ -1,8 +1,8 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/Arch Linux) (preloaded format=xelatex 2020.5.15)  27 MAY 2020 03:15
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/Arch Linux) (preloaded format=xelatex 2020.5.15)  29 MAY 2020 18:35
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
-**thesis.tex -aux-directory ./jl_ItRtBr -include-directory pdf
+**thesis.tex -aux-directory ./jl_r85jY8 -include-directory pdf
 (./thesis.tex
 LaTeX2e <2019-10-01> patch level 1
 (/usr/share/texmf-dist/tex/latex/base/article.cls
@@ -356,16 +356,24 @@ Package tocbasic Info: setting babel extension for `nls' on input line 156.
 \nom@tempdim=\dimen128
 \nomitemsep=\skip48
 )
+(/usr/share/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count118
+\float@exts=\toks25
+\float@box=\box31
+\@float@everytoks=\toks26
+\@floatcapt=\box32
+)
 \@nomenclaturefile=\write3
 \openout3 = `thesis.nlo'.
 
-Package nomencl Info: Writing nomenclature file thesis.nlo on input line 11.
+Package nomencl Info: Writing nomenclature file thesis.nlo on input line 12.
 
 (/usr/share/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
 File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 22.
+Package hyperref Info: Option `colorlinks' set `true' on input line 23.
 
 (/usr/share/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
@@ -454,24 +462,24 @@ Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
 Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
 ))
 (/usr/share/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count118
-\lst@gtempboxa=\box31
-\lst@token=\toks25
-\lst@length=\count119
+\lst@mode=\count119
+\lst@gtempboxa=\box33
+\lst@token=\toks27
+\lst@length=\count120
 \lst@currlwidth=\dimen129
-\lst@column=\count120
-\lst@pos=\count121
+\lst@column=\count121
+\lst@pos=\count122
 \lst@lostspace=\dimen130
 \lst@width=\dimen131
-\lst@newlines=\count122
-\lst@lineno=\count123
+\lst@newlines=\count123
+\lst@lineno=\count124
 \lst@maxwidth=\dimen132
 
 (/usr/share/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2019/09/10 1.8c (Carsten Heinz)
-\c@lstnumber=\count124
-\lst@skipnumbers=\count125
-\lst@framebox=\box32
+\c@lstnumber=\count125
+\lst@skipnumbers=\count126
+\lst@framebox=\box34
 )
 (/usr/share/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2019/09/10 1.8c listings configuration
@@ -506,31 +514,31 @@ LaTeX Warning: Label `b' multiply defined.
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 124.
-LaTeX Font Info:    ... okay on input line 124.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 124.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 125.
+LaTeX Font Info:    ... okay on input line 125.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 125.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
-24.
+25.
  (/usr/share/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 124.
+LaTeX Font Info:    ... okay on input line 125.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -568,7 +576,7 @@ LaTeX Font Info:    ... okay on input line 124.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Info: Redefining \microtypecontext on input line 124.
+LaTeX Info: Redefining \microtypecontext on input line 125.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: No adjustment of tracking.
@@ -578,8 +586,8 @@ Package microtype Info: No adjustment of kerning.
 File: mt-LatinModernRoman.cfg 2013/03/13 v1.0 microtype config. file: Latin Mod
 ern Roman (RS)
 )
-\AtBeginShipoutBox=\box33
-Package hyperref Info: Link coloring ON on input line 124.
+\AtBeginShipoutBox=\box35
+Package hyperref Info: Link coloring ON on input line 125.
 
 (/usr/share/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -587,18 +595,18 @@ Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
 (/usr/share/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count126
+\c@section@level=\count127
 )
-LaTeX Info: Redefining \ref on input line 124.
-LaTeX Info: Redefining \pageref on input line 124.
-LaTeX Info: Redefining \nameref on input line 124.
+LaTeX Info: Redefining \ref on input line 125.
+LaTeX Info: Redefining \pageref on input line 125.
+LaTeX Info: Redefining \nameref on input line 125.
  (./thesis.out) (./thesis.out)
 \@outlinefile=\write4
 \openout4 = `thesis.out'.
 
-\c@lstlisting=\count127
+\c@lstlisting=\count128
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-27.
+28.
  (/usr/share/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
@@ -607,30 +615,30 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-27.
+28.
 
 (/usr/share/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-127.
+128.
 
 (/usr/share/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-127.
+128.
 
 (/usr/share/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 127.
+(Font)              <14.4> on input line 128.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 127.
+(Font)              <10> on input line 128.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 127.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 127
+(Font)              <7> on input line 128.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 128
 .
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -639,7 +647,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 127
+LaTeX Font Info:    Trying to load font information for U+msb on input line 128
 .
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -659,64 +667,77 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 )
 [2]
 
-LaTeX Warning: Citation `Bryson' on page 3 undefined on input line 190.
+LaTeX Warning: Citation `Bryson' on page 3 undefined on input line 203.
 
 
-LaTeX Warning: Citation `juliawhite' on page 3 undefined on input line 199.
+LaTeX Warning: Citation `juliawhite' on page 3 undefined on input line 212.
 
 
-LaTeX Warning: Citation `juliawhite' on page 3 undefined on input line 199.
+LaTeX Warning: Citation `juliawhite' on page 3 undefined on input line 212.
 
 [3]
 
-LaTeX Warning: Reference `sysDyn' on page 4 undefined on input line 226.
+LaTeX Warning: Reference `sysDyn' on page 4 undefined on input line 239.
 
 
-LaTeX Warning: Citation `mit' on page 4 undefined on input line 226.
+LaTeX Warning: Citation `mit' on page 4 undefined on input line 239.
 
 
-LaTeX Warning: Reference `ipopt' on page 4 undefined on input line 229.
+LaTeX Warning: Reference `ipopt' on page 4 undefined on input line 242.
 
 [4]
 
-LaTeX Warning: Citation `ipopttut' on page 5 undefined on input line 254.
+LaTeX Warning: Citation `ipopttut' on page 5 undefined on input line 267.
 
-[5] [6] [7] [8]
+[5] [6] [7]
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmtt' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 418.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <5> on input line 422.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_3_1.
+pdf Graphic file (type pdf)
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_3_1.p
+df>
+ [8] [9]
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_4_1.
+pdf Graphic file (type pdf)
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_4_1.p
+df>
+ [10] [11]
 
-LaTeX Warning: Reference `morepoly' on page 9 undefined on input line 454.
+LaTeX Warning: Reference `morepoly' on page 12 undefined on input line 591.
 
-[9]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_4_1.
-png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_4_1.png>
- [10]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_5_1.
-png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_5_1.png>
+[12] [13] [14] [15]
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_15_1
+.png Graphic file (type bmp)
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_15_1.png>
 
+ [16]
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_16_1
+.png Graphic file (type bmp)
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_16_1.png>
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_17_1
+.png Graphic file (type bmp)
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_17_1.png>
 
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_6_1.
-png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_6_1.png>
+ [17]
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_18_1
+.png Graphic file (type bmp)
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_yvohi8/thesis_18_1.png>
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_7_1.
-png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_OMh48p/thesis_7_1.png>
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 533.
-[11] [12] [13]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 533.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 833.
+ [18]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 833.
  (./thesis.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 533.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 533.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 833.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 833.
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 47229613A2C4FDAEB55B7EB429539585.
+(rerunfilecheck)             Checksum: 63094C30B6A82FCCBB5E2A5EE7A331BF.
 
 
 LaTeX Warning: There were undefined references.
@@ -724,15 +745,15 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 533.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 833.
  ) 
 Here is how much of TeX's memory you used:
- 14284 strings out of 492483
- 209579 string characters out of 6134979
- 371531 words of memory out of 5000000
- 18561 multiletter control sequences out of 15000+600000
- 50023 words of font info for 77 fonts, out of 8000000 for 9000
+ 14445 strings out of 492483
+ 213437 string characters out of 6134979
+ 442833 words of memory out of 5000000
+ 18699 multiletter control sequences out of 15000+600000
+ 57640 words of font info for 89 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 39i,11n,45p,1709b,380s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 39i,11n,45p,1709b,1035s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on thesis.pdf (13 pages).
+Output written on thesis.pdf (18 pages).
