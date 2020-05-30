@@ -5,8 +5,9 @@ options :
     template : julia_tex.tpl
 ---
 
-```julia; echo=false
-using Images, Plots, Colors, Polynomials, MorePolynomials, BenchmarkTools
+```julia; echo=false;
+using Images, Plots, Colors, Polynomials, BenchmarkTools
+using MorePolynomials;
 plotly()
 
 struct Begin
@@ -102,7 +103,13 @@ Some abstract
 ! NomItem("t","Time")
 ! NomItem("k","Location of a collocation point")
 ! NomItem("N","Total number of collocation points")
+! NomItem("m","Number of mesh points")
 ! NomItem("i","State or control index")
+! NomItem("\\rho","Lagrange term for objective function")
+! NomItem("\\Phi","Mayer term for objective function")
+! NomItem("L","Lagrange interpolating polynomial")
+! NomItem("l","Intermidiate lagrange weights")
+! NomItem("w","Lagrange barycentric weights")
 
 
 ! NomPrint()
@@ -547,7 +554,7 @@ Together they form the Bolza problem
 $$
 \begin{equation}
 \label{bolza}
-J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} w(t, \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
+J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (t, \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
 \end{equation}
 $$
 
@@ -555,6 +562,45 @@ The nonlinear function in equation ``\ref{bolza}`` maps directy to equation ``\r
 
 This completes our formulation of the dynamic optimisation problem. 
 Now we will discuss the background for a pseudospectral representation of this method.
+
+## Lagrange polynomials
+! Label("lagmath")
+Lagrange interpolating polynomials in the barycentric form are useful for fast polynomial interpolation and are forward stable for problems with mesh points clustered towards the ends of intervals ``\cite{lagstable}``.
+Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent a function evaluations at points of ``t`` such that ``y = f(t)``, the unmodified lagrange formula is
+
+$$
+\begin{equation}
+\label{lagweight}
+l_j(t) = \prod_{k=1,k\neq j}^{n} \frac{t - t_k}{t_j - t_k}
+\end{equation}
+$$
+$$
+L(t) = \sum_{j=1}^n  y_j l_j(t)
+$$
+
+We take ``n`` to be the number of mesh points (as before in seciton ``\ref{dynamicsmath}``), ``t`` to be the evaluation point, ``L`` is the output of our interpolation at ``t`` and ``l_j`` are intermediary lagrange weights.
+The denominaor of equation ``\ref{lagweight}`` is a function of the mesh points and not of the evaluation point ``t``.
+As such, we can precompute these beforehand and use them when evaluating our polynomial interpolation.
+This gives us the barycentric form of out polynomial
+
+$$
+\begin{equation}
+\label{barweight}
+w_j = \frac{1}{\prod_{k=1,k\neq j}^n(t_j - t_k)}
+\end{equation}
+$$
+
+$$
+\begin{equation}
+\label{lagbar}
+L(t) = \frac{\displaystyle \sum_{j=1}^n \frac{w_j}{t-t_j} y_j}{ \displaystyle \sum_{j=1}^n \frac{w_j}{t-t_j}}
+\end{equation}
+$$
+
+Where ``w`` are are barycentric weights.
+Note that the weights are purely a function of the mesh points (the domain of the polynomial) and not of the reference evaluations ``y`` at the mesh points.
+This means we can calculate our polynomial weights without knowledge of the function outputs at mesh points (in this case ``y``), and thus if we want to update our polynomial approximation (providing our mesh spacing is the same) all we need do is update our output values which we use for interpolation. 
+No further computation of the weights is required, and the cost of adding additional weights is much lower than recalculating our approximation.
 
 ## The pseudospectral method
 
@@ -715,7 +761,9 @@ mutable struct LagrangePoly{T<:Number} <: AbstractLagrangePolynomial{T}
 end
 ```
 Take note of a couple of features.
-The types all fields are parameterised forced to be the same.
+First, we have chosen to use `x` and `y` to represent our mesh points and function evaluation points respectively, which is inconsistant with the notation in this text.
+This is by choice to maintain consistency with the Polynomials.jl package, and is mentioned here as many additional decisions of notation in this package have been chosen for similar reasons.
+Seconds, the types of all fields (excluding var) are parameterised and forced to be the same.
 The benefits of this are twofold: we don't have to call convert functions when execution any computation that is a function of more than one field, and the compiler is fully aware of the type at runtime, and thus can optimise operations for this type, leading to significant performance gains.
 This choice of representation is made for the benefit gain in polynomial creation and alteration, at the expense of larger memory presence and evaluation time.
 
@@ -731,7 +779,7 @@ mean(@benchmark fit(Polynomial, x, y)) # using Polynomials.jl
 ```julia
 mean(@benchmark fit(LagrangePoly, x, y)) # using MorePolynomials.jl
 ```
-This is perhapse an undfair comparison as Polynomials.jl has the additional step of converting to a coefficient representation.
+This is perhapse an unfair comparison as Polynomials.jl has the additional step of converting to a coefficient representation.
 A more fair comparison would be from time to polynomial creation to first evaluation.
 Let's time the creatation and evaluation of the polynomial at point `x=0.25`.
 ```julia
@@ -743,8 +791,72 @@ mean(@benchmark fit(LagrangePoly, x, y)(0.25)) # using MorePolynomials.jl
 ```
 
 We observe a minor time increase in both cases but MorePolynomials.jl is still almost an order of magnitude faster.
-This is largly due to the barycentric repsresentation, which uses mesh weights to speed up the evaluation of the polynomial.
-This incurrs overhead when generating the weights for the polynomial, but this is still significantly faster than the least-squares approximation employed by Polynomials.jl
+This is largely due to the barycentric representation, which uses barycentric weights to speed up the evaluation of the polynomial, allowing an evaluation time in the order of ``\mathcal{O}(n)`` flops.
+This incurs overhead when generating the weights for the polynomial, but this is still significantly faster than the least-squares approximation employed by Polynomials.jl.
+Internally, the generation of weights takes the following form
+```julia; eval=false
+function lagrange_bary_weights(x::AbstractVector{T}) where {T}
+    numPoints = length(x)
+    w = ones(T,numPoints)
+    for j in 2:numPoints
+        xj = x[j]
+        for k in 1:j-1
+            w[k] *= x[k] - xj
+        end
+        for k in 1:j-1
+            w[j] *= xj - x[k]
+        end
+    end
+    return 1 ./ w
+end
+```
+
+This achieves the same result as equation ``\ref{barweight}``.
+The exact number of flops required to calculate the weights is ``n\times (n - 1)``.
+We execute the same for loop twice so to take advantage of the cpu cache when indexing the final weight.
+
+As mentioned in section ``\ref{lagmath}``, the barycentric representation allows us to update our representation without having to recumpute weights if our mesh points are the same.
+This can be particularly useful for dynamic optimisation problems, where the states are perpetually changing but the mesh remains the same between solves.
+We demonstrate this below
+
+```julia
+lPoly = fit(LagrangePoly, x, y)
+ynew = map( (x)->5x^5 + 7x^4 - 3x - 1, x)
+updateAndEval(lPoly, ynew, x) = lPoly[:] = ynew; lPoly(x)
+mean(@benchmark updateAndEval(lPoly, ynew, 0.25)) 
+```
+
+An extension of the Lagrange polynomial is the Legendre-Gauss-Radau Lagrange polynomial [^1].
+This uses Legendre-Gauss-Radau points to generate the mesh.
+See this paper on the benefits of using Legendre-Gauss-Radau (LGR) points of function approximation in dynamic optimisation ``\cite{lgrcomp}``.
+The current implementation finds the LGR points as a function of the eigenvalues of a symmetric Legendre polynomial based matrix, but future implementations will most likely use a combination of this method and the implementation in the package FastGaussQuadrature, dynamically switching based on speed of implementation and number of points.
+For the moment, our implementation is faster at low orders.
+Additionally, if the mesh points follow the LGR formulation, we can make use of the LGR weights generated from FastGaussQuadrature for fast integration.
+Let's now compare some polynomial integration between Polynomials.jl and MorePolynomials.jl.
+
+[^1]: Try saying that really quickly many times in a row!
+
+```julia
+x = lgr_points(6)
+
+mean(@benchmark integrate(fit(Polynomial, x, y)),0) # using Polynomials.jl
+```
+```julia
+mean(@benchmark integrate(fit(LGRPoly, y))) # using MorePolynomials.jl
+```
+And just for fun let's compare this to a similar implementation in matlab (output is in seconds)
+
+```julia
+open(`matlab -nodesktop -nosplash`, "w", stdout) do io
+    println(io,"x = $x;")
+    println(io,"y = $y;")
+    println(io,"int = @() polyint(polyfit(x,y,5));")
+    println(io,"time_taken = timeit(int)")
+end
+```
+
+
+### Low order Vendemonde methods
 
 ### User interface
 ### Error handling
@@ -780,6 +892,7 @@ img = load("figures/gargposttransformy.png")
 
 ```
 ! EndFig("a","b")
+
 
 <!-- ipopt: https://coin-or.github.io/Ipopt/ --> 
 <!-- ipopttut: Short tutorial Ipopt.pdf --> 
