@@ -84,6 +84,24 @@ function Base.show(io::IO, m::MIME"text/latex", t::Table)
     write(io, "\\end{table}\n")
 end
 
+
+
+struct BeginColBox end
+Base.show(io::IO, m::MIME"text/latex", b::BeginColBox) = write(io, "\\begin{tcolorbox}[breakable,
+        left=0pt,
+        right=0pt,
+        top=0pt,
+        bottom=0pt,
+        colback=gray!20,
+        colframe=gray!20,
+        width=\\dimexpr\\textwidth\\relax, 
+        enlarge left by=0mm,
+        boxsep=5pt,
+        arc=0pt,outer arc=0pt,
+        ] ")
+struct EndColBox end
+Base.show(io::IO, m::MIME"text/latex", b::EndColBox) = write(io, "\\end{tcolorbox}")
+
 ``` 
 ! Begin("abstract")
 
@@ -205,18 +223,23 @@ $$
 
 Where
 $$
-J : \mathbb{R}^n \rightarrow \mathbb{R}
+J : \mathbb{R}^n \rightarrow \mathbb{R},
 $$
 
-is the objective function to be minimised, and
+is the objective function to be minimised,
+$$
+\pmb{x} \in \mathbb{R}^n
+$$
+is an array of decision variables and
 
 $$
-g : \mathbb{R}^n \rightarrow \mathbb{R}^m 
+g : \mathbb{R}^n \rightarrow \mathbb{R}^m,
 $$
 
 are functions that represent nonlinear constraints.
 In this text we use bold font to denote the existance of an array of either variables or functions.
 In this particular case, ``\pmb{g}`` comprises of multiple constraint functions with multiple inputs and outputs.
+
 The nonlinear constraint may also take the form (which is more common in the syntactic formulation of dynamic optimisation problems)
 $$
 \begin{equation}
@@ -246,79 +269,85 @@ We will now go on to explore how the dynamics optimisation problem becomes the N
 
 The system dynamics are of key importance in the dynamic optimisation problem, and are what essentially separate it from a standard NLP problem.
 By system dynmaics, we are referring to the governing equations which describe the evolution of the state over time.
-Simply put, if ``\pmb{x}`` is our state, ``\pmb{u}`` is our control input and ``t`` represents time we have
+Simply put, if ``x`` is our state, ``u`` is our control input and ``t`` represents time we have
 
 $$
 \begin{equation}
-\frac{\partial \pmb{x}}{\partial t}\rvert_{t_k} = \dot{\pmb{x}}\rvert_{t_k} = \pmb{f}(\pmb{x},\pmb{u})\rvert_{t_k}
+\label{nakeddynamics}
+\frac{\partial x}{\partial t}\rvert_{t_k} = \dot{x}\rvert_{t_k} = f(x,u)\rvert_{t_k}
 \end{equation}
 $$
 
 Essentially we are saying the change of state through time (derivative) is a function of both the state(s) and control(s) at that instance in time. 
 
 Let's define our terms a little more thoroughly.
-Our state is denoted by ``\pmb{x}``, which in reality represents a vector of states such that
+Our state is denoted by the continuous time variable ``x``, which in reality represents a number of continuous states such that
 
 $$
-x \in \mathbb{R}^m
+x \in \mathbb{R}^n,
 $$
 
-Where ``m`` here is the number state discritzation points, otherwise known as mesh points.
-This is not to be confused with the number of collocation points, which is most cases is the same but in some is different.
-Collocation points are the points where system dynamics are enforced, but not all points where we approximate state have to comply with system dynamics.
-Here ``x`` represents a vector of mesh points such that ``\pmb{x}_{ik} = x_i(t_{k})``, where ``x_i(t_{k})`` is the ``i^{\text{th}}`` state evaluated at time ``t_{k}``.
-In the name of consistency, we will define some syntax.
-When referring to state and control, the first subscript value always refers to the index of the state or control being referenced.
-The second subscript value refers to the index of the mesh point being referenced.
-For example ``x_{ij}`` refers to the ``j^{\text{th}}`` mesh point for the ``i^{\text{th}}`` state.
-
-If the number of mesh points is the same for each state it may be convenient to define ``\pmb{x}`` as 
-
-$$
-\pmb{x} \in \mathbb{R}^{n \times m}
-$$
-
-Where ``n`` is the number of states (e.g. distance, velocity etc. ). 
-In some cases (if the toolbox supports such a formulation) we may require each individual state to have a different mesh size.
-If this is the case, we can define ``\pmb{x}`` as 
+where ``n`` is the number of states (e.g. distance, velocity etc. ).
+In order to transcribe the problem to a format compatible with our NLP problem, we must discritse this continuous states into a set of decision variables and dynamics constraints.
+As such, we can represent the state as a function of a set of decision variables.
+Let's take ``\tilde{x}`` to be some interpolating function which interpolates a state for a given number of inputs.
+We then have
 
 $$
 \begin{equation}
 \label{xState}
-\pmb{x} = x_i \in \mathbb{R}^{m_i}, \quad i = 1,2 \ldots n
+\pmb{x} = [\tilde{x}_i (x_i,t)], \quad x_i \in \mathbb{R}^{m_i}, \quad \tilde{x} : \mathbb{R}^{m_i + 1} \rightarrow \mathbb{R},  \quad i = 1,2 \ldots n,
 \end{equation}
 $$
 
-Such that ``m \in \mathbb{R}^n`` may contain a different value at each state index ``i``.
-Supporting this formulation is indeed one of the aims of the toolbox being developed here and as such this shall be the assumed notation from now on.
+such that ``t`` is the evaluation time of the interpolating function, ``m \in \mathbb{R}^n`` is the number of decision variables for each discretised state and may contain a different value at each state index ``i``, and ``x_i`` is the decision variable.
+As illustrated in section ``\ref{lagmath}``, function ``\tilde{x}`` can be initialised without knowledge of the specifics of ``t``.
+The number of decision variables in not to be confused with the number of collocation points, which in many cases is the same but in some is different.
+Collocation points are the points where system dynamics are enforced, but not all points where we approximate state have to comply with system dynamics.
+Additionally, in the data point formulation (as opposed to the coefficient formulation) an individual data point ``x_{ij}`` will consist of a mesh location and state value as below.
+
+$$
+x_i = \big[ x_{ij} = [t_{ij}, x(t_{ij})] \big], \quad j = 1,2, \ldots m_i.
+$$
+
+These discretised states will go onto become decision variables in our NLP formulation.
+Traditional formulations such as that in ICLOCS require states to be discretised at set mesh interval points such that ``\pmb{x} \in \mathbb{R}^{n\times m}``.
+By the introduction of and interpolating function ``\tilde{x}``, we are no longer constrained to requiring the number of decision variables in each state to be the same.
+In our formulation, ``\tilde{x}`` is an interpolating polynomial, hence the discussion in section ``\ref{lagmath}``.
+This interpolating polynomial may be a function of polynomial coefficients, or interpolating data points, and for the rest of this discussion we will assume they are the latter.
+As such, ``x_i`` represents a set of interpolating data points, and ``\pmb{x}`` represents a vector of state approximating functions such that ``\pmb{x}_i(t_k) = \tilde{x}_i(x_i,t_k)``, where ``\tilde{x}_i`` is the ``i^{\text{th}}`` state approximation evaluated at time ``t_{k}``.
+
 
 Likewise we may use the same definition for our control variables.
 $$
 \begin{equation}
 \label{uControl}
-\pmb{u} = u_i \in \mathbb{R}^{m_i}, \quad i = 1,2 \ldots c
+\pmb{u} = [\tilde{u}_i (u_i,t)], \quad u_i \in \mathbb{R}^{m_i}, \quad \tilde{u} : \mathbb{R}^{m_i + 1} \rightarrow \mathbb{R},  \quad i = 1,2 \ldots c,
 \end{equation}
 $$
 
-Where ``c`` is the number of controls. The state can control points as formulated here are decision variables in our NLP problem, that will be varied by the solver in order to find the optimal solution.
+where ``c`` is the number of controls. 
 
 Our system dynamics function is how we specify the dynamics (in many cases physics) of the system being optimised, and is represented as an array of functions, one for each state derivative.
 Given we can calculate all state derivatives as a function of the states at one particular time instance, we can have a function mapping that outputs all the state dynamics for a particular state at collocation points given by a time vector ``t = t_1, t_2 \ldots t_{m_i}``
 
 $$
-\pmb{f} = f_i(\pmb{x}(t),\pmb{u}(t)) : \mathbb{R}^{(n + c) \times m_i} \rightarrow \mathbb{R}^{m_i}, \quad i = 1,2\ldots n
+\begin{equation}
+\label{ffunc}
+\pmb{f} = f_i(\pmb{x}(t),\pmb{u}(t), t) : \mathbb{R}^{(n + c) \times m_i} \rightarrow \mathbb{R}^{m_i}, \quad i = 1,2\ldots n
+\end{equation}
 $$
 
 Where ``n`` here is the number of both states and controls, and ``m_i`` is the number of collocation points for each state index ``i``.
-The keen eye will note that for each individual function evaluation, the input array is assumed to have dimensions ``n \times m_i``, while in equation ``\ref{xState}`` and ``\ref{uControl}`` we observe that these arrays do not necessarily have a rectangular representation (rather they are more arrays of varying length vectors).
-We resolve this by interpolating the values of ``x`` and ``u`` at some time ``t``.
+Note that for each individual function evaluation, the input array is assumed to have dimensions ``(n+c) \times m_i``, and as such we use our interpolating functions to find the values of states and controls at locations of ``t=t_k, k = 1,2\ldots m_i``.
+Also note that, though we can map multiple time inputs to outputs, these mappings must be direct (as per equation ``\ref{nakeddynamics}``) i.e. ``f(\pmb{x}(t_k),\pmb{u}(t_k), t_k) \rightarrow \dot{x}(t_k)``.
 
 Putting this all together we have
 $$
 \pmb{x}\left\{\begin{matrix}
-x_1 =& [x_{11}, x_{12} \ldots x_{1m_1} ] \\
+\pmb{x}_1 =& \tilde{x}_1 ([x_{11}, x_{12} \ldots x_{1m_1} ],t) \\
  \ldots & \\ 
-x_n =& [x_{n1}, x_{n2} \ldots x_{nm_n} ] 
+\pmb{x}_n =& \tilde{x}_n ([x_{n1}, x_{n2} \ldots x_{nm_n} ], t) 
 \end{matrix}\right.
 $$
 $$
@@ -328,9 +357,9 @@ $$
 
 $$
 \pmb{u}\left\{\begin{matrix}
-u_1 =& [u_{11}, u_{12} \ldots u_{1m_1} ] \\
+\pmb{u}_1 =& \tilde{u}_1 ([u_{11}, u_{12} \ldots u_{1m_1} ], t) \\
  \ldots & \\ 
-u_c =& [u_{c1}, u_{c2} \ldots u_{cm_c} ] 
+\pmb{u}_c =& \tilde{u}_n ([u_{c1}, u_{c2} \ldots u_{cm_c} ], t) 
 \end{matrix}\right.
 $$
 $$
@@ -339,17 +368,18 @@ c = \text{number of controls}, m_i = \text{controls mesh sizes}, i = 1,2\ldots c
 $$
 $$
 \pmb{f}\left\{\begin{matrix}
-\dot{x}_1 =& f_1(\pmb{x}(t_1),\pmb{u}(t_1)\ldots\pmb{x}(t_{m_1}),\pmb{u}(t_{m_1})) \\
+\dot{x}_{,1} =& f_1(\pmb{x}(t_1),\pmb{u}(t_1)\ldots\pmb{x}(t_{m_1}),\pmb{u}(t_{m_1}), t) \\
  \ldots & \\ 
-\dot{x}_n =& f_n(\pmb{x}(t_1),\pmb{u}(t_1)\ldots\pmb{x}(t_{m_n}),\pmb{u}(t_{m_n})) 
+\dot{x}_{,n} =& f_n(\pmb{x}(t_1),\pmb{u}(t_1)\ldots\pmb{x}(t_{m_n}),\pmb{u}(t_{m_n}), t) 
 \end{matrix}\right.
 $$
 $$
 n = \text{number of states}, m_i = \text{number of state collocation points}, i = 1,2 \ldots n
 \medskip
 $$
+We use ``\dot{x}_,i`` to represent the continuous dynamics of the state at the collocation points.
 In our formulation the time vector ``t`` does not necessarily have to have the same length or values for any one such function call, only that it must correspond with the number of output variables being assigned.
-For example, if the state ``x_1`` has ``m_1`` mesh points, then when calling ``f_1(\pmb{x}(t), \pmb{u}(t))``, ``t`` here must be of length ``m_1``, but the mesh points of ``x_2`` to ``x_n`` do not have to correspond with those of ``x_1``, and if they do not they are interpolated.
+For example, if we are evaluating ``m_i`` collocation points, then when calling ``f_1(\pmb{x}(t), \pmb{u}(t))``, ``t`` here must be of length ``m_1``, but the mesh points of ``x_1`` to ``x_n`` do not have to correspond with the collocation points, and if they do not they are interpolated.
 
 Now that we have our system dynamics functions, we need to transform them into a format that can be solved with an NLP solver.
 This is the process of transcription and we do this by creating a set of equality constraints that enforce system dynamics at our chosen collocation points.
@@ -360,25 +390,26 @@ Additionally, oscillations can occur between collocation points if the system is
 
 This process generally involves us approximating the derivatives of the state vector at our collocation points, and in some way equating these with our dynamics function.
 There are many of these approximations, but the simplest of these (and the one that probably illustrates the point best) is the euler method in equation ``\ref{euler}``.
-Note here ``h_k`` is the timestep ``h_k = t_{k+1} - t_k``
+Note here ``h_k`` is the timestep ``h_k = t_{k+1} - t_k`` and ``t_k`` is the collocation point being evaluated.
 
 $$
-\frac{\partial \pmb{x}_{ik}}{\partial t} = \pmb{f}_{ik} \approx \frac{\pmb{x}_{ik+1} - \pmb{x}_{ik}}{h_k}
+\frac{\partial \pmb{x}_{i}(t_k)}{\partial t} = \pmb{f}_{i}(t_k) \approx \frac{\pmb{x}_{i}(t_{k+1}) - \pmb{x}_{i}(t_k)}{h_k}
 $$
 $$
 \begin{equation}
 \label{euler}
-\pmb{x}_{ik+1} - \pmb{x}_{ik} - h_k \pmb{f}_{ik} = 0
+\pmb{x}_{i}(t_{k+1}) - \pmb{x}_{i}(t_k) - h_k \pmb{f}_{i}(t_k) = 0
 \end{equation}
 $$
 
+For the sake of consistency, ``\pmb{x}_i(t) = \tilde{x}_i(x_i,t)``, ``\pmb{f}_i(t) = f_i(\pmb{x}(t), \pmb{u}(t),t)``.
 All other methods are extensions of this principle, but aim to have more accurate estimations of state derivatives at collocation points.
 Take for example the trapizoidal method
 
 $$
 \begin{equation}
 \label{trap}
-\pmb{x}_{ik+1} - \pmb{x}_{ik} - \frac{h_k}{2} (\pmb{f}_{ik} + \pmb{f}_{ik+1}) = 0
+\pmb{x}_{i}(t_{k+1}) - \pmb{x}_{i}(t_k) - \frac{h_k}{2} \big(\pmb{f}_{i}(t_k) + \pmb{f}_{i}(t_{k+1}\big)) = 0
 \end{equation}
 $$
 
@@ -415,9 +446,8 @@ $$
 
 where ``x_1`` is mass position, ``\omega_n = \sqrt{\frac{k}{m}}`` and ``\zeta = \frac{c}{2m\omega_n}`` with the constants as defined in the code.
 
-! BeginFig()
-
-```julia; out_width="0.7\\textwidth"
+! BeginColBox()
+```julia; results = "hidden"
 function spring()
     k = 5
     m = 0.1
@@ -442,10 +472,14 @@ function spring()
 end
 
 x1, x2, t = spring()
+
+```
+! EndColBox()
+! BeginFig()
+```julia; out_width="0.7\\textwidth"; echo=false
 interpolated_t = collect(0:0.01:1)
 plot(interpolated_t, x1.(interpolated_t), labels = ["interpolated" ""])
 scatter!(t, x1.(t), xlabel="t", ylabel="x1", labels = ["collocated" ""])
-
 ```
 ! EndFig("Collocated system dynamics for a mass spring damper","massdamp")
 Figure ``\ref{massdamp}`` shows the results.
@@ -471,10 +505,10 @@ $$
 t_{F,L} \leq t_F \leq t_{F,U}
 $$
 $$
-\pmb{x}_{i1,L} \leq \pmb{x}_i(t_1) \leq \pmb{x}_{i1,U}
+\pmb{x}_{i,L}(t_1) \leq \pmb{x}_i(t_1) \leq \pmb{x}_{i,U}(t_1)
 $$
 $$
-\pmb{x}_{iF,L} \leq \pmb{x}_i(t_F) \leq \pmb{x}_{iF,U}
+\pmb{x}_{i,L}(t_F) \leq \pmb{x}_i(t_F) \leq \pmb{x}_{i,U}(F_1)
 $$
 
 which are all perturbations of equation ``\ref{xineq}``.
@@ -491,43 +525,42 @@ Path constrains follow an almost identical formulation but apply to the whole of
 $$
 \begin{equation}
 \label{xpath}
-\pmb{x}_{i,L} \leq \pmb{x}_i(t_k) \leq \pmb{x}_{i,U}
+\pmb{x}_{i,L} \leq \pmb{x}_i(t) \leq \pmb{x}_{i,U}
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{upath}
-\pmb{u}_{i,L} \leq \pmb{u}_i(t_k) \leq \pmb{u}_{i,U}
+\pmb{u}_{i,L} \leq \pmb{u}_i(t) \leq \pmb{u}_{i,U}
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{bpath}
-\pmb{h}(t_k,\pmb{x}(t_k),\pmb{u}(t_k)) \leq 0
+\pmb{h}(t,\pmb{x}(t),\pmb{u}(t)) \leq 0
 \end{equation}
 $$
-
-Once again for the sake of completeness equations ``\ref{xpath}`` and ``\ref{upath}`` correspond to equation ``\ref{xineq}`` and equation ``\ref{bpath}`` to equation ``\ref{gfunc}`` in our NLP formulation.
+A direct time mapping is once again assumed for ``h`` as described below equation ``\ref{ffunc}``.
+For the sake of completeness equations ``\ref{xpath}`` and ``\ref{upath}`` correspond to equation ``\ref{xineq}`` and equation ``\ref{bpath}`` to equation ``\ref{gfunc}`` in our NLP formulation.
 Again let's look at a graphical representation to illustrate this using the example from figure ``\ref{massdamp}``.
 Lets add the following constraints to our problem.
 
 $$
 \begin{equation}
 \label{expathcon}
--1 \leq x_1(t_k) \leq 1
+-1 \leq \pmb{x}_1(t_k) \leq 1
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{exhcon}
-h_1(t_k,\pmb{x}(t_k),\pmb{u}(t_k) )  = x_1(t_k) + t_k - 1.5 \leq 0
+h_1(t_k,\pmb{x}(t_k),\pmb{u}(t_k) )  = \pmb{x}_1(t_k) + t_k - 1.5 \leq 0
 \end{equation}
 $$
 For the example ``h_1`` could represent a desire for the oscillations to grow smaller with time, while the path constraint could represent physical stops on the system which stop the spring moving beyond this point.
 We can taylor the constraints to fit both the problem dynamics and our specific goals.
 
 ! BeginFig()
-
 ```julia; out_width="0.7\\textwidth";echo=false
 rect(w, h, x, y) = Shape(x .+ [0, w, w, 0, 0], y .+ [0, 0, h, h, 0])
 h = Shape([0,1,1,0],[1.5,0.5,2,2])
@@ -562,6 +595,9 @@ The nonlinear function in equation ``\ref{bolza}`` maps directy to equation ``\r
 
 This completes our formulation of the dynamic optimisation problem. 
 Now we will discuss the background for a pseudospectral representation of this method.
+
+## The pseudospectral method
+
 
 ## Lagrange polynomials
 ! Label("lagmath")
@@ -602,7 +638,6 @@ Note that the weights are purely a function of the mesh points (the domain of th
 This means we can calculate our polynomial weights without knowledge of the function outputs at mesh points (in this case ``y``), and thus if we want to update our polynomial approximation (providing our mesh spacing is the same) all we need do is update our output values which we use for interpolation. 
 No further computation of the weights is required, and the cost of adding additional weights is much lower than recalculating our approximation.
 
-## The pseudospectral method
 
 
 
@@ -686,12 +721,14 @@ The second package, MorePolynomials.jl, is an extension of the afformentioned Po
 We will begin with a discussion of the MorePolynomials.jl package.
 
 ## MorePolynomials.jl
+! Label("morepoly")
 MorePolynomials aims to address the need for polynomial representations of state and control vectors in dynmaic optimisation problems, while being generic enough to be used with other applications.
 As not to reinvent the wheel (though much wheel reinventing is present in the wild west that is the Julia package library), it is built as an extension to the Polynomials.jl package.
 One advantage of this is by subtyping our polynomials from the `AbstractPolynomial` type, we can make use of many of the generic polynomial funtions without having to write additional code.
 Unfortunately much of this code 'inheritance' (though not to be taken in the traditional manner) relies in this case on having a mathcing backend data representation, which is not the case.
 All is not lost however, as we can dispatch on our own custom types and essentially just rewrite the necessary subroutines for our polynomials.
 Take the example of the `fit()` command from Polynomials.jl.
+! BeginColBox()
 ```julia;eval=false
 function fit(P::Type{<:AbstractPolynomial},
              x::AbstractVector{T},
@@ -709,17 +746,21 @@ function fit(P::Type{<:AbstractPolynomial},
     return P(T.(coeffs), var)
 end
 ```
+! EndColBox()
 
 This function assumes the existence of the `coeffs` data structure, which does not exist in our present formulation.
 As such, we dispatch on the function with our own implementation.
 In the case of the `LagrangePoly`, we have
+! BeginColBox()
 ```julia;eval=false
 function fit(P::Type{<:AbstractLagrangePolynomial}, x::AbstractVector{T}, y::AbstractVector{T}; var = :x) where {T}
     return LagrangePoly(x,y;var)
 end
 ```
+! EndColBox()
 Others can be direct inherited from the package without any code additions.
 For example in the case of the roots function in Polynomials.jl
+! BeginColBox()
 ```julia;eval=false
 function roots(q::AbstractPolynomial{T}; kwargs...) where {T <: Number}
     p = convert(Polynomial{T},  q)
@@ -727,6 +768,7 @@ function roots(q::AbstractPolynomial{T}; kwargs...) where {T <: Number}
 end
 
 ```
+! EndColBox()
 Here the `AbstractPolynomial` is converted to type `Polynomial` and then the roots can be found based on the internal `Polynomial` type.
 As long as we implement the `convert()` function for our polynomial and the `Polynomial` type, we need not dispatch on the `roots()` function.
 The important not is that to the user it makes no difference thanks to the power of multiple dispatch.
@@ -743,14 +785,17 @@ We will now take a closer look at the backend implementation of MorePolynomials.
 
 ### Lagrange Implementation
 The Polynomials.jl package has the following data structure which allows polynomial to be stored using it's coefficients.
+! BeginColBox()
 ```julia;eval=false
 struct Polynomial{T <: Number} <: StandardBasisPolynomial{T}
     coeffs::Vector{T}
     var::Symbol
 end
 ```
+! EndColBox()
 
 As the standard `Polynomial` type from `Polynomials.jl` already provides and interface for storing coefficient based polynomials, an additional data structure and supporting subroutines has been introduced to implement the Lagrange polynomial.
+! BeginColBox()
 ```julia;eval=false
 mutable struct LagrangePoly{T<:Number} <: AbstractLagrangePolynomial{T} 
     x::Vector{T}
@@ -760,6 +805,7 @@ mutable struct LagrangePoly{T<:Number} <: AbstractLagrangePolynomial{T}
     var::Symbol
 end
 ```
+! EndColBox()
 Take note of a couple of features.
 First, we have chosen to use `x` and `y` to represent our mesh points and function evaluation points respectively, which is inconsistant with the notation in this text.
 This is by choice to maintain consistency with the Polynomials.jl package, and is mentioned here as many additional decisions of notation in this package have been chosen for similar reasons.
@@ -769,6 +815,7 @@ This choice of representation is made for the benefit gain in polynomial creatio
 
 To illustrate the differences between the two representations, let's benchmark some polynomials.
 First, let's start with polynomial fitting
+! BeginColBox()
 ```julia
 x = [-1,-0.6,-0.2,0.2,0.6,1]
 y = map( (x)->x^5 + 3x^2 - x + 1, x)
@@ -779,9 +826,11 @@ mean(@benchmark fit(Polynomial, x, y)) # using Polynomials.jl
 ```julia
 mean(@benchmark fit(LagrangePoly, x, y)) # using MorePolynomials.jl
 ```
+! EndColBox()
 This is perhapse an unfair comparison as Polynomials.jl has the additional step of converting to a coefficient representation.
 A more fair comparison would be from time to polynomial creation to first evaluation.
 Let's time the creatation and evaluation of the polynomial at point `x=0.25`.
+! BeginColBox()
 ```julia
 mean(@benchmark fit(Polynomial, x, y)(0.25)) # using Polynomials.jl
 ```
@@ -789,11 +838,13 @@ mean(@benchmark fit(Polynomial, x, y)(0.25)) # using Polynomials.jl
 ```julia
 mean(@benchmark fit(LagrangePoly, x, y)(0.25)) # using MorePolynomials.jl
 ```
+! EndColBox()
 
 We observe a minor time increase in both cases but MorePolynomials.jl is still almost an order of magnitude faster.
 This is largely due to the barycentric representation, which uses barycentric weights to speed up the evaluation of the polynomial, allowing an evaluation time in the order of ``\mathcal{O}(n)`` flops.
 This incurs overhead when generating the weights for the polynomial, but this is still significantly faster than the least-squares approximation employed by Polynomials.jl.
 Internally, the generation of weights takes the following form
+! BeginColBox()
 ```julia; eval=false
 function lagrange_bary_weights(x::AbstractVector{T}) where {T}
     numPoints = length(x)
@@ -810,6 +861,7 @@ function lagrange_bary_weights(x::AbstractVector{T}) where {T}
     return 1 ./ w
 end
 ```
+! EndColBox()
 
 This achieves the same result as equation ``\ref{barweight}``.
 The exact number of flops required to calculate the weights is ``n\times (n - 1)``.
@@ -819,12 +871,14 @@ As mentioned in section ``\ref{lagmath}``, the barycentric representation allows
 This can be particularly useful for dynamic optimisation problems, where the states are perpetually changing but the mesh remains the same between solves.
 We demonstrate this below
 
+! BeginColBox()
 ```julia
 lPoly = fit(LagrangePoly, x, y)
 ynew = map( (x)->5x^5 + 7x^4 - 3x - 1, x)
 updateAndEval(lPoly, ynew, x) = lPoly[:] = ynew; lPoly(x)
 mean(@benchmark updateAndEval(lPoly, ynew, 0.25)) 
 ```
+! EndColBox()
 
 An extension of the Lagrange polynomial is the Legendre-Gauss-Radau Lagrange polynomial [^1].
 This uses Legendre-Gauss-Radau points to generate the mesh.
@@ -836,6 +890,7 @@ Let's now compare some polynomial integration between Polynomials.jl and MorePol
 
 [^1]: Try saying that really quickly many times in a row!
 
+! BeginColBox()
 ```julia
 x = lgr_points(6)
 
@@ -844,8 +899,10 @@ mean(@benchmark integrate(fit(Polynomial, x, y)),0) # using Polynomials.jl
 ```julia
 mean(@benchmark integrate(fit(LGRPoly, y))) # using MorePolynomials.jl
 ```
+! EndColBox()
 And just for fun let's compare this to a similar implementation in matlab (output is in seconds)
 
+! BeginColBox()
 ```julia
 open(`matlab -nodesktop -nosplash`, "w", stdout) do io
     println(io,"x = $x;")
@@ -854,13 +911,23 @@ open(`matlab -nodesktop -nosplash`, "w", stdout) do io
     println(io,"time_taken = timeit(int)")
 end
 ```
+! EndColBox()
 
 
 ### Low order Vendemonde methods
 
+### Piecewise Polynomials
+
 ### User interface
 ### Error handling
 ### Benchmarking and performance gains
+
+## JuDO.jl
+The development of the JuDO.jl package has been somewhat more staggered than the MorePolynomials.jl package.
+While MorePolynomials.jl inherists much of the design ethos from Polynomials.jl, JuDO.jl has no such counterpart.
+Additionally, one of the key learning points from ICLOCS was that a good base design facillitates easy and intuative feature addition, and avoids problems associated with feature creep.
+As such, progress with JuDO.jl has been slow but deliberate.
+In this text we will outline a basic generic implementation of trancription methods in JuMP, 
 
 # Documentation
 # Next steps
