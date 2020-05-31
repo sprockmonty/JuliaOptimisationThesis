@@ -609,7 +609,7 @@ scatter(lgr_points(7),[0,0,0,0,0,0,0],xlabel="t",ylabel="",labels=["LGR points" 
 We use the LGR points as a base for the interpolating polynomial mesh, such that ``t_{ij}`` in equation ``\ref{meshdef}`` are the LGR points.
 As the LGR points are defined on the interval ``[-1,1)``, we can use the following transformation to transform from ``[-1,1]`` to ``[-t_1,t_F]``.
 $$
-t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_F+t_1}{2}.
+t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_1+t_F}{2}.
 $$
 
 
