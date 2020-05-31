@@ -1,8 +1,8 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/Arch Linux) (preloaded format=xelatex 2020.5.15)  31 MAY 2020 00:23
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/Arch Linux) (preloaded format=xelatex 2020.5.15)  31 MAY 2020 04:44
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
-**thesis.tex -aux-directory ./jl_nkpxFx -include-directory pdf
+**thesis.tex -aux-directory ./jl_vONz26 -include-directory pdf
 (./thesis.tex
 LaTeX2e <2019-10-01> patch level 1
 (/usr/share/texmf-dist/tex/latex/base/article.cls
@@ -364,6 +364,22 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks26
 \@floatcapt=\box32
 )
+(/usr/share/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(/usr/share/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: xetex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+)
 (/usr/share/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
 Package: tcolorbox 2019/09/19 version 4.21 text color boxes
 
@@ -444,22 +460,6 @@ File: pgfsyssoftpath.code.tex 2019/08/03 v3.1.4b (3.1.4b)
 (/usr/share/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
 File: pgfsysprotocol.code.tex 2019/08/03 v3.1.4b (3.1.4b)
 ))
-(/usr/share/texmf-dist/tex/latex/xcolor/xcolor.sty
-Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
-
-(/usr/share/texmf-dist/tex/latex/graphics-cfg/color.cfg
-File: color.cfg 2016/01/02 v1.6 sample color configuration
-)
-Package xcolor Info: Driver file: xetex.def on input line 225.
-Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
-Package xcolor Info: Model `RGB' extended on input line 1364.
-Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
-Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
-Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
-Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
-Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
-Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
-)
 (/usr/share/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
 Package: pgfcore 2019/08/03 v3.1.4b (3.1.4b)
 
@@ -611,82 +611,17 @@ Package: etoolbox 2019/09/21 v2.5h e-TeX tools for LaTeX (JAW)
 \tcb@temp=\box47
 \tcb@out=\write4
 \tcb@record@out=\write5
-
-(/usr/share/texmf-dist/tex/latex/tcolorbox/tcbbreakable.code.tex
-Library (tcolorbox): 'tcbbreakable.code.tex' version '4.21'
-\tcb@testbox=\box48
-\tcb@totalupperbox=\box49
-\tcb@totallowerbox=\box50
-) (/usr/share/texmf-dist/tex/latex/tcolorbox/tcbtheorems.code.tex
-Library (tcolorbox): 'tcbtheorems.code.tex' version '4.21'
-) (/usr/share/texmf-dist/tex/latex/tcolorbox/tcbskins.code.tex
-Library (tcolorbox): 'tcbskins.code.tex' version '4.21'
-(/usr/share/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty
-(/usr/share/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
-(/usr/share/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
-(/usr/share/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex))
-(/usr/share/texmf-dist/tex/latex/pgf/math/pgfmath.sty
-(/usr/share/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex))
-(/usr/share/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
-Package: pgffor 2019/08/03 v3.1.4b (3.1.4b)
-
-(/usr/share/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
-\pgffor@iter=\dimen168
-\pgffor@skip=\dimen169
-\pgffor@stack=\toks39
-\pgffor@toks=\toks40
-))
-(/usr/share/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
-Package: tikz 2019/08/03 v3.1.4b (3.1.4b)
-
-(/usr/share/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothandlers.code.te
-x
-File: pgflibraryplothandlers.code.tex 2019/08/03 v3.1.4b (3.1.4b)
-\pgf@plot@mark@count=\count136
-\pgfplotmarksize=\dimen170
 )
-\tikz@lastx=\dimen171
-\tikz@lasty=\dimen172
-\tikz@lastxsaved=\dimen173
-\tikz@lastysaved=\dimen174
-\tikz@lastmovetox=\dimen175
-\tikz@lastmovetoy=\dimen176
-\tikzleveldistance=\dimen177
-\tikzsiblingdistance=\dimen178
-\tikz@figbox=\box51
-\tikz@figbox@bg=\box52
-\tikz@tempbox=\box53
-\tikz@tempbox@bg=\box54
-\tikztreelevel=\count137
-\tikznumberofchildren=\count138
-\tikznumberofcurrentchild=\count139
-\tikz@fig@count=\count140
- (/usr/share/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.code.tex
-File: pgfmodulematrix.code.tex 2019/08/03 v3.1.4b (3.1.4b)
-\pgfmatrixcurrentrow=\count141
-\pgfmatrixcurrentcolumn=\count142
-\pgf@matrix@numberofcolumns=\count143
-)
-\tikz@expandcount=\count144
-
-(/usr/share/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrary
-topaths.code.tex
-File: tikzlibrarytopaths.code.tex 2019/08/03 v3.1.4b (3.1.4b)
-)))
-\tcb@waterbox=\box55
-
-(/usr/share/texmf-dist/tex/latex/tcolorbox/tcbskinsjigsaw.code.tex
-Library (tcolorbox): 'tcbskinsjigsaw.code.tex' version '4.21'
-)))
 \@nomenclaturefile=\write6
 \openout6 = `thesis.nlo'.
 
-Package nomencl Info: Writing nomenclature file thesis.nlo on input line 13.
- (/usr/share/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
+Package nomencl Info: Writing nomenclature file thesis.nlo on input line 14.
+
+(/usr/share/texmf-dist/tex/generic/oberdiek/se-ascii-print.def
 File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 24.
+Package hyperref Info: Option `colorlinks' set `true' on input line 25.
 
 (/usr/share/texmf-dist/tex/latex/upquote/upquote.sty
 Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
@@ -775,24 +710,24 @@ Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
 Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
 ))
 (/usr/share/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count145
-\lst@gtempboxa=\box56
-\lst@token=\toks41
-\lst@length=\count146
-\lst@currlwidth=\dimen179
-\lst@column=\count147
-\lst@pos=\count148
-\lst@lostspace=\dimen180
-\lst@width=\dimen181
-\lst@newlines=\count149
-\lst@lineno=\count150
-\lst@maxwidth=\dimen182
+\lst@mode=\count136
+\lst@gtempboxa=\box48
+\lst@token=\toks39
+\lst@length=\count137
+\lst@currlwidth=\dimen168
+\lst@column=\count138
+\lst@pos=\count139
+\lst@lostspace=\dimen169
+\lst@width=\dimen170
+\lst@newlines=\count140
+\lst@lineno=\count141
+\lst@maxwidth=\dimen171
 
 (/usr/share/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2019/09/10 1.8c (Carsten Heinz)
-\c@lstnumber=\count151
-\lst@skipnumbers=\count152
-\lst@framebox=\box57
+\c@lstnumber=\count142
+\lst@skipnumbers=\count143
+\lst@framebox=\box49
 )
 (/usr/share/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2019/09/10 1.8c listings configuration
@@ -811,31 +746,31 @@ LaTeX Warning: Label `b' multiply defined.
 )
 \openout1 = `thesis.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 126.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 127.
+LaTeX Font Info:    ... okay on input line 127.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 127.
 LaTeX Font Info:    Trying to load font information for TS1+cmr on input line 1
-26.
+27.
  (/usr/share/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    ... okay on input line 127.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -873,7 +808,7 @@ LaTeX Font Info:    ... okay on input line 126.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Info: Redefining \microtypecontext on input line 126.
+LaTeX Info: Redefining \microtypecontext on input line 127.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: No adjustment of tracking.
@@ -883,8 +818,8 @@ Package microtype Info: No adjustment of kerning.
 File: mt-LatinModernRoman.cfg 2013/03/13 v1.0 microtype config. file: Latin Mod
 ern Roman (RS)
 )
-\AtBeginShipoutBox=\box58
-Package hyperref Info: Link coloring ON on input line 126.
+\AtBeginShipoutBox=\box50
+Package hyperref Info: Link coloring ON on input line 127.
 
 (/usr/share/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -892,19 +827,19 @@ Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
 (/usr/share/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
 )
-\c@section@level=\count153
+\c@section@level=\count144
 )
-LaTeX Info: Redefining \ref on input line 126.
-LaTeX Info: Redefining \pageref on input line 126.
-LaTeX Info: Redefining \nameref on input line 126.
+LaTeX Info: Redefining \ref on input line 127.
+LaTeX Info: Redefining \pageref on input line 127.
+LaTeX Info: Redefining \nameref on input line 127.
  (./thesis.out) (./thesis.out)
 \@outlinefile=\write7
 \openout7 = `thesis.out'.
 
  ABD: EveryShipout initializing macros
-\c@lstlisting=\count154
+\c@lstlisting=\count145
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-29.
+30.
 
 (/usr/share/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -914,30 +849,30 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-29.
+30.
 
 (/usr/share/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-129.
+130.
 
 (/usr/share/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-129.
+130.
 
 (/usr/share/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <14.4> on input line 129.
+(Font)              <14.4> on input line 130.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 129.
+(Font)              <10> on input line 130.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 129.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 129
+(Font)              <7> on input line 130.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 130
 .
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -946,7 +881,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/usr/share/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 129
+LaTeX Font Info:    Trying to load font information for U+msb on input line 130
 .
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
@@ -994,55 +929,53 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 460.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 449.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 464.
- [8]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_4_1.
+(Font)              <5> on input line 453.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_4_1.
 pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_4_1.p
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_4_1.p
 df>
- [9]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_5_1.
+ [8] [9]
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_5_1.
 pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_5_1.p
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_5_1.p
 df>
- [10]
+ [10] [11]
 
-LaTeX Warning: Citation `lagstable' on page 11 undefined on input line 599.
+LaTeX Warning: Citation `lagstable' on page 12 undefined on input line 616.
 
-[11] [12] [13] [14] [15] [16] [17]
+[12] [13] [14] [15] [16] [17] [18]
 
-LaTeX Warning: Citation `lgrcomp' on page 18 undefined on input line 1049.
+LaTeX Warning: Citation `lgrcomp' on page 19 undefined on input line 986.
 
-[18]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_21_1
+[19] [20]
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_22_1
 .png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_21_1.png>
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_22_1.png>
 
- [19]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_22_1
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_23_1
 .png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_22_1.png>
-
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_23_1
-.png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_23_1.png>
-
- [20]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_24_1
-.png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_UoXhsu/thesis_24_1.png>
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_23_1.png>
 
  [21]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1214.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1214.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_24_1
+.png Graphic file (type bmp)
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_24_1.png>
+
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_25_1
+.png Graphic file (type bmp)
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_zVJb67/thesis_25_1.png>
+
+ [22] [23]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1129.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1129.
  (./thesis.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1214.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1214.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 1129.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1129.
 
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: E979F45B8A1ABA7E627ECCAC662F50AD.
+(rerunfilecheck)             Checksum: 643AB2E53D43D8AACAE565DA8701EABE.
 
 
 LaTeX Warning: There were undefined references.
@@ -1050,15 +983,15 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1214.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1129.
  ) 
 Here is how much of TeX's memory you used:
- 27777 strings out of 492483
- 518063 string characters out of 6134979
- 783716 words of memory out of 5000000
- 31783 multiletter control sequences out of 15000+600000
+ 23866 strings out of 492483
+ 417092 string characters out of 6134979
+ 650868 words of memory out of 5000000
+ 27921 multiletter control sequences out of 15000+600000
  57656 words of font info for 91 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 63i,11n,92p,1709b,1120s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 63i,11n,80p,1709b,1116s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on thesis.pdf (21 pages).
+Output written on thesis.pdf (23 pages).

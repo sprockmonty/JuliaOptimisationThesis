@@ -9,7 +9,8 @@
 \usepackage{hyperref}
 \usepackage{nomencl}
 \usepackage{float}
-\usepackage[breakable, theorems, skins]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
 \makenomenclature
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1.2ex}

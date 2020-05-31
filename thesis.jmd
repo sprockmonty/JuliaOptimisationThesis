@@ -5,7 +5,7 @@ options :
     template : julia_tex.tpl
 ---
 
-```julia; echo=false;
+```julia; echo=false; results="hidden"
 using Images, Plots, Colors, Polynomials, BenchmarkTools
 using MorePolynomials;
 plotly()
@@ -87,18 +87,7 @@ end
 
 
 struct BeginColBox end
-Base.show(io::IO, m::MIME"text/latex", b::BeginColBox) = write(io, "\\begin{tcolorbox}[breakable,
-        left=0pt,
-        right=0pt,
-        top=0pt,
-        bottom=0pt,
-        colback=gray!20,
-        colframe=gray!20,
-        width=\\dimexpr\\textwidth\\relax, 
-        enlarge left by=0mm,
-        boxsep=5pt,
-        arc=0pt,outer arc=0pt,
-        ] ")
+Base.show(io::IO, m::MIME"text/latex", b::BeginColBox) = write(io, "\\begin{tcolorbox}")
 struct EndColBox end
 Base.show(io::IO, m::MIME"text/latex", b::EndColBox) = write(io, "\\end{tcolorbox}")
 
@@ -192,7 +181,7 @@ Here we will outline the basic formulation of the dynamic optimisation problem.
 It is important to note that the main objective of dynamic optimisation is to find a set of optimal control inputs which results in the boundary constraints and system dynamics being satisfied, and a minimisation of the objective function.
 As such, we can break down the problem into 3 main components:
 
-```julia; echo=false
+```julia; echo=false; results="hidden"
 problemComponents = ["System dynamics",
                      "Boundary and path constraints",
                      "Objective function"];
@@ -307,7 +296,10 @@ Collocation points are the points where system dynamics are enforced, but not al
 Additionally, in the data point formulation (as opposed to the coefficient formulation) an individual data point ``x_{ij}`` will consist of a mesh location and state value as below.
 
 $$
+\begin{equation}
+\label{meshdef}
 x_i = \big[ x_{ij} = [t_{ij}, x(t_{ij})] \big], \quad j = 1,2, \ldots m_i.
+\end{equation}
 $$
 
 These discretised states will go onto become decision variables in our NLP formulation.
@@ -597,6 +589,30 @@ This completes our formulation of the dynamic optimisation problem.
 Now we will discuss the background for a pseudospectral representation of this method.
 
 ## The pseudospectral method
+Using interpolating polynomials for our ``\tilde{x}`` function has the benefit of having derivative information encoded in the polynomial itself (see seciton ``\ref{lagpolyder}``).
+As such, we can use this information, along with a particular distribution of mesh points, to forumulate the pseudospectral methods for dynamic optimisation.
+There are a few different formulations of the pseudospectral method, but to keep things simple we will assume a single polynomial approximates each state and control.
+More complex formulations include multiple piecewise polynomials approximating each state and control, but this complicates derivative formulation.
+Additionally, we will be focusing on using Legendre-Gauss-Radau (LGR) points to approximate our polynomial, which are defined on the interval ``[-1,1)``.
+LGR points are the solution to the polynomial 
+$$
+P_N(\tau)+P_{N-1}(\tau) = 0,
+$$
+where ``P_N`` are Legendre polynomials. 
+! BeginFig()
+```julia;echo=false;out_width="0.7\\textwidth"
+scatter(lgr_points(7),[0,0,0,0,0,0,0],xlabel="t",ylabel="",labels=["LGR points" ""], ylims=(-1,1),showaxis=:x )
+
+```
+! EndFig("Seven LGR Points","lgrfig")
+
+We use the LGR points as a base for the interpolating polynomial mesh, such that ``t_{ij}`` in equation ``\ref{meshdef}`` are the LGR points.
+As the LGR points are defined on the interval ``[-1,1)``, we can use the following transformation to transform from ``[-1,1]`` to ``[-t_1,t_F]``.
+$$
+t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_F+t_1}{2}.
+$$
+
+
 
 
 ## Lagrange polynomials
@@ -638,7 +654,24 @@ Note that the weights are purely a function of the mesh points (the domain of th
 This means we can calculate our polynomial weights without knowledge of the function outputs at mesh points (in this case ``y``), and thus if we want to update our polynomial approximation (providing our mesh spacing is the same) all we need do is update our output values which we use for interpolation. 
 No further computation of the weights is required, and the cost of adding additional weights is much lower than recalculating our approximation.
 
+### Differentiation matrix
+! Label("lagpolyder")
 
+Having constructed our polynomial in the barycentric form, we can also calculate the differentiation matrix such that
+
+$$
+\dot{L}(t) = \sum_{j=1}^n  \bar{y}_j l_j(t), \quad \bar{y} = Dy,
+$$
+
+where ``y`` is a column vector.
+The differentiation matrix ``D`` is defined as
+$$
+D_{ij} = \left\{\begin{matrix}
+\displaystyle \frac{w_j}{w_i(t_i-t_j))}, & i\neq j \\ 
+\\
+\displaystyle \sum_{k=0,k\neq i}^n \frac{1}{t_i-t_k},& i = j 
+\end{matrix}\right.
+$$
 
 
 
@@ -652,7 +685,7 @@ No further computation of the weights is required, and the cost of adding additi
 # Project Ethos
 ! Label("ethos")
 The main aims of the project are derived from lessons learnt in ICLOCS, and are as follows:
-```julia; echo=false
+```julia; echo=false; results="hidden"
 aims = ["Code structure must be modular",
         "Code must be sufficiently verbose when handling errors",
         "Code must verify data before computation",
@@ -806,6 +839,7 @@ mutable struct LagrangePoly{T<:Number} <: AbstractLagrangePolynomial{T}
 end
 ```
 ! EndColBox()
+
 Take note of a couple of features.
 First, we have chosen to use `x` and `y` to represent our mesh points and function evaluation points respectively, which is inconsistant with the notation in this text.
 This is by choice to maintain consistency with the Polynomials.jl package, and is mentioned here as many additional decisions of notation in this package have been chosen for similar reasons.
@@ -834,7 +868,6 @@ Let's time the creatation and evaluation of the polynomial at point `x=0.25`.
 ```julia
 mean(@benchmark fit(Polynomial, x, y)(0.25)) # using Polynomials.jl
 ```
-
 ```julia
 mean(@benchmark fit(LagrangePoly, x, y)(0.25)) # using MorePolynomials.jl
 ```
@@ -881,8 +914,8 @@ mean(@benchmark updateAndEval(lPoly, ynew, 0.25))
 ! EndColBox()
 
 An extension of the Lagrange polynomial is the Legendre-Gauss-Radau Lagrange polynomial [^1].
-This uses Legendre-Gauss-Radau points to generate the mesh.
-See this paper on the benefits of using Legendre-Gauss-Radau (LGR) points of function approximation in dynamic optimisation ``\cite{lgrcomp}``.
+This uses LGR points to generate the mesh.
+See this paper on the benefits of using LGR points of function approximation in dynamic optimisation ``\cite{lgrcomp}``.
 The current implementation finds the LGR points as a function of the eigenvalues of a symmetric Legendre polynomial based matrix, but future implementations will most likely use a combination of this method and the implementation in the package FastGaussQuadrature, dynamically switching based on speed of implementation and number of points.
 For the moment, our implementation is faster at low orders.
 Additionally, if the mesh points follow the LGR formulation, we can make use of the LGR weights generated from FastGaussQuadrature for fast integration.
