@@ -285,7 +285,7 @@ We then have
 $$
 \begin{equation}
 \label{xState}
-\pmb{x} = [\tilde{x}_i (x_i,t)], \quad x_i \in \mathbb{R}^{m_i}, \quad \tilde{x} : \mathbb{R}^{m_i + 1} \rightarrow \mathbb{R},  \quad i = 1,2 \ldots n,
+\pmb{x} = [\tilde{x}_i (t,x_i)], \quad x_i \in \mathbb{R}^{m_i}, \quad \tilde{x} : \mathbb{R}^{m_i + 1} \rightarrow \mathbb{R},  \quad i = 1,2 \ldots n,
 \end{equation}
 $$
 
@@ -314,32 +314,31 @@ Likewise we may use the same definition for our control variables.
 $$
 \begin{equation}
 \label{uControl}
-\pmb{u} = [\tilde{u}_i (u_i,t)], \quad u_i \in \mathbb{R}^{m_i}, \quad \tilde{u} : \mathbb{R}^{m_i + 1} \rightarrow \mathbb{R},  \quad i = 1,2 \ldots c,
+\pmb{u} = [\tilde{u}_i (t,u_i)], \quad u_i \in \mathbb{R}^{m_i}, \quad \tilde{u} : \mathbb{R}^{m_i + 1} \rightarrow \mathbb{R},  \quad i = 1,2 \ldots c,
 \end{equation}
 $$
 
 where ``c`` is the number of controls. 
 
 Our system dynamics function is how we specify the dynamics (in many cases physics) of the system being optimised, and is represented as an array of functions, one for each state derivative.
-Given we can calculate all state derivatives as a function of the states at one particular time instance, we can have a function mapping that outputs all the state dynamics for a particular state at collocation points given by a time vector ``t = t_1, t_2 \ldots t_{m_i}``
+Given we can calculate all state derivatives as a function of the states at one particular time instance, we can have a function mapping that outputs all the state dynamics for a particular state at collocation points given by a time vector ``\pmb{\tau} = [\tau_i] = [t_1, t_2 \ldots t_{m_i}], i = 1,2\ldots n``
 
 $$
 \begin{equation}
 \label{ffunc}
-\pmb{f} = f_i(\pmb{x}(t),\pmb{u}(t), t) : \mathbb{R}^{(n + c) \times m_i} \rightarrow \mathbb{R}^{m_i}, \quad i = 1,2\ldots n
+\pmb{f} = f_i(\tau_i, \pmb{x}(t),\pmb{u}(t)) : \mathbb{R}^{(n + c) \times m_i} \rightarrow \mathbb{R}^{m_i}, \quad i = 1,2\ldots n
 \end{equation}
 $$
 
 Where ``n`` here is the number of both states and controls, and ``m_i`` is the number of collocation points for each state index ``i``.
-Note that for each individual function evaluation, the input array is assumed to have dimensions ``(n+c) \times m_i``, and as such we use our interpolating functions to find the values of states and controls at locations of ``t=t_k, k = 1,2\ldots m_i``.
-Also note that, though we can map multiple time inputs to outputs, these mappings must be direct (as per equation ``\ref{nakeddynamics}``) i.e. ``f(\pmb{x}(t_k),\pmb{u}(t_k), t_k) \rightarrow \dot{x}(t_k)``.
+Note that for each individual function evaluation, the input array ``\tau_i`` is assumed to have dimensions ``(n+c) \times m_i``, and as such we use our interpolating functions to find the values of states and controls at locations of ``\tau_i=t_k, k = 1,2\ldots m_i``.
 
 Putting this all together we have
 $$
 \pmb{x}\left\{\begin{matrix}
-\pmb{x}_1 =& \tilde{x}_1 ([x_{11}, x_{12} \ldots x_{1m_1} ],t) \\
+\pmb{x}_1 =& \tilde{x}_1 (t,[x_{11}, x_{12} \ldots x_{1m_1} ]) \\
  \ldots & \\ 
-\pmb{x}_n =& \tilde{x}_n ([x_{n1}, x_{n2} \ldots x_{nm_n} ], t) 
+\pmb{x}_n =& \tilde{x}_n ( t,[x_{n1}, x_{n2} \ldots x_{nm_n} ]) 
 \end{matrix}\right.
 $$
 $$
@@ -349,9 +348,9 @@ $$
 
 $$
 \pmb{u}\left\{\begin{matrix}
-\pmb{u}_1 =& \tilde{u}_1 ([u_{11}, u_{12} \ldots u_{1m_1} ], t) \\
+\pmb{u}_1 =& \tilde{u}_1 ( t,[u_{11}, u_{12} \ldots u_{1m_1} ]) \\
  \ldots & \\ 
-\pmb{u}_c =& \tilde{u}_n ([u_{c1}, u_{c2} \ldots u_{cm_c} ], t) 
+\pmb{u}_c =& \tilde{u}_n (t,[u_{c1}, u_{c2} \ldots u_{cm_c} ]) 
 \end{matrix}\right.
 $$
 $$
@@ -360,18 +359,19 @@ c = \text{number of controls}, m_i = \text{controls mesh sizes}, i = 1,2\ldots c
 $$
 $$
 \pmb{f}\left\{\begin{matrix}
-\dot{x}_{,1} =& f_1(\pmb{x}(t_1),\pmb{u}(t_1)\ldots\pmb{x}(t_{m_1}),\pmb{u}(t_{m_1}), t) \\
+\dot{x}_{,1} =& f_1( \tau_1,\pmb{x}(t),\pmb{u}(t)) \\
  \ldots & \\ 
-\dot{x}_{,n} =& f_n(\pmb{x}(t_1),\pmb{u}(t_1)\ldots\pmb{x}(t_{m_n}),\pmb{u}(t_{m_n}), t) 
+\dot{x}_{,n} =& f_n( \tau_n,\pmb{x}(t),\pmb{u}(t)) 
 \end{matrix}\right.
 $$
 $$
 n = \text{number of states}, m_i = \text{number of state collocation points}, i = 1,2 \ldots n
 \medskip
 $$
-We use ``\dot{x}_,i`` to represent the continuous dynamics of the state at the collocation points.
+We use ``\dot{x}_{,i}`` to represent the continuous dynamics of the state at the collocation points.
 In our formulation the time vector ``t`` does not necessarily have to have the same length or values for any one such function call, only that it must correspond with the number of output variables being assigned.
-For example, if we are evaluating ``m_i`` collocation points, then when calling ``f_1(\pmb{x}(t), \pmb{u}(t))``, ``t`` here must be of length ``m_1``, but the mesh points of ``x_1`` to ``x_n`` do not have to correspond with the collocation points, and if they do not they are interpolated.
+For example, if we are evaluating ``m_i`` collocation points, then when calling ``f_1(\tau_1,\pmb{x}(t), \pmb{u}(t))``, ``\tau_1`` here must be of length ``m_1``, but the mesh points of ``x_1`` to ``x_n`` do not have to correspond with the collocation points, and if they do not they are interpolated.
+Additionally, inside the function ``f_i``, ``\pmb{x}`` and ``\pmb{u}`` may actually be evaluated at any time as they are interpolating functions, not necessarily at just the collocation points.
 
 Now that we have our system dynamics functions, we need to transform them into a format that can be solved with an NLP solver.
 This is the process of transcription and we do this by creating a set of equality constraints that enforce system dynamics at our chosen collocation points.
@@ -394,7 +394,7 @@ $$
 \end{equation}
 $$
 
-For the sake of consistency, ``\pmb{x}_i(t) = \tilde{x}_i(x_i,t)``, ``\pmb{f}_i(t) = f_i(\pmb{x}(t), \pmb{u}(t),t)``.
+For the sake of consistency, ``\pmb{x}_i(t) = \tilde{x}_i(t,x_i)``, ``\pmb{f}_i(\tau) = f_i(\tau,\pmb{x}(t), \pmb{u}(t))``.
 All other methods are extensions of this principle, but aim to have more accurate estimations of state derivatives at collocation points.
 Take for example the trapizoidal method
 
@@ -500,7 +500,7 @@ $$
 \pmb{x}_{i,L}(t_1) \leq \pmb{x}_i(t_1) \leq \pmb{x}_{i,U}(t_1)
 $$
 $$
-\pmb{x}_{i,L}(t_F) \leq \pmb{x}_i(t_F) \leq \pmb{x}_{i,U}(F_1)
+\pmb{x}_{i,L}(t_F) \leq \pmb{x}_i(t_F) \leq \pmb{x}_{i,U}(t_F)
 $$
 
 which are all perturbations of equation ``\ref{xineq}``.
@@ -517,22 +517,21 @@ Path constrains follow an almost identical formulation but apply to the whole of
 $$
 \begin{equation}
 \label{xpath}
-\pmb{x}_{i,L} \leq \pmb{x}_i(t) \leq \pmb{x}_{i,U}
+\pmb{x}_{i,L} \leq \pmb{x}_i(\tau_i) \leq \pmb{x}_{i,U}
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{upath}
-\pmb{u}_{i,L} \leq \pmb{u}_i(t) \leq \pmb{u}_{i,U}
+\pmb{u}_{i,L} \leq \pmb{u}_i(\tau_i) \leq \pmb{u}_{i,U}
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{bpath}
-\pmb{h}(t,\pmb{x}(t),\pmb{u}(t)) \leq 0
+\pmb{h}( \pmb{\tau},\pmb{x}(t),\pmb{u}(t)) \leq 0
 \end{equation}
 $$
-A direct time mapping is once again assumed for ``h`` as described below equation ``\ref{ffunc}``.
 For the sake of completeness equations ``\ref{xpath}`` and ``\ref{upath}`` correspond to equation ``\ref{xineq}`` and equation ``\ref{bpath}`` to equation ``\ref{gfunc}`` in our NLP formulation.
 Again let's look at a graphical representation to illustrate this using the example from figure ``\ref{massdamp}``.
 Lets add the following constraints to our problem.
@@ -546,7 +545,7 @@ $$
 $$
 \begin{equation}
 \label{exhcon}
-h_1(t_k,\pmb{x}(t_k),\pmb{u}(t_k) )  = \pmb{x}_1(t_k) + t_k - 1.5 \leq 0
+h_1(t_k,\pmb{x}(t_k),\pmb{u}(t_k))  = \pmb{x}_1(t_k) + t_k - 1.5 \leq 0
 \end{equation}
 $$
 For the example ``h_1`` could represent a desire for the oscillations to grow smaller with time, while the path constraint could represent physical stops on the system which stop the spring moving beyond this point.
@@ -579,7 +578,7 @@ Together they form the Bolza problem
 $$
 \begin{equation}
 \label{bolza}
-J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (t, \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
+J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (\tau_{\rho} \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
 \end{equation}
 $$
 
@@ -587,32 +586,6 @@ The nonlinear function in equation ``\ref{bolza}`` maps directy to equation ``\r
 
 This completes our formulation of the dynamic optimisation problem. 
 Now we will discuss the background for a pseudospectral representation of this method.
-
-## The pseudospectral method
-Using interpolating polynomials for our ``\tilde{x}`` function has the benefit of having derivative information encoded in the polynomial itself (see seciton ``\ref{lagpolyder}``).
-As such, we can use this information, along with a particular distribution of mesh points, to forumulate the pseudospectral methods for dynamic optimisation.
-There are a few different formulations of the pseudospectral method, but to keep things simple we will assume a single polynomial approximates each state and control.
-More complex formulations include multiple piecewise polynomials approximating each state and control, but this complicates derivative formulation.
-Additionally, we will be focusing on using Legendre-Gauss-Radau (LGR) points to approximate our polynomial, which are defined on the interval ``[-1,1)``.
-LGR points are the solution to the polynomial 
-$$
-P_N(\tau)+P_{N-1}(\tau) = 0,
-$$
-where ``P_N`` are Legendre polynomials. 
-! BeginFig()
-```julia;echo=false;out_width="0.7\\textwidth"
-scatter(lgr_points(7),[0,0,0,0,0,0,0],xlabel="t",ylabel="",labels=["LGR points" ""], ylims=(-1,1),showaxis=:x )
-
-```
-! EndFig("Seven LGR Points","lgrfig")
-
-We use the LGR points as a base for the interpolating polynomial mesh, such that ``t_{ij}`` in equation ``\ref{meshdef}`` are the LGR points.
-As the LGR points are defined on the interval ``[-1,1)``, we can use the following transformation to transform from ``[-1,1]`` to ``[-t_1,t_F]``.
-$$
-t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_1+t_F}{2}.
-$$
-
-
 
 
 ## Lagrange polynomials
@@ -660,7 +633,10 @@ No further computation of the weights is required, and the cost of adding additi
 Having constructed our polynomial in the barycentric form, we can also calculate the differentiation matrix such that
 
 $$
+\begin{equation}
+\label{Ldot}
 \dot{L}(t) = \sum_{j=1}^n  \bar{y}_j l_j(t), \quad \bar{y} = Dy,
+\end{equation}
 $$
 
 where ``y`` is a column vector.
@@ -674,7 +650,72 @@ D_{ij} = \left\{\begin{matrix}
 $$
 
 
+## The pseudospectral method
+The pseudospectral method is of particular interest as its formulation allows us to exploit the use of the interpolating polynomial describle in section \ref{dynamicsmath}
+Using interpolating polynomials for our ``\tilde{x}`` function has the benefit of having derivative information encoded in the polynomial itself (see seciton ``\ref{lagpolyder}``).
+As such, we can use this information, along with a particular distribution of mesh points, to forumulate the pseudospectral methods for dynamic optimisation.
+There are a few different formulations of the pseudospectral method, but to keep things simple we will assume a single polynomial approximates each state and control.
+More complex formulations include multiple piecewise polynomials approximating each state and control, but this complicates derivative formulation.
+Additionally, we will be focusing on using Legendre-Gauss-Radau (LGR) points to approximate our polynomial, which are defined on the interval ``[-1,1)``.
+LGR points are the solution to the polynomial 
+$$
+P_N(x)+P_{N-1}(x) = 0,
+$$
+where ``P_N`` are Legendre polynomials. 
+! BeginFig()
+```julia;echo=false;out_width="0.7\\textwidth"
+scatter(lgr_points(7),[0,0,0,0,0,0,0],xlabel="t",ylabel="",labels=["LGR points" ""], ylims=(-1,1),showaxis=:x )
 
+```
+! EndFig("Seven LGR Points","lgrfig")
+
+We use the LGR points as a base for the interpolating polynomial mesh, such that ``t_{ij}`` in equation ``\ref{meshdef}`` are the LGR points.
+As the LGR points are defined on the interval ``[-1,1)``, we can use the following transformation to transform from ``[-1,1]`` to ``[-t_1,t_F]``.
+$$
+\begin{equation}
+\label{timetrans}
+t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_1+t_F}{2}.
+\end{equation}
+$$
+If we know our interpolating points correspond with LGR points, we can also use the LGR weights ``w_{LGR}`` to calculate the exact integral.
+$$
+\int_{-1}^1 x(t)dt = \sum_{k}^m w_{LGR,k} x(t_k)
+$$
+The is useful for determining the object function, or for approximating endpoints as below.
+
+Now we can use the derivate information of our polynomial to enforce our system dynamics
+$$
+\dot{\tilde{x}}_i(\tau_i,x_i) - f_i(\tau_i,\pmb{x}(t),\pmb{u}(t)) = 0, \quad i=1,2\ldots n,
+$$
+where ``t=t_1,t_2,\ldots t_{m_i}`` is a vector of collocation points for this state and ``\dot{\tilde{x}}`` is aquired from equation ``\ref{Ldot}``.
+As in this formulation our LGR points do not include the endpoint, we must construct an interpolating constraint for this too.
+$$
+\pmb{x}_i(t_F) = \pmb{x}_i(t_1) + \int_{-1}^1 \dot{x_{,i}}(t)dt \approx \pmb{x}_i(t_1) + w_{LGR} \pmb{f}_i(\tau_i)
+$$
+
+Here ``t_1=-1, t_F = 1``.
+Use equation ``\ref{timetrans}`` to transform to the time domain of the optimisation problem.
+Additionally, ``w_{LGR}`` is a row vector, and ``\pmb{f}_i`` is a column vector, such that ``w_{LGR}\pmb{f}_i \rightarrow \mathbb{R}^{m_i}``.
+Note we can avoid this additional constraint by using a set of flipped LGR points.
+It is useful to know however as some pseudospectral methods are defined on the interval (-1,1).
+
+Finally, the full pseudospectral LGR formulation of the dynamic optimisation problem is
+
+$$
+\begin{align*}
+\min & \quad J(\tau_{\rho}, \pmb{x}(t), \pmb{u}(t)) = \Phi(t_1,t_F, \pmb{x}(t_1),\pmb{x}(t_F)) + w_{LGR} \tilde{\rho}(\tau_{\rho},\pmb{x}(t),\pmb{u}(t))   \\
+\text{s.t.} & \quad \dot{\pmb{x}}(\pmb{\tau}) - \pmb{f}(\pmb{\tau},\pmb{x}(t),\pmb{u}(t)) = 0 \\
+& \quad  \pmb{x}(t_F) - \pmb{x}(t_1) - w_{LGR}\pmb{f}(\pmb{\tau}) = 0\\
+& \quad t_{1,L} \leq t_1 \leq t_{1,U} \\
+& \quad t_{F,L} \leq t_F \leq t_{F,U} \\
+& \quad \pmb{x}_{,L}(t_1) \leq \pmb{x}(t_1) \leq \pmb{x}_{,U}(t_1) \\
+& \quad \pmb{x}_{,L}(t_F) \leq \pmb{x}(t_F) \leq \pmb{x}_{,U}(t_F) \\
+& \quad \pmb{b}(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) \leq 0 \\
+& \quad \pmb{x}_{,L} \leq \pmb{x}(\pmb{\tau}) \leq \pmb{x}_{,U} \\
+& \quad \pmb{u}_{,L} \leq \pmb{u}(\pmb{\tau}) \leq \pmb{u}_{,U} \\
+& \quad \pmb{h}( \pmb{\tau},\pmb{x}(t),\pmb{u}(t)) \leq 0 \\
+& \end{align*}
+$$
 
 ## Julia Packages
 ### JuMP.jl
@@ -816,7 +857,7 @@ MorePolynomials.jl adds the following additional functionality to the Polynomial
 
 We will now take a closer look at the backend implementation of MorePolynomials.jl.
 
-### Lagrange Implementation
+### Lagrange implementation
 The Polynomials.jl package has the following data structure which allows polynomial to be stored using it's coefficients.
 ! BeginColBox()
 ```julia;eval=false
@@ -952,6 +993,41 @@ end
 ### Piecewise Polynomials
 
 ### User interface
+The challenge of any user interface is to balance the exposure provided to the user of complex functionality with the ability to remain intuitive and simple to use.
+This is more apparent when designing a graphical user interface, but elements of this are apparent in any interface.
+By far, one of the key elements to maintaining an intuitive interface is consistency.
+As previously stated one of the objectives of the MorePolynomials.jl package is to maintain close compatibility with Polynomials.jl.
+One aspect of maintaining this compatibility it being consistent with maintaining the intent of user functions, and Julia's multiple dispatch system is well suited for this role.
+
+Take the `fit()` command for example.
+In Polynomials.jl, if we want to fit a polynomial to a set of datapoints, we have two arguments, the `x` values and the `y` values
+! BeginColBox()
+```julia;eval=false
+fittedpoly = fit(x, y)
+```
+! EndColBox()
+In MorePolynomials.jl, we extend this function to cover our custom polynomials using the method provided by Polynomials.jl
+! BeginColBox()
+```julia;eval=false
+fittedpoly = fit(LagrangePoly, x, y)
+```
+! EndColBox()
+
+Crucially however, we also make use of multiple dispatch to dispatch on a function arguments, allowing the user to define a function to fit, rather than merely data points.
+! BeginColBox()
+```julia;eval=false
+fittedpoly = fit( (x) -> x^2 - 5, 7)
+```
+! EndColBox()
+As no data point spacing has been specified (only the number of points), we can also guess that the user might wish to use an LGR spacing, as this provides a good approximation when using Lagrange polynomials.
+This is not consistent with the arguments that Polynomials.jl fit command takes, but it is consistent with the intent of the user.
+The user knows what it means to fit a polynomial to a function, and so this formulation is intuitive from a human perspective.
+We employ similar patterns in our speech everyday.
+One can say "I am going to work", or "I am going to Spain" or "I am going to walk the dog".
+All these actions are conducted in different manners, but the intent of the statement is the same, that one will travel from one place to another through some means.
+Here, we take ``fit()`` to mean fit some input to a polynomial representation, the internals are dependent on the context.
+As the core role of the programming language is to provide an interface between the human and the computer is makes sense (when we have the ability) to tailor the experience in a way similar to how a human would behave.
+
 ### Error handling
 ### Benchmarking and performance gains
 
@@ -960,7 +1036,7 @@ The development of the JuDO.jl package has been somewhat more staggered than the
 While MorePolynomials.jl inherists much of the design ethos from Polynomials.jl, JuDO.jl has no such counterpart.
 Additionally, one of the key learning points from ICLOCS was that a good base design facillitates easy and intuative feature addition, and avoids problems associated with feature creep.
 As such, progress with JuDO.jl has been slow but deliberate.
-In this text we will outline a basic generic implementation of trancription methods in JuMP, 
+In this text we will outline a basic generic implementation of transcription methods in JuMP, 
 
 # Documentation
 # Next steps
