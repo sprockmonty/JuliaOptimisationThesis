@@ -747,6 +747,7 @@ aims = ["Code structure must be modular",
 6) `j print(aims[6])`
 
 ## `j print(aims[1])`
+! Label("aimmodular")
 It has been identified that the ICLOCS package has reached a feature saturation point, such that further expansion would require a large proportion of code to be rewritten.
 One of the primary aims of this project is to write code which is sufficiently extensible by leveraging features in Julia such as types and multiple dispatch that allow for greater code separation. 
 Examples of this can be found in section ``\ref{morepoly}``, where multiple dispatch and abstract typing allow us to utilise existing functions in the Polynomials.jl package while extending it to work with our own function definitions.
@@ -1034,9 +1035,144 @@ As the core role of the programming language is to provide an interface between 
 ## JuDO.jl
 The development of the JuDO.jl package has been somewhat more staggered than the MorePolynomials.jl package.
 While MorePolynomials.jl inherists much of the design ethos from Polynomials.jl, JuDO.jl has no such counterpart.
-Additionally, one of the key learning points from ICLOCS was that a good base design facillitates easy and intuative feature addition, and avoids problems associated with feature creep.
+Additionally, one of the key learning points from ICLOCS was that a good base design facilitates easy and intuitive feature addition, and avoids problems associated with feature creep.
 As such, progress with JuDO.jl has been slow but deliberate.
-In this text we will outline a basic generic implementation of transcription methods in JuMP, 
+In this text we will outline a basic generic implementation of transcription methods in JuMP, and a proposed architecture to be taken forward based on the project aims.
+
+### JuDO architecture
+An architectural outline for JuDO is proposed in figure ``\ref{judoarc}``.
+The generic implementation prototype already employs some of the features here, but not to the full extent.
+The methodology behind the architecture is outlined below, and the methods proposed for how to implement each component based on experience with ICLOCS and Julia.
+! BeginFig()
+
+```julia; out_width="0.7\\textwidth";echo=false
+img = load("figures/judo.png")
+
+```
+! EndFig("JuDO architecture","judoarc")
+
+The architecture has eight components, five of which are referred to as factories.
+It is proposed that, to facilitate aim ``\ref{aimmodular}``, the package should be broken up into individual factories, each of which act as an autonomous agent, with a set of standard interfaces and definitions of the problem.
+This interface is the JuDO problem type itself, which is parsed between factories.
+The role of the factory is to manage one component of the problem and provide an expected output.
+For example, the role of the derivate factory is to handle all derivative production within JuDO.
+Additionally, using multiple dispatch we can dispatch on various problem formulations within each factory and, providing the interface is standardised for a particular problem formulation, there should be minimal developer headache.
+We may also dispatch on particular solvers if they support a particular feature which may be exploited internally.
+For example a black box solver does not require derivative information, and so the derivative factory would dispatch and return nothing accordingly.
+This factory architecture is also useful from a development perspective.
+Multiple developers can work on different factories within JuDO while being confident that their interface will integrate well with the rest of the solver.
+
+#### User Defined Problem
+The aim here is to provide a standard intuitive interface for problem definitions which requires as little knowledge of the backend implementation as possible.
+Ideally the user would define their problem as seen in the mathematical formulation. 
+There should be little need to try and reformulate the problem in order to work with matrix operations or specific functions.
+We can leverage julia macros to reformulate dynamics functions in a format understandable by our solver.
+For parameters such as solver selection, it is suggested that custom types should be used, such as `struct IPOPT <: AbstractSolver end`, as an example.
+For states and controls, a julia symbol is used.
+The following user defined problem syntax is suggested.
+
+! BeginColBox()
+```julia;eval=false
+problem = new_JuDO_problem()
+solver(problem,SolverType)
+addstate(problem, :x)
+addcontrol(problem, :c)
+addparameter(problem, :p, val)
+xdot = @JuDOFunc function xdotfunc(p)
+            xdot = f(x, c, p) 
+            return xdot
+       end
+adddynamicsfunction(problem, :x, xdot) # an example function is used here
+bound = @JuDOFunc function boundfunc(p)
+            bound = h(x, c, p)
+            return h >= 0
+       end
+addboundsfunction(problem, :x, xdot) # an example function is used here
+```
+! EndColBox()
+#### Mesh Factory
+The role of the meshing factory is to generate meshes based on the user defined problem, and refine meshes after successful solves.
+The user can either specify what type of mesh they would like, or we can generate one for them based on the problem definition.
+The following function definition is proposed for the mesh factory.
+! BeginColBox()
+```julia;eval=false
+function mesh_factory(solver::AbstractSolver, udp::AbstractUserDefinedProblem) # initial problem formulation
+    #...
+    return JuDO_problem
+end
+function mesh_factory(solver::AbstractSolver, problem::AbstractJuDOProblem) # Mesh refinement
+```
+! EndColBox()
+#### Function Factory
+The aim of the function factory is to provide a standard interface for handling functions, such that various transcription methods can be employed.
+Additionally, a standard interface will ensure compatibility with derivative calculation in the derivative factory.
+The following function definition is proposed for the function factory.
+! BeginColBox()
+```julia;eval=false
+function function_factory(problem::AbstractJuDOProblem,; kwargs...)
+    #...
+    return problem
+end
+function function_factory(problem::AbstractJuDOProblem, solver::AbstractSolver; kwargs...) # custom solver implementation
+function dynamics_transcription(problem::AbstractJuDOProblem, dynamicsFunction::Function, method::AbstractTranscriptionMethod) # system dynamics transcription
+function objective_function(problem::AbstractJuDOProblem) # system dynamics transcription
+function constraints_function(problem::AbstractJuDOProblem) # system dynamics transcription
+```
+! EndColBox()
+It is important to note that although we provide an interface for dispatching on the solver, the intention is to use this sparingly when implementing a feature specific to the solver.
+The majority of solver specific actions should be taken in the solver translator layer.
+Note also that each factory is not necessarily an object as in a traditional OOP program, but rather a collection of functions. 
+This has the added benefit that these functions can be called by other functions.
+For example, it is useful in this case for the derivative factory to call some functions within the function factory to calculate derivatives.
+
+#### Derivative Factory
+The derivative factory calculates the derivatives of NLP functions to parse to the NLP solver.
+The aim here is to support multiple derivative methods, as well as sparsity patterns.
+Because of the standard JuDO problem interface, we can deduce from within the problem what the parameters to dispatch on for the function factory function calls should be.
+The following function definition is proposed for the derivative factory.
+! BeginColBox()
+```julia;eval=false
+function derivative_factory(problem::AbstractJuDOProblem; kwargs...)
+    #...
+    return problem
+end
+function derivative_factory(problem::AbstractJuDOProblem, solver::AbstractSolver) # custom solver implementation
+function jacobian(problem::AbstractJuDOProblem) # custom solver implementation
+function hessian(problem::AbstractJuDOProblem) # custom solver implementation
+```
+! EndColBox()
+
+#### Error Factory
+The role of the error factory is to handle any errors from the solver elegantly in a standardised manner, and to manage the analysis of errors.
+The error analysis can then be packaged and sent to the mesh factory for further mesh refinement.
+The following function definition is proposed for the error factory.
+! BeginColBox()
+```julia;eval=false
+function error_factory(problem::AbstractJuDOProblem; kwargs...)
+    #...
+    return problem
+end
+function error_factory(problem::AbstractJuDOProblem, solver::AbstractSolver) # custom solver implementation
+function calculate_error(problem::AbstractJuDOProblem)
+```
+! EndColBox()
+
+#### Output Factory
+The role of the output factory is to display the results of the optimisation problem, and proved interfaces for the user to save the problem.
+We can do this by taking the solved problem as well as the error analysis and presenting it to the user.
+The output factory should ideally handle any interactions with the user, including solver errors produced by the error factory.
+The following function definition is proposed for the output factory.
+! BeginColBox()
+```julia;eval=false
+function output_factory(problem::AbstractJuDOProblem; kwargs...)
+    #...
+    return problem
+end
+function print_output(problem::AbstractJuDOProblem)
+function plot_output(problem::AbstractJuDOProblem)
+function save_output(problem::AbstractJuDOProblem)
+```
+! EndColBox()
 
 # Documentation
 # Next steps

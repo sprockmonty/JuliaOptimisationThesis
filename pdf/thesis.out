@@ -31,5 +31,6 @@
 \BOOKMARK [3][-]{subsubsection.4.1.5}{Error\040handling}{subsection.4.1}% 31
 \BOOKMARK [3][-]{subsubsection.4.1.6}{Benchmarking\040and\040performance\040gains}{subsection.4.1}% 32
 \BOOKMARK [2][-]{subsection.4.2}{JuDO.jl}{section.4}% 33
-\BOOKMARK [1][-]{section.5}{Documentation}{}% 34
-\BOOKMARK [1][-]{section.6}{Next\040steps}{}% 35
+\BOOKMARK [3][-]{subsubsection.4.2.1}{JuDO\040architecture}{subsection.4.2}% 34
+\BOOKMARK [1][-]{section.5}{Documentation}{}% 35
+\BOOKMARK [1][-]{section.6}{Next\040steps}{}% 36
