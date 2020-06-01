@@ -109,8 +109,7 @@ Some abstract
 ! NomItem("\\pmb{h}","Path constraint functions")
 ! NomItem("t","Time")
 ! NomItem("k","Location of a collocation point")
-! NomItem("N","Total number of collocation points")
-! NomItem("m","Number of mesh points")
+! NomItem("m","Number of mesh/collocation")
 ! NomItem("i","State or control index")
 ! NomItem("\\rho","Lagrange term for objective function")
 ! NomItem("\\Phi","Mayer term for objective function")
@@ -365,7 +364,7 @@ $$
 \end{matrix}\right.
 $$
 $$
-n = \text{number of states}, m_i = \text{number of state collocation points}, i = 1,2 \ldots n
+n = \text{number of states}, \tau_i = \text{state collocation points}, i = 1,2 \ldots n
 \medskip
 $$
 We use ``\dot{x}_{,i}`` to represent the continuous dynamics of the state at the collocation points.
@@ -578,11 +577,19 @@ Together they form the Bolza problem
 $$
 \begin{equation}
 \label{bolza}
-J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (\tau_{\rho} \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
+J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (\tau_{\rho}, \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
 \end{equation}
 $$
 
 The nonlinear function in equation ``\ref{bolza}`` maps directy to equation ``\ref{objectiveFunc}`` in our NLP problem.
+With regards  to the Lagrange term, there are a few options for calculating the integral.
+If no interpolating function is used, we could a basic approximation
+
+$$
+\int_{t_1}^{t_F} \rho (\tau_{\rho}, \pmb{x}(t), \pmb{u}(t)) dt \approx \sum_{k=1}^{m-1} \frac{1}{2} (h_k)\rho(\tau_{\rho k},\pmb{x}(\tau_{\rho k}),\pmb{u}(\tau_{\rho k}))
+$$
+
+Alternatively, if the objective function is modelled with an interplating function we can calculate the exact intergral of the interplation as per equation ``\ref{lgrint}``.
 
 This completes our formulation of the dynamic optimisation problem. 
 Now we will discuss the background for a pseudospectral representation of this method.
@@ -679,7 +686,10 @@ t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_1+t_F}{2}.
 $$
 If we know our interpolating points correspond with LGR points, we can also use the LGR weights ``w_{LGR}`` to calculate the exact integral.
 $$
+\begin{equation}
+\label{lgrint}
 \int_{-1}^1 x(t)dt = \sum_{k}^m w_{LGR,k} x(t_k)
+\end{equation}
 $$
 The is useful for determining the object function, or for approximating endpoints as below.
 
@@ -894,7 +904,7 @@ First, let's start with polynomial fitting
 ! BeginColBox()
 ```julia
 x = [-1,-0.6,-0.2,0.2,0.6,1]
-y = map( (x)->x^5 + 3x^2 - x + 1, x)
+y = @. x^5 + 3x^2 - x + 1
 # y points for a 5th order polynomial x^5 + 3x^2 - x + 1
 
 mean(@benchmark fit(Polynomial, x, y)) # using Polynomials.jl
@@ -949,7 +959,7 @@ We demonstrate this below
 ! BeginColBox()
 ```julia
 lPoly = fit(LagrangePoly, x, y)
-ynew = map( (x)->5x^5 + 7x^4 - 3x - 1, x)
+ynew = @. 5x^5 + 7x^4 - 3x - 1
 updateAndEval(lPoly, ynew, x) = lPoly[:] = ynew; lPoly(x)
 mean(@benchmark updateAndEval(lPoly, ynew, 0.25)) 
 ```
@@ -1039,12 +1049,164 @@ Additionally, one of the key learning points from ICLOCS was that a good base de
 As such, progress with JuDO.jl has been slow but deliberate.
 In this text we will outline a basic generic implementation of transcription methods in JuMP, and a proposed architecture to be taken forward based on the project aims.
 
-### JuDO architecture
+### Generic transcription implementation
+
+The user defined problem, which also acts as an internal interface between JuMP and JuDO methods, is defined as follows.
+! BeginColBox()
+```julia;eval=false
+mutable struct TrajProblem
+    objectiveFunc::Function
+    dynamicsFunc::Function
+    pathConstraintFunc::Function
+    controlVector::Array
+    stateVector::Array # each row represents a state, maybe use an add state guess function which adds each state guess
+    timeStep::Union{Array, Float64} 
+    boundaryConstraints::BoundaryConstraint 
+    numStates::Int   
+    numControls::Int
+    numCollocationPoints::Int 
+end
+```
+! EndColBox()
+
+### Example cart-pole swing-up
+An example implementation is the cart-pole swing-up problem, where the objective is to swing a mass above a cart using the minimum effort squared.
+The example is taken from Matthew Kelly's paper ``\cite{matthewkelly}`` and has the following formulation
+$$
+\pmb{x}(t) = 
+\begin{bmatrix}
+q\\
+\theta\\
+\dot{q}\\
+\dot{\theta}
+
+\end{bmatrix} 
+= 
+\begin{bmatrix}
+\pmb{x}_1(t)\\
+\pmb{x}_2(t)\\
+\pmb{x}_3(t)\\
+\pmb{x}_4(t)
+\end{bmatrix},
+$$
+$$
+\pmb{f}(\tau, \pmb{x},\pmb{u}) = 
+\begin{bmatrix}
+\dot{q}\\
+\dot{\theta}\\
+\ddot{q}\\
+\ddot{\theta}
+\end{bmatrix}
+= 
+\begin{bmatrix}
+\pmb{x}_3\\
+\pmb{x}_4\\
+\frac{lm_2\sin(\pmb{x}_2)\pmb{x}_4^2 + u + m_2g\cos(\pmb{x}_2)\sin(\pmb{x}_2)}{m_1+m_2(1-\cos^2(\pmb{x}_2))}\\
+- \frac{lm_2\cos(\pmb{x}_2)\sin(\pmb{x}_2)\pmb{x}_4^2 + u\cos(\pmb{x}_2) + g(m_1 + m_2)\sin(\pmb{x}_2)}{lm_1+lm_2(1-\cos^2(\pmb{x}_2))}
+\end{bmatrix}_{\tau},
+$$
+$$
+J(\pmb{u}) = \int_0^{t_F} u^2(t)dt,
+$$
+$$
+\begin{align*}
+\pmb{x}_1(t_1) = 0, & \quad  \pmb{x}_1(t_F) = 1, \\
+\pmb{x}_2(t_1) = 0, & \quad  \pmb{x}_2(t_F) = \pi,\\
+\pmb{x}_3(t_1) = 0, & \quad  \pmb{x}_3(t_F) = 0,\\
+\pmb{x}_4(t_1) = 0, & \quad  \pmb{x}_4(t_F) = 0,\\
+\end{align*}
+$$
+$$
+-2 \leq \pmb{x}_1(t) \leq 2, \quad -20 \leq \pmb{u}(t) \leq 20,
+$$
+
+where ``q`` is the cart position, ``\theta`` is the pole angle, ``u`` is the force applied horizontally to the cart, ``m_1`` is the mass of the cart, ``m_2`` is the mass at the end of the pole, ``g`` is standard acceleration due to gravity and ``l`` is the length of the pole.
+
+Within our code, we begin by constructing the problem definition which will be parsed to the solver.
+! BeginColBox()
+```julia;eval=false
+numCP = 30
+tf = 2
+timeStep = ones(1,numCP-1) * tf/(numCP-1)
+time = pushfirst!(cumsum(timeStep';dims=1)[:,1],0.0)
+controlVectorGuess = zeros(1,numCP)
+stateVectorGuess = [1 π 0 0]' * time'  /tf
+boundaryConstraints = BoundaryConstraint([0;0;0;0],[1;π;0;0])
+
+# create user defined problem
+problem = TrajProblem(objectiveFunc, dynamicsFunc, pathConstraintFunc, controlVectorGuess, stateVectorGuess, timeStep, boundaryConstraints, 4, 1, numCP)
+```
+! EndColBox()
+We're using 30 collocation points here, and we assume the state and control mesh points correspond exactly with the collocation points.
+Additionally we also define an initial guess for state and control.
+
+Next, we define custom functions for the dynamics, the objective function and path constraints.
+! BeginColBox()
+```julia;eval=false
+function dynamicsFunc(stateVector, controlVector) 
+    l = 0.5
+    m1 = 1
+    m2 = 0.3
+    g = 9.81
+    x2 = stateVector[2,:]
+    u = controlVector[1,:]
+    x1dot = stateVector[3,:]  
+    x2dot = stateVector[4,:]
+    x3dot = map((x2, x2d,u) -> (l * m2 * sin(x2)*x2d^2 + u + m2 * g * cos(x2)*sin(x2) )/ (m1 + m2 *(1 - cos(x2)^2)), x2, x2dot, u)
+    x4dot = map( (x2,x2d,u) -> - (l*m2*cos(x2)*sin(x2)*x2d^2+u*cos(x2)+(m1+m2)*g*sin(x2)) / (l*m1+l*m2*(1-cos(x2)^2)) , x2, x2dot, u)
+    return [x1dot';x2dot';x3dot';x4dot']
+end
+
+objectiveFunc(stateVector, controlVector) = controlVector.^2
+
+function pathConstraintFunc(stateVector, controlVector) # less than or equal to output value. Output must by 1 D vector of constraints
+    dmax = 2
+    umax = 20
+    bounds = zeros(typeof(stateVector[1,1]),4,size(stateVector,2))
+    bounds[1,:] = -dmax .- stateVector[1,:]
+    bounds[2,:] = -dmax .+ stateVector[1,:]
+    bounds[3,:] = -umax .- controlVector[1,:]
+    bounds[4,:] = -umax .+ controlVector[1,:]
+    return [bounds...]
+end
+```
+! EndColBox()
+In this formulation we are not yet considering interpolated functions, but this is of little consiquene if we're using trapizoidal collocation, as we will be here.
+The disadvantage of this is that in our function formulation we have to keep in mind the array nature of our states and controls, something present in the ICLOCS package too.
+
+Finally we define the methods for collocation and interpolations.
+! BeginColBox()
+```julia;eval=false
+function collocateConstraint(state::Array, control::Array) # make sure timestep vector matches length of state vector
+    ΔstateVector = 0.5 .* problem.timeStep[1] .* (problem.dynamicsFunc(stateVector[:,2:end], controlVector[:,2:end]) + problem.dynamicsFunc(stateVector[:,1:end-1], controlVector[:,1:end-1])) 
+    ζ = stateVector[:, 2:end] - stateVector[:,1:end-1] - ΔstateVector
+    return ζ
+end
+
+function objectiveFuncInterp(state::Array, control::Array)  # can we type union this? so we don't have to define two functions, only one
+    # return interpolated integral
+    return [sum(0.5 .* problem.timeStep[1] .* (problem.objectiveFunc(stateVector[2:end,:], controlVector[2:end]) .+ problem.objectiveFunc(stateVector[1:end-1,:], controlVector[1:end-1])))] 
+end
+```
+! EndColBox()
+The exact implementation within the code is slightly different due to some additional translation code for JuMP as described above, but this code could nonetheless be implemented in its shown form with some wrapper functions.
+The results of the solve are found below.
+
+! BeginFig()
+```julia; out_width="0.7\\textwidth";echo=false
+img = load("figures/cartepole.png")
+
+```
+! EndFig("JuDO architecture","judoarc")
+### Example pseudospectral method
+
+
+# Next steps
+## JuDO architecture
 An architectural outline for JuDO is proposed in figure ``\ref{judoarc}``.
 The generic implementation prototype already employs some of the features here, but not to the full extent.
 The methodology behind the architecture is outlined below, and the methods proposed for how to implement each component based on experience with ICLOCS and Julia.
 ! BeginFig()
-
 ```julia; out_width="0.7\\textwidth";echo=false
 img = load("figures/judo.png")
 
@@ -1062,7 +1224,7 @@ For example a black box solver does not require derivative information, and so t
 This factory architecture is also useful from a development perspective.
 Multiple developers can work on different factories within JuDO while being confident that their interface will integrate well with the rest of the solver.
 
-#### User Defined Problem
+### User Defined Problem
 The aim here is to provide a standard intuitive interface for problem definitions which requires as little knowledge of the backend implementation as possible.
 Ideally the user would define their problem as seen in the mathematical formulation. 
 There should be little need to try and reformulate the problem in order to work with matrix operations or specific functions.
@@ -1076,21 +1238,50 @@ The following user defined problem syntax is suggested.
 problem = new_JuDO_problem()
 solver(problem,SolverType)
 addstate(problem, :x)
-addcontrol(problem, :c)
+addcontrol(problem, :u)
 addparameter(problem, :p, val)
-xdot = @JuDOFunc function xdotfunc(p)
-            xdot = f(x, c, p) 
+xdot = @JuDOFunc function xdotfunc(p,τ)
+            xdot = f(x(τ), u(τ), p) 
             return xdot
        end
 adddynamicsfunction(problem, :x, xdot) # an example function is used here
-bound = @JuDOFunc function boundfunc(p)
-            bound = h(x, c, p)
-            return h >= 0
+constrain = @JuDOFunc function constrainfunc(p, τ)
+            constrain = h(x(τ), u(τ), p)
+            return constrain >= 0
        end
 addboundsfunction(problem, :x, xdot) # an example function is used here
 ```
 ! EndColBox()
-#### Mesh Factory
+
+### JuDO Problem
+The role of the JuDO problem is to act as an internal standard interface between all other factories.
+Internally, it is represented by a datastructure containing all relevant components of the problem.
+Each factory either modifies or uses data from the JuDO problem.
+Additionally, components within the JuDO problem may have their own structures.
+An example is the `AbstractState` which may contain a vector of Lagrange interpolating polynomials, as an example.
+This abstraction allows us to generate standard interfaces for each data component, ensuring future compatibility is part of the structure changes form (if we used a package other than MorePolynomials for example).
+The following datastructure is suggested.
+
+! BeginColBox()
+```julia;eval=false
+mutable struct JuDOProblem <: AbstractJuDOProblem
+    x::AbstractState
+    u::AbstractControl
+    dynamics::AbstractDynamics
+    constraints::AbstractConstraint
+    objective::AbstractObjective
+    solver::AbstractSolver
+    results::AbstractResults
+end
+```
+! EndColBox()
+
+### Solver Translator
+Different solvers will have different interfaces, and while we could dispatch on each solver, this incurs a significant amount of code rewriting for each solver.
+A more elegant solution would be to standardise the interface between each solver by using a layer of abstraction.
+This requires only the rewriting of a few translation functions per solver, rather than changing the entire system architecture, and is the preferred implementation method.
+
+### Mesh Factory
 The role of the meshing factory is to generate meshes based on the user defined problem, and refine meshes after successful solves.
 The user can either specify what type of mesh they would like, or we can generate one for them based on the problem definition.
 The following function definition is proposed for the mesh factory.
@@ -1103,7 +1294,7 @@ end
 function mesh_factory(solver::AbstractSolver, problem::AbstractJuDOProblem) # Mesh refinement
 ```
 ! EndColBox()
-#### Function Factory
+### Function Factory
 The aim of the function factory is to provide a standard interface for handling functions, such that various transcription methods can be employed.
 Additionally, a standard interface will ensure compatibility with derivative calculation in the derivative factory.
 The following function definition is proposed for the function factory.
@@ -1115,8 +1306,8 @@ function function_factory(problem::AbstractJuDOProblem,; kwargs...)
 end
 function function_factory(problem::AbstractJuDOProblem, solver::AbstractSolver; kwargs...) # custom solver implementation
 function dynamics_transcription(problem::AbstractJuDOProblem, dynamicsFunction::Function, method::AbstractTranscriptionMethod) # system dynamics transcription
-function objective_function(problem::AbstractJuDOProblem) # system dynamics transcription
-function constraints_function(problem::AbstractJuDOProblem) # system dynamics transcription
+function objective_function(problem::AbstractJuDOProblem) 
+function constraints_function(problem::AbstractJuDOProblem) 
 ```
 ! EndColBox()
 It is important to note that although we provide an interface for dispatching on the solver, the intention is to use this sparingly when implementing a feature specific to the solver.
@@ -1125,7 +1316,7 @@ Note also that each factory is not necessarily an object as in a traditional OOP
 This has the added benefit that these functions can be called by other functions.
 For example, it is useful in this case for the derivative factory to call some functions within the function factory to calculate derivatives.
 
-#### Derivative Factory
+### Derivative Factory
 The derivative factory calculates the derivatives of NLP functions to parse to the NLP solver.
 The aim here is to support multiple derivative methods, as well as sparsity patterns.
 Because of the standard JuDO problem interface, we can deduce from within the problem what the parameters to dispatch on for the function factory function calls should be.
@@ -1137,12 +1328,12 @@ function derivative_factory(problem::AbstractJuDOProblem; kwargs...)
     return problem
 end
 function derivative_factory(problem::AbstractJuDOProblem, solver::AbstractSolver) # custom solver implementation
-function jacobian(problem::AbstractJuDOProblem) # custom solver implementation
-function hessian(problem::AbstractJuDOProblem) # custom solver implementation
+function jacobian(problem::AbstractJuDOProblem) 
+function hessian(problem::AbstractJuDOProblem) 
 ```
 ! EndColBox()
 
-#### Error Factory
+### Error Factory
 The role of the error factory is to handle any errors from the solver elegantly in a standardised manner, and to manage the analysis of errors.
 The error analysis can then be packaged and sent to the mesh factory for further mesh refinement.
 The following function definition is proposed for the error factory.
@@ -1157,7 +1348,7 @@ function calculate_error(problem::AbstractJuDOProblem)
 ```
 ! EndColBox()
 
-#### Output Factory
+### Output Factory
 The role of the output factory is to display the results of the optimisation problem, and proved interfaces for the user to save the problem.
 We can do this by taking the solved problem as well as the error analysis and presenting it to the user.
 The output factory should ideally handle any interactions with the user, including solver errors produced by the error factory.
@@ -1175,7 +1366,6 @@ function save_output(problem::AbstractJuDOProblem)
 ! EndColBox()
 
 # Documentation
-# Next steps
 ! BeginFig()
 
 ```julia; out_width="0.7\\textwidth";echo=false
