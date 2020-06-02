@@ -1132,6 +1132,15 @@ mean(@benchmark vandpoly(x, y)(0.25)) # using Lagrange poly fitting
 ! EndColBox()
 
 ### Piecewise polynomials
+Now that we have our low order polynomials, it would be useful to have a method for assembling them into a single piecewise polynomial.
+This is achieved in the MorePolynomials package using a custom `GlobalPoly`, which allows for the assembling of multiple polynomials.
+Here we can also check for continuity between polynomials, and set bound mapping e.g. a polynomial defined over ``[-1,1]`` may be mapped to a polynomial with domain ``[t_1,t_2]``.
+Additionally we can assemble a polynomial of different types of polynomials, such that portions of the piecewise polynomial could be a high order Lagrange polynomial, while other could be low order coefficient defined polynomial.
+
+Internally the implementation runs a series of checks when a new polynomial is added.
+These checks ensure bounds 
+
+
 
 ### User interface
 The challenge of any user interface is to balance the exposure provided to the user of complex functionality with the ability to remain intuitive and simple to use.
@@ -1169,7 +1178,34 @@ All these actions are conducted in different manners, but the intent of the stat
 Here, we take ``fit()`` to mean fit some input to a polynomial representation, the internals are dependent on the context.
 As the core role of the programming language is to provide an interface between the human and the computer is makes sense (when we have the ability) to tailor the experience in a way similar to how a human would behave.
 
-### Error handling
+An extension of the user interface is the ability to handle errors elegantly.
+Good error reporting is a balance between providing the used with useful information to debug the error, while not overloading the user with too much information.
+Generally the author believes it is better to provide too much information than too little.
+Examples of detailed error reporting can be found when using the `GlobalPoly` polynomial type.
+For example, if we try evaluating a value that does not exist in any of the subpolynomial domains, we get the following error
+! BeginColBox()
+```julia;results=hidden
+p = LGRPoly([1.0, 2, 1])
+piecewisePoly = GlobalPoly(p, 0, 1)
+push!(piecewisePoly, p, 2, 3) # polynomial defined over [0,1] and [2,3]
+piecewisePoly(1.7)
+```
+! EndColBox()
+Here we are not only told what the error is, but we're provided information which may help give us a better idea of where we're going wrong.
+Another example would be when trying to add a polynomial to a continuous piecewise polynomial which would violate the continuity.
+In this case, the endpoints of the 2 lines generated here do not line up
+! BeginColBox()
+```julia;results=hidden
+x1 = LagrangePoly([0.0, 1], [1.0, 3])
+x2 = LagrangePoly([0.0, 1], [2.0, 4])
+piecewisePoly = GlobalPoly(x1, 0, 1)
+push!(piecewisePoly, x2, 1, 2) 
+```
+! EndColBox()
+Once again we are told exactly what went wrong, and how we might go about fixing it.
+Contextual data driven errors can be a very useful tool for debugging and especially so when complex problems such as dynamic optimisation problems are being debugged.
+
+
 
 ## JuDO.jl
 The development of the JuDO.jl package has been somewhat more staggered than the MorePolynomials.jl package.
