@@ -109,9 +109,9 @@ Base.show(io::IO, m::MIME"text/latex", b::EndColBox) = write(io, "\\end{tcolorbo
 ``` 
 ! Begin("abstract")
 The field of dynamic optimisation solvers is one dominated by programs of high complexity, both in implementation and user interface.
-Moreover, within the field of dynamic optimisation methods involving so-called orthogonal collocation (or pseudospectral methods) have proven achieve high accuracy with relatively few discretisation points ``\cite{Huntington2001AdvancementProblems}``.
-They are well renown in the filed of aerospace, with uses ranging from calculating the optimal path for space shuttle reentry to maximising payload delivered to orbit for vertical takeoff vertical landing spacecraft.
-In addition, more recently a numerically focused programming language by the name of Julia has gained popularity due to its lightning speed (as fast as C) and it's employment of features usually found in high level languages such as dynamic typing.
+Moreover, within the field of dynamic optimisation methods involving so-called orthogonal collocation (or pseudospectral methods) have proven to achieve high accuracy with relatively few discretisation points ``\cite{Huntington2001AdvancementProblems}``.
+They are well renown in the field of aerospace, with uses ranging from calculating the optimal path for space shuttle reentry to maximising payload delivered to orbit for vertical takeoff vertical landing spacecraft.
+In addition, more recently a numerically focused programming language by the name of Julia has gained popularity due to its lightning speed (as fast as C) and its employment of features usually found in high level languages such as dynamic typing.
 The aim of this work is to provide a background to dynamic optimisation using polynomial approximating functions in Julia, and outline steps for developing the next generation of intuitive dynamic optimisation solvers.
 Along the way we will implement some examples and explore some of the ready to use packages developed for this purpose.
 ! End("abstract")
@@ -159,28 +159,52 @@ For to do this is more than wisdom or knowledge, it is pure love.
 ! Newpage()
 
 ! NomItem("J","Objective function")
-! NomItem("\\pmb{g}","Constraint functions")
-! NomItem("\\pmb{f}","System dynamics functions")
-! NomItem("\\x_{,i}","i'th continuous state variable")
-! NomItem("x_i","i'th state vector of state interpolating data points, decision variables")
+! NomItem("\\pmb{g}","NLP Constraint functions")
+! NomItem("\\pmb{f}","Vector of all system dynamics functions")
+! NomItem("f_i","i'th state system dynamics function")
+! NomItem("x^{(i)}","i'th continuous state variable")
+! NomItem("x_i","i'th state vector of state interpolating data points")
 ! NomItem("x_{ij}","i'th state j'th decision variable / interpolating point state value")
 ! NomItem("\\bar{x}_{ij}","i'th state j'th interpolating data point state time pair")
 ! NomItem("\\pmb{x}","Vector of state interpolating polynomials")
 ! NomItem("\\pmb{x}_i","i'th state interpolating polynomial")
-! NomItem("\\tilde{x}","State interpolation function")
-! NomItem("\\pmb{u}","Controls")
-! NomItem("\\pmb{b}","Boundary constraint functions")
-! NomItem("\\pmb{h}","Path constraint functions")
+! NomItem("\\tilde{x}_i","i'th state interpolation function")
+! NomItem("u^{(i)}","i'th continuous control variable")
+! NomItem("u_i","i'th control vector of control interpolating data points")
+! NomItem("u_{ij}","i'th control j'th decision variable / interpolating point control value")
+! NomItem("\\bar{u}_{ij}","i'th control j'th interpolating data point control time pair")
+! NomItem("\\pmb{u}","Vector of control interpolating polynomials")
+! NomItem("\\pmb{u}_i","i'th control interpolating polynomial")
+! NomItem("\\tilde{u}_i","i'th control interpolation function")
+! NomItem("\\pmb{b}","Vector of all boundary constraint functions")
+! NomItem("\\pmb{h}","Vector of all path constraint functions")
 ! NomItem("t","Any time")
+! NomItem("t_k","Time at collocation point k")
+! NomItem("t_1","Start time")
+! NomItem("t_F","End time")
 ! NomItem("t_{ij}","i'th state or control time at interpolating data point j ")
+! NomItem("h_k","timestep")
+! NomItem("\\tau_i","i'th state vector of collocation point times for dynamics function")
+! NomItem("\\pmb{\\tau}","All collocation vectors for dynamics function")
+! NomItem("\\tau^{(\\rho)}","Vector of collocation point times for objective function")
+! NomItem("\\pmb{\\tau}^{(h)}","All vectors of collocation point times for path constraints")
 ! NomItem("k","Location of a collocation point")
-! NomItem("m","Number of mesh/collocation")
+! NomItem("n","Number of states")
+! NomItem("c","Number of controls")
+! NomItem("m","Number of mesh/collocation/interpolation points")
 ! NomItem("i","State or control index")
+! NomItem("j","Iterative variable")
 ! NomItem("\\rho","Lagrange term for objective function")
+! NomItem("\\tilde{\\rho}","Interpolated Lagrange term for objective function")
 ! NomItem("\\Phi","Mayer term for objective function")
 ! NomItem("L","Lagrange interpolating polynomial")
-! NomItem("l","Intermidiate Lagrange weights")
+! NomItem("l","Intermediate Lagrange weights")
 ! NomItem("w","Lagrange barycentric weights")
+! NomItem("w_{LGR}","Legendre-Gauss-Radau integration weights")
+! NomItem("s","Slack variable")
+! NomItem("y","Function output data points for Lagrange polynomials")
+! NomItem("D","Differentiation matrix")
+! NomItem("P_N","Legendre polynomials")
 
 
 ! NomPrint()
@@ -274,7 +298,7 @@ Direct methods are currently of more interest as these conditions are often diff
 Before we explore the direct method however, it may be beneficial to define what our dynamic optimisation problem will eventually become, a nonlinear programming problem.
 
 ### Nonlinear programming problem
-If we can reformulate our dynamic problem into a NLP problem, we can use a number of widely available solvers to find optimal solutions.
+If we can reformulate our dynamic problem into an NLP problem, we can use a number of widely available solvers to find optimal solutions.
 The general formulation of the NLP problem is (as given by Ipopt from COIN-OR ``\cite{Ipopt:Documentation}``, a popular NLP solver)
 
 $$
@@ -322,8 +346,8 @@ $$
 
 The nonlinear constraints may take the form of either equation ``\ref{gfunc}`` or ``\ref{gfunceq}``, or both.
 
-The target of dynamic optimisation is to discretize the dynamic optimisation problem into a set of constrained points (known as collocation points) which can be expressed as a series of dynamics constraints and solved as a nonlinear problem.
-The forces that govern the system thus become a discretized set of equality constraints that essentially say the system must behave in this way otherwise the physics would be violated.
+The target of dynamic optimisation is to discretise the dynamic optimisation problem into a set of constrained points (known as collocation points) which can be expressed as a series of dynamics constraints and solved as a nonlinear problem.
+The forces that govern the system thus become a discretised set of equality constraints that essentially say the system must behave in this way otherwise the physics would be violated.
 Another way to put it is rather than giving an input and calculating what the output would be based on extrapolation of the system dynamics through time marching (such as in a shooting method), we evaluate what the physics would have to be at each location in time to satisfy a given input.
 <!-- Illustrate this with some diagrams -->
 
@@ -333,7 +357,7 @@ We will now go on to explore how the dynamics optimisation problem becomes the N
 ! Label("sysDyn")
 
 The system dynamics are of key importance in the dynamic optimisation problem, and are what essentially separate it from a standard NLP problem.
-By system dynmaics, we are referring to the governing equations which describe the evolution of the state over time.
+By system dynamics, we are referring to the governing equations which describe the evolution of the state over time.
 Simply put, if ``x`` is our state, ``u`` is our control input and ``t`` represents time we have
 
 $$
@@ -391,7 +415,7 @@ This interpolating polynomial may be a function of polynomial coefficients, or i
 As such, ``x_i`` represents a set of interpolating data points, and ``\pmb{x}`` represents a vector of state approximating functions such that ``\pmb{x}_i(t_k) = \tilde{x}_i(x_i,t_k)``, where ``\tilde{x}_i`` is the ``i^{\text{th}}`` state approximation evaluated at time ``t_{k}``.
 
 
-Likewise we may use the same definition for our control variables.
+Likewise, we may use the same definition for our control variables.
 $$
 \begin{equation}
 \label{uControl}
@@ -411,7 +435,7 @@ $$
 \end{equation}
 $$
 
-Where ``n`` here is the number of both states and controls, and ``m_i`` is the number of collocation points for each state index ``i``.
+Where ``n`` is the number of both states and controls, and ``m_i`` is the number of collocation points for each state index ``i``.
 Note that for each individual function evaluation, the input array ``\tau_i`` is assumed to have dimensions ``(n+c) \times m_i``, and as such we use our interpolating functions to find the values of states and controls at locations of ``\tau_i=t_k, k = 1,2\ldots m_i``.
 
 Putting this all together we have
@@ -451,7 +475,7 @@ n = \text{number of states}, \tau_i = \text{state collocation points}, i = 1,2 \
 $$
 We use ``\dot{x}^{(i)}`` to represent the continuous dynamics of the state at the collocation points.
 In our formulation the time vector ``t`` does not necessarily have to have the same length or values for any one such function call, only that it must correspond with the number of output variables being assigned.
-For example, if we are evaluating ``m_i`` collocation points, then when calling ``f_1(\tau_1,\pmb{x}(t), \pmb{u}(t))``, ``\tau_1`` here must be of length ``m_1``, but the mesh points of ``x_1`` to ``x_n`` do not have to correspond with the collocation points, and if they do not they are interpolated.
+For example, if we are evaluating ``m_i`` collocation points, then when calling ``f_1(\tau_1,\pmb{x}(t), \pmb{u}(t))``, ``\tau_1`` here must be of length ``m_1``, but the mesh points of ``x_1`` to ``x_n`` do not have to correspond with the collocation points, and if they do not, they are interpolated.
 Additionally, inside the function ``f_i``, ``\pmb{x}`` and ``\pmb{u}`` may actually be evaluated at any time as they are interpolating functions, not necessarily at just the collocation points.
 
 Now that we have our system dynamics functions, we need to transform them into a format that can be solved with an NLP solver.
@@ -611,7 +635,7 @@ $$
 $$
 For the sake of completeness equations ``\ref{xpath}`` and ``\ref{upath}`` correspond to equation ``\ref{xineq}`` and equation ``\ref{bpath}`` to equation ``\ref{gfunc}`` in our NLP formulation.
 Again let's look at a graphical representation to illustrate this using the example from figure ``\ref{massdamp}``.
-Lets add the following constraints to our problem.
+Let's add the following constraints to our problem.
 
 $$
 \begin{equation}
@@ -671,7 +695,7 @@ $$
 \int_{t_1}^{t_F} \rho (\tau^{(\rho)}, \pmb{x}(t), \pmb{u}(t)) dt \approx \sum_{k=1}^{m-1} \frac{1}{2} (h_k)\rho(\tau^{(\rho)}_k,\pmb{x}(t),\pmb{u}(t))
 $$
 
-Alternatively, if the objective function is modelled with an interpolating function we can calculate the exact integral of the interpolation as per equation ``\ref{lgrint}``.
+Alternatively, if the objective function is modelled with an interpolating function, we can calculate the exact integral of the interpolation as per equation ``\ref{lgrint}``.
 
 This completes our formulation of the dynamic optimisation problem. 
 
@@ -681,34 +705,34 @@ This completes our formulation of the dynamic optimisation problem.
 ! Label("lagmath")
 Now we will discuss the background for the interpolating functions used to approximate state and control functions (and potentially the objective function), which will lead us to a discussion of the pseudospectral dynamic optimisation method.
 Lagrange interpolating polynomials in the barycentric form are useful for fast polynomial interpolation and are forward stable for problems with mesh points clustered towards the ends of intervals ``\cite{Higham2004TheInterpolation}``.
-Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent a function evaluations at points of ``t`` such that ``y = f(t)``, the unmodified Lagrange formula is
+Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent our function evaluations at points of ``t_k`` and ``t_j`` such that ``y = f(t_{k,j})``, the unmodified Lagrange formula is
 
 $$
 \begin{equation}
 \label{lagweight}
-l_j(t) = \prod_{k=1,k\neq j}^{n} \frac{t - t_k}{t_j - t_k}
+l_j(t) = \prod_{k=1,k\neq j}^{m} \frac{t - t_k}{t_j - t_k}
 \end{equation}
 $$
 $$
-L(t) = \sum_{j=1}^n  y_j l_j(t)
+L(t) = \sum_{j=1}^m  y_j l_j(t)
 $$
 
-We take ``n`` to be the number of mesh points (as before in section ``\ref{dynamicsmath}``), ``t`` to be the evaluation point, ``L`` is the output of our interpolation at ``t`` and ``l_j`` are intermediary lagrange weights.
+We take ``m`` to be the number of mesh points (as before in section ``\ref{dynamicsmath}``), ``t`` to be the evaluation point, ``L`` is the output of our interpolation at ``t`` and ``l_j`` are intermediary Lagrange weights.
 The denominator of equation ``\ref{lagweight}`` is a function of the mesh points and not of the evaluation point ``t``.
 As such, we can precompute these beforehand and use them when evaluating our polynomial interpolation.
-This gives us the barycentric form of out polynomial
+This gives us the barycentric form of our polynomial
 
 $$
 \begin{equation}
 \label{barweight}
-w_j = \frac{1}{\prod_{k=1,k\neq j}^n(t_j - t_k)}
+w_j = \frac{1}{\prod_{k=1,k\neq j}^m(t_j - t_k)}
 \end{equation}
 $$
 
 $$
 \begin{equation}
 \label{lagbar}
-L(t) = \frac{\displaystyle \sum_{j=1}^n \frac{w_j}{t-t_j} y_j}{ \displaystyle \sum_{j=1}^n \frac{w_j}{t-t_j}}
+L(t) = \frac{\displaystyle \sum_{j=1}^m \frac{w_j}{t-t_j} y_j}{ \displaystyle \sum_{j=1}^m \frac{w_j}{t-t_j}}
 \end{equation}
 $$
 
@@ -725,7 +749,7 @@ Having constructed our polynomial in the barycentric form, we can also calculate
 $$
 \begin{equation}
 \label{Ldot}
-\dot{L}(t) = \sum_{j=1}^n  \bar{y}_j l_j(t), \quad \bar{y} = Dy,
+\dot{L}(t) = \sum_{j=1}^m  \bar{y}_j l_j(t), \quad \bar{y} = Dy,
 \end{equation}
 $$
 
@@ -735,7 +759,7 @@ $$
 D_{ij} = \left\{\begin{matrix}
 \displaystyle \frac{w_j}{w_i(t_i-t_j))}, & i\neq j \\ 
 \\
-\displaystyle \sum_{k=0,k\neq i}^n \frac{1}{t_i-t_k},& i = j 
+\displaystyle \sum_{k=0,k\neq i}^m \frac{1}{t_i-t_k},& i = j 
 \end{matrix}\right.
 $$
 
@@ -890,7 +914,7 @@ This can be achieved by interpolating the state at collocation points when requi
 
 ## `j print(aims[6])`
 As Polynomials.jl is a rapidly developing package, ensuring compatibility allows for easy integration of future features.
-As Julia is an ever evolving language, by building off pr-existing packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on are part as Polynomials.jl is updated with Julia updates.
+As Julia is an ever evolving language, by building off pre-existing packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on are part as Polynomials.jl is updated with Julia updates.
 The disadvantage being we are then at the mercy of the Polynomials.jl package developers.
 If they decided to change their framework entirely, our package may also need to change.
 This is not necessarily an issue however as we can specify backwards compatibility.
@@ -1184,7 +1208,7 @@ mean(@benchmark vandpoly(x, y)(0.25)) # using Lagrange poly fitting
 ### Piecewise polynomials
 Now that we have our low order polynomials, it would be useful to have a method for assembling them into a single piecewise polynomial.
 This is achieved in the MorePolynomials.jl package using a custom `GlobalPoly`, which allows for the assembling of multiple polynomials.
-Here we can also check for continuity between polynomials, and set doman mapping e.g. a polynomial defined over ``[-1,1]`` may be mapped to a polynomial with domain ``[t_1,t_2]``.
+Here we can also check for continuity between polynomials, and set domain mapping e.g. a polynomial defined over ``[-1,1]`` may be mapped to a polynomial with domain ``[t_1,t_2]``.
 Additionally, we can assemble a polynomial of different types of polynomials, such that portions of the piecewise polynomial could be a high order Lagrange polynomial, while other could be low order coefficient defined polynomial.
 To avoid confusion, we refer to the polynomials which make up the piecewise polynomial as local polynomials, and the piecewise polynomial as the global polynomial.
 This terminology makes more sense when discussing mapping of local domains to the global domain.
@@ -1232,7 +1256,7 @@ println("at (t = 1) p has value $(p(1)), at (t ≈ ∞) infPoly have value $(inf
 ```
 ! EndColBox()
 `GlobalPoly` has a system for deciding which transformation to use when using infinite domains in either the local or global poly domains based on intuition.
-For example, for a mapping of ``[-t,t] \rightarrow [-\infty,\infty]`` `GlobalPoly` will first use te linear transform ``[-t,t] \rightarrow [-1,1]``, followed by the transform 
+For example, for a mapping of ``[-t,t] \rightarrow [-\infty,\infty]`` `GlobalPoly` will first use the linear transform ``[-t,t] \rightarrow [-1,1]``, followed by the transform 
 $$
 \bar{t} = \tan\big(\frac{\pi t}{2}\big).
 $$
@@ -1247,7 +1271,7 @@ As previously stated one of the objectives of the MorePolynomials.jl package is 
 One aspect of maintaining this compatibility is being consistent with maintaining the intent of user functions, and Julia's multiple dispatch system is well suited for this role.
 
 Take the `fit()` command for example.
-In Polynomials.jl, if we want to fit a polynomial to a set of datapoints, we have two arguments, the `x` values and the `y` values
+In Polynomials.jl, if we want to fit a polynomial to a set of data points, we have two arguments, the `x` values and the `y` values
 ! BeginColBox()
 ```julia;eval=false
 fittedpoly = fit(x, y)
@@ -1769,7 +1793,11 @@ In this work have outlined a method for implementing a generic dynamic optimisat
 We have achieved this through the development of two autonomous Julia packages, one for polynomial interpolation, and one for transcribing dynamic optimisation problems and interfacing with nonlinear programming solvers.
 We have shown how barycentric interpolation and effective utilise of Julia features can significantly reduce overhead in our problem associated with the generation and interpolation of polynomials.
 Lastly, we have outlined the framework for a generic and developer friendly optimal control package based on the experiences of using JuMP.jl and ICLOCS.
+! Newpage()
+
 ! Bib()
+
+! Newpage()
 
 ! BeginAppendix()
 
