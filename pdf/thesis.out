@@ -22,7 +22,7 @@
 \BOOKMARK [2][-]{subsection.3.3}{Code\040must\040verify\040data\040before\040computation}{section.3}% 22
 \BOOKMARK [2][-]{subsection.3.4}{The\040final\040package\040must\040be\040user\040extensible\040and\040have\040the\040ability\040to\040support\040multiple\040solvers}{section.3}% 23
 \BOOKMARK [2][-]{subsection.3.5}{Location\040of\040mesh\040points\040for\040each\040state\040must\040be\040independent\040of\040other\040states}{section.3}% 24
-\BOOKMARK [2][-]{subsection.3.6}{The\040MorePolynomials\040package\040must\040interface\040well\040with\040the\040existing\040Polynomials\040package}{section.3}% 25
+\BOOKMARK [2][-]{subsection.3.6}{The\040MorePolynomials.jl\040package\040must\040interface\040well\040with\040the\040existing\040Polynomials\040package}{section.3}% 25
 \BOOKMARK [1][-]{section.4}{Results\040and\040Discussion}{}% 26
 \BOOKMARK [2][-]{subsection.4.1}{MorePolynomials.jl}{section.4}% 27
 \BOOKMARK [3][-]{subsubsection.4.1.1}{Lagrange\040implementation}{subsection.4.1}% 28
@@ -34,7 +34,7 @@
 \BOOKMARK [3][-]{subsubsection.4.2.2}{Example\040cart-pole\040swing-up}{subsection.4.2}% 34
 \BOOKMARK [3][-]{subsubsection.4.2.3}{Example\040pseudospectral\040method}{subsection.4.2}% 35
 \BOOKMARK [1][-]{section.5}{Next\040Steps}{}% 36
-\BOOKMARK [2][-]{subsection.5.1}{JuDO\040architecture}{section.5}% 37
+\BOOKMARK [2][-]{subsection.5.1}{JuDO.jl\040architecture}{section.5}% 37
 \BOOKMARK [3][-]{subsubsection.5.1.1}{User\040defined\040problem}{subsection.5.1}% 38
 \BOOKMARK [3][-]{subsubsection.5.1.2}{JuDO\040problem}{subsection.5.1}% 39
 \BOOKMARK [3][-]{subsubsection.5.1.3}{Solver\040translator}{subsection.5.1}% 40
@@ -43,3 +43,9 @@
 \BOOKMARK [3][-]{subsubsection.5.1.6}{Derivative\040factory}{subsection.5.1}% 43
 \BOOKMARK [3][-]{subsubsection.5.1.7}{Error\040factory}{subsection.5.1}% 44
 \BOOKMARK [3][-]{subsubsection.5.1.8}{Output\040factory}{subsection.5.1}% 45
+\BOOKMARK [1][-]{section.6}{Conclusions}{}% 46
+\BOOKMARK [1][-]{section*.5}{Appendices}{}% 47
+\BOOKMARK [1][-]{Appendix.1.A}{Package\040code}{}% 48
+\BOOKMARK [2][-]{subsection.1.A.1}{MorePolynomials.jl}{Appendix.1.A}% 49
+\BOOKMARK [2][-]{subsection.1.A.2}{JuDO.jl}{Appendix.1.A}% 50
+\BOOKMARK [1][-]{Appendix.1.B}{Julia\040Thesis}{}% 51

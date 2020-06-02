@@ -6,7 +6,7 @@ options :
 ---
 
 ```julia; echo=false; results="hidden"
-using Images, Plots, Colors, Polynomials, BenchmarkTools, ForwardDiff, Reduce
+using Images, Plots, Colors, Polynomials, BenchmarkTools, ForwardDiff, Reduce, Intervals
 using MorePolynomials;
 plotly()
 
@@ -23,6 +23,15 @@ Base.show(io::IO, m::MIME"text/latex", e::End) = write(io, "\\end{$(e.text)}\n")
 
 struct Newpage end
 Base.show(io::IO, m::MIME"text/latex", n::Newpage) = write(io, "\\newpage\n ")
+
+struct Ack end
+Base.show(io::IO, m::MIME"text/latex", a::Ack) = write(io, "\\section*{Acknowledgement}")
+
+struct BeginAppendix end
+Base.show(io::IO, m::MIME"text/latex", a::BeginAppendix) = write(io, "\\begin{appendices}\n ")
+
+struct EndAppendix end
+Base.show(io::IO, m::MIME"text/latex", a::EndAppendix) = write(io, "\\end{appendices}\n ")
 
 struct Bib end
 Base.show(io::IO, m::MIME"text/latex", b::Bib) = write(io, "\\bibliography{references}\n\\bibliographystyle{vancouver}\n ")
@@ -100,12 +109,49 @@ Base.show(io::IO, m::MIME"text/latex", b::EndColBox) = write(io, "\\end{tcolorbo
 ``` 
 ! Begin("abstract")
 The field of dynamic optimisation solvers is one dominated by programs of high complexity, both in implementation and user interface.
-Moreover, within the field of dynamic optimisation methods involving so-called orthogonal collocation (or pseudospectral methods) have proven achieve high accuracy with relatively few discretization points ``\cite{Huntington2001AdvancementProblems}``.
-They are well renoun in the filed of aerospace, with uses ranging from calculating the optimal path for space shuttle reentry to maximising payload delivered to orbit for vertical takeoff vertical landing spacecraft.
+Moreover, within the field of dynamic optimisation methods involving so-called orthogonal collocation (or pseudospectral methods) have proven achieve high accuracy with relatively few discretisation points ``\cite{Huntington2001AdvancementProblems}``.
+They are well renown in the filed of aerospace, with uses ranging from calculating the optimal path for space shuttle reentry to maximising payload delivered to orbit for vertical takeoff vertical landing spacecraft.
 In addition, more recently a numerically focused programming language by the name of Julia has gained popularity due to its lightning speed (as fast as C) and it's employment of features usually found in high level languages such as dynamic typing.
 The aim of this work is to provide a background to dynamic optimisation using polynomial approximating functions in Julia, and outline steps for developing the next generation of intuitive dynamic optimisation solvers.
 Along the way we will implement some examples and explore some of the ready to use packages developed for this purpose.
 ! End("abstract")
+! Newpage()
+
+! Ack()
+> "The fear of the LORD is the beginning of wisdom: and the knowledge of the holy is understanding."
+> Proverbs 9:10
+
+I include the above quote because it addresses something which has been on my mind for some time during my studies.
+Specifically the notion why we do what we do?
+What is the point of all this study?
+Furthermore what is the point of anything at all?
+One might suggest we do these things because we enjoy them, which is a reasonable until you stop enjoying them, which happens with any activity after some time.
+And yet we often keep doing them regardless, I guess in the hope that we start enjoying them again.
+Much ink has been spilt over such thoughts, and more so with the rise of existentialism, and as such my aim is not to give the answer, but ask the question.
+We're told to keep trying, to never give up until we reach the top, but do we ever stop to ask why we must get to the top in the first place?
+Sometimes it's best to be thankful for what we have.
+Not to try and get to the top in a worldly sense, but to enjoy what I believe God has given us no matter how small.
+
+I would like to thank the staff and students of Imperial College London for support and good company they have offered over the years.
+I would like to thank my supervisor Dr Eric Kerrigan for being patient with my sometimes lacking understanding, and for providing truly constructive feedback.
+I would like to thank Yuanbo Nie for always offering a helping hand, and for his speedy replies to all my questions.
+I would like to thank my personal tutor Dr Koon-Yang Lee for being a good friend over the years.
+I would like to thank my housemates, my parents, and the good folks at the Christian Union for being a support for me when I needed them.
+And finally I would like to thank my God and His son for His guiding hand over the years.
+
+To go back to the quote, it's from one of the books in the Bible referred to as the wisdom literature.
+Proverbs mostly contains sayings about how to do good in order to live rightly before God.
+But here lies the wisdom, at least for me, in this quote. 
+That to know heavenly things is the beginning of the lower ones.
+To fear the Lord leads to great wisdom.
+Because we must know why we study before we study.
+We must know that our efforts are for a greater purpose, if we are to make any lasting effort.
+Because to know that we know anything at all we have to start somewhere.
+And that for all the wisdom and knowledge that this world contains, the best of us are those who use it to do good.
+And though fear of the Lord this is what my experiences have taught me, that the best of us are those who serve others above themselves.
+My motivation is to be more like them.
+For to do this is more than wisdom or knowledge, it is pure love.
+
 ! Newpage()
 
 ! ContentsPrint()
@@ -133,7 +179,7 @@ Along the way we will implement some examples and explore some of the ready to u
 ! NomItem("\\rho","Lagrange term for objective function")
 ! NomItem("\\Phi","Mayer term for objective function")
 ! NomItem("L","Lagrange interpolating polynomial")
-! NomItem("l","Intermidiate lagrange weights")
+! NomItem("l","Intermidiate Lagrange weights")
 ! NomItem("w","Lagrange barycentric weights")
 
 
@@ -150,7 +196,7 @@ Optimisation problems are the focus of wide range of research fields, and have b
 As such, effective tools for solving optimal problems are extremely desirable, and are employed in fields such as medicine, robotics and aerospace.
 Specifically, optimal problem solvers allow us to streamline the design an operation of, for example, a reusable spacecraft, or a walking robot, or the layout of a hospital.
 If the problem has a cost function and can be formulated subject to certain mathematical constraints, it can be optimised.
-<!-- add some history here init -->
+
 Dynamic optimisation is a subset of general optimisation problems, where the problem is best thought of as finding the optimal control input that minimises some cost function through statespace subject to system dynamics and constraints. 
 An example would be finding the optimal thrust output over time from the earth to another body which maximises the final orbital radius (as seen in ``\cite{ICLOCS2:Raising}``). 
 
@@ -187,7 +233,7 @@ For programs written natively in Julia, (providing the source code is easily acc
 
 Although Julia takes heavy inspiration from other languages such as C, MATLAB. Python and Lisp (to name a few), through the implementations of its main paradigm it holds its own in the world of dynamic general programming languages.
 By choosing to diverge from the commonly practiced object oriented programming (OOP) paradigm, Julia presents an alternative and more intuitive interface using multiple dispatch and strong type interfaces.
-By types we refer to the data type of variables such as `Int`, `Float64` etc., but julia also provides the ability to define types which contain other types (like structs in C), and abstract types from which other types can be subtyped.
+By types we refer to the data type of variables such as `Int`, `Float64` etc., but Julia also provides the ability to define types which contain other types (like structs in C), and abstract types from which other types can be subtyped.
 We can execute different subroutines depending on the combination of the types of the arguments of a function, and this ability is referred to as multiple dispatch.
 For example, the function `f(x::Int, y::Float64)` is a different function to `f(x::Int,y::Char)` or even `f(x::Float64, y::Int)`, but all three use the same `f` identifier i.e. we overload `f` for each type combination.
 
@@ -255,7 +301,7 @@ g : \mathbb{R}^n \rightarrow \mathbb{R}^m,
 $$
 
 are functions that represent nonlinear constraints.
-In this text we use bold font to denote the existance of an array of either variables or functions.
+In this text we use bold font to denote the existence of an array of either variables or functions.
 In this particular case, ``\pmb{g}`` comprises of multiple constraint functions with multiple inputs and outputs.
 
 The nonlinear constraint may also take the form (which is more common in the syntactic formulation of dynamic optimisation problems)
@@ -307,7 +353,7 @@ x \in \mathbb{R}^n,
 $$
 
 where ``n`` is the number of states (e.g. distance, velocity etc. ).
-In order to transcribe the problem to a format compatible with our NLP problem, we must discritse this continuous states into a set of decision variables and dynamics constraints.
+In order to transcribe the problem to a format compatible with our NLP problem, we must discretise this continuous states into a set of decision variables and dynamics constraints.
 As such, we can represent the state as a function of a set of decision variables.
 Let's take ``\tilde{x}`` to be some interpolating function which interpolates a state for a given number of inputs.
 We then have
@@ -320,6 +366,10 @@ $$
 $$
 
 such that ``t`` is the evaluation time of the interpolating function, ``m \in \mathbb{R}^n`` is the number of decision variables for each discretised state and may contain a different value at each state index ``i``, and ``x_i`` is a vector of interpolating data points.
+The existence of this interpolating function is important and one of the primary motivations for this work.
+In traditional dynamic optimisation problems, we are only ever aware of the dynamics and constraint violations at collocation points, information between is often determined at the end of a solve when some interpolation is applied.
+Having such an interpolating function can provide us with more information during the solve and lead to better mesh refinement with the ultimate goal of reducing the number of collocation points while maintaining solution accuracy. 
+One such example for ensuring accuracy would be to have a higher number of collocation points for the path constraint function, and a lower number for the system dynamics. 
 As illustrated in section ``\ref{lagmath}``, function ``\tilde{x}`` can be initialised without knowledge of the specifics of ``t``.
 The number of decision variables in not to be confused with the number of collocation points, which in many cases is the same but in some is different.
 Collocation points are the points where system dynamics are enforced, but not all points where we approximate state have to comply with system dynamics.
@@ -367,9 +417,9 @@ Note that for each individual function evaluation, the input array ``\tau_i`` is
 Putting this all together we have
 $$
 \pmb{x}\left\{\begin{matrix}
-\pmb{x}_1 =& \tilde{x}_1 (t,[x_{11}, x_{12} \ldots x_{1m_1} ]) \\
+\pmb{x}_1 =& \tilde{x}_1 (t,[\bar{x}_{11}, \bar{x}_{12} \ldots \bar{x}_{1m_1} ]) \\
  \ldots & \\ 
-\pmb{x}_n =& \tilde{x}_n ( t,[x_{n1}, x_{n2} \ldots x_{nm_n} ]) 
+\pmb{x}_n =& \tilde{x}_n ( t,[\bar{x}_{n1}, \bar{x}_{n2} \ldots \bar{x}_{nm_n} ]) 
 \end{matrix}\right.
 $$
 $$
@@ -379,9 +429,9 @@ $$
 
 $$
 \pmb{u}\left\{\begin{matrix}
-\pmb{u}_1 =& \tilde{u}_1 ( t,[u_{11}, u_{12} \ldots u_{1m_1} ]) \\
+\pmb{u}_1 =& \tilde{u}_1 ( t,[\bar{u}_{11}, \bar{u}_{12} \ldots \bar{u}_{1m_1} ]) \\
  \ldots & \\ 
-\pmb{u}_c =& \tilde{u}_n (t,[u_{c1}, u_{c2} \ldots u_{cm_c} ]) 
+\pmb{u}_c =& \tilde{u}_n (t,[\bar{u}_{c1}, \bar{u}_{c2} \ldots \bar{u}_{cm_c} ]) 
 \end{matrix}\right.
 $$
 $$
@@ -390,16 +440,16 @@ c = \text{number of controls}, m_i = \text{controls mesh sizes}, i = 1,2\ldots c
 $$
 $$
 \pmb{f}\left\{\begin{matrix}
-\dot{x}_{,1} =& f_1( \tau_1,\pmb{x}(t),\pmb{u}(t)) \\
+\dot{x}^{(1)} =& f_1( \tau_1,\pmb{x}(t),\pmb{u}(t)) \\
  \ldots & \\ 
-\dot{x}_{,n} =& f_n( \tau_n,\pmb{x}(t),\pmb{u}(t)) 
+\dot{x}^{(n)} =& f_n( \tau_n,\pmb{x}(t),\pmb{u}(t)) 
 \end{matrix}\right.
 $$
 $$
 n = \text{number of states}, \tau_i = \text{state collocation points}, i = 1,2 \ldots n
 \medskip
 $$
-We use ``\dot{x}_{,i}`` to represent the continuous dynamics of the state at the collocation points.
+We use ``\dot{x}^{(i)}`` to represent the continuous dynamics of the state at the collocation points.
 In our formulation the time vector ``t`` does not necessarily have to have the same length or values for any one such function call, only that it must correspond with the number of output variables being assigned.
 For example, if we are evaluating ``m_i`` collocation points, then when calling ``f_1(\tau_1,\pmb{x}(t), \pmb{u}(t))``, ``\tau_1`` here must be of length ``m_1``, but the mesh points of ``x_1`` to ``x_n`` do not have to correspond with the collocation points, and if they do not they are interpolated.
 Additionally, inside the function ``f_i``, ``\pmb{x}`` and ``\pmb{u}`` may actually be evaluated at any time as they are interpolating functions, not necessarily at just the collocation points.
@@ -410,10 +460,9 @@ At these points we can verify that the system satisfies the laws of physics (if 
 However, between collocation points we do not enforce such laws, and solutions must be interpolated, from which we derive a certain amount of error from approximation.
 Additionally, oscillations can occur between collocation points if the system is significantly ill-defined.
 
-
 This process generally involves us approximating the derivatives of the state vector at our collocation points, and in some way equating these with our dynamics function.
-There are many of these approximations, but the simplest of these (and the one that probably illustrates the point best) is the euler method in equation ``\ref{euler}``.
-Note here ``h_k`` is the timestep ``h_k = t_{k+1} - t_k`` and ``t_k`` is the collocation point being evaluated.
+There are many of these approximations, but the simplest of these (and the one that probably illustrates the point best) is the Euler method in equation ``\ref{euler}``.
+Note here ``h_k`` is the timestep ``h_k = t_{k+1} - t_k`` and ``t_k \in \tau_i`` is the collocation point being evaluated.
 
 $$
 \frac{\partial \pmb{x}_{i}(t_k)}{\partial t} = \pmb{f}_{i}(t_k) \approx \frac{\pmb{x}_{i}(t_{k+1}) - \pmb{x}_{i}(t_k)}{h_k}
@@ -427,7 +476,7 @@ $$
 
 For the sake of consistency, ``\pmb{x}_i(t) = \tilde{x}_i(t,x_i)``, ``\pmb{f}_i(\tau) = f_i(\tau,\pmb{x}(t), \pmb{u}(t))``.
 All other methods are extensions of this principle, but aim to have more accurate estimations of state derivatives at collocation points.
-Take for example the trapizoidal method
+Take for example the trapezoidal method
 
 $$
 \begin{equation}
@@ -436,7 +485,7 @@ $$
 \end{equation}
 $$
 
-Here we take an average of the system dynamics at the ``k`` and the ``k+1`` collocation point (the derivation comes from the trapizoidal integration approximation, hense trapizoidal method).
+Here we take an average of the system dynamics at the ``k`` and the ``k+1`` collocation point (the derivation comes from the trapezoidal integration approximation, hence trapezoidal method).
 
 Equations ``\ref{euler}`` and ``\ref{trap}`` are formulations of the system dynamics as equality constraints which are in the form of equation ``\ref{gfunceq}`` and thus solvable by an NLP solver. 
 Let's use the simple example of a mass spring damper system to show how system dynamics can be collocated.
@@ -510,9 +559,6 @@ The collocation points are marked with a circle, while the interpolated value (i
 Note the example code here is more akin to a shooting method rather than direct collocation but the results in this case are similar.
 
 Next we will look into formulating our path and boundary constraints for the NLP problem.
-<!-- give oscillating figure for this too --> 
-<!-- discuss the jacobian -->
-
 
 
 ### `j print(problemComponents[2])`
@@ -537,30 +583,30 @@ $$
 which are all perturbations of equation ``\ref{xineq}``.
 Examples of fixed limits would be wanting to finish at a particular location, or with no fuel left etc.
 
-Additionally we may formulate constraints as a function of boundary values
+Additionally, we may formulate constraints as a function of boundary values
 $$
 \pmb{b}(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) \leq 0
 $$
 which again can be represented in our NLP solver by equation ``\ref{gfunc}``.
-An example of a boundary constraint function would be a function ensuring that the final speed of a spacecraft matches that of a spacestation in orbit.
+An example of a boundary constraint function would be a function ensuring that the final speed of a spacecraft matches that of a space station in orbit.
 
 Path constrains follow an almost identical formulation but apply to the whole of the path through time and consider control input as well.
 $$
 \begin{equation}
 \label{xpath}
-\pmb{x}_{i,L} \leq \pmb{x}_i(\tau_i) \leq \pmb{x}_{i,U}
+\pmb{x}_{i,L} \leq \pmb{x}_i(t_{ij}) \leq \pmb{x}_{i,U}
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{upath}
-\pmb{u}_{i,L} \leq \pmb{u}_i(\tau_i) \leq \pmb{u}_{i,U}
+\pmb{u}_{i,L} \leq \pmb{u}_i(t_{ij}) \leq \pmb{u}_{i,U}
 \end{equation}
 $$
 $$
 \begin{equation}
 \label{bpath}
-\pmb{h}( \pmb{\tau},\pmb{x}(t),\pmb{u}(t)) \leq 0
+\pmb{h}( \pmb{\tau}^{(h)},\pmb{x}(t),\pmb{u}(t)) \leq 0
 \end{equation}
 $$
 For the sake of completeness equations ``\ref{xpath}`` and ``\ref{upath}`` correspond to equation ``\ref{xineq}`` and equation ``\ref{bpath}`` to equation ``\ref{gfunc}`` in our NLP formulation.
@@ -580,7 +626,7 @@ h_1(t_k,\pmb{x}(t_k),\pmb{u}(t_k))  = \pmb{x}_1(t_k) + t_k - 1.5 \leq 0
 \end{equation}
 $$
 For the example ``h_1`` could represent a desire for the oscillations to grow smaller with time, while the path constraint could represent physical stops on the system which stop the spring moving beyond this point.
-We can taylor the constraints to fit both the problem dynamics and our specific goals.
+We can tailor the constraints to fit both the problem dynamics and our specific goals.
 
 ! BeginFig()
 ```julia; out_width="0.7\\textwidth";echo=false
@@ -589,12 +635,16 @@ h = Shape([0,1,1,0],[1.5,0.5,2,2])
 plot(rect(1,1,0,-2), labels = ["" ""], fillcolor =plot_color(:black,0.3))
 plot!(rect(1,1,0,1), labels = ["" ""], c = plot_color(:black,0.3))
 plot!(h, labels = ["" ""], c = palette(:default)[2])
-plot!(interpolated_t, x1.(interpolated_t), xlabel="t", ylabel="x1", labels = ["" ""],c=palette(:default)[1])
+plot!(interpolated_t, x1.(interpolated_t), xlabel="t", ylabel="x1", labels = ["interpolated" ""],c=palette(:default)[1])
+scatter!(t, x1.(t), xlabel="t", ylabel="x1", labels = ["collocation points" ""])
 ```
 ! EndFig("Example inequality constraints from equations \\ref{expathcon} and \\ref{exhcon}","pathconfig")
 
-The constraint in equation ``\ref{expathcon}`` is violated in the grey area in figure ``\ref{pathconfig}``, the the equation ``\ref{exhcon}`` is violated in the orange region.
-We observe that a small portion of the state violates the path constraint above ``x_1 = 1``, and in practice the optimiser would change the problem variables such that this were not the case (with the physics still being satisfied).
+The constraint in equation ``\ref{expathcon}`` is violated in the grey area in figure ``\ref{pathconfig}``, the equation ``\ref{exhcon}`` is violated in the orange region.
+We observe that a small portion of the state violates the path constraint above ``x_1 = 1``, but also note that the path constraint is still entirely satisfied at the collocation points at ``t=0`` and ``t=0.1``, and it it a result of our interpolation that the constraint is violates.
+To the NLP solver, this violation is invisible, as we only ensure path constraints at collocation points.
+Hence the motivation for this work, that is, having the ability to evaluate the function at points other than collocation points can help us refine the mesh spacings / collocation points in order find a more accurate solution.
+One course of action here would be to increase the number of collocation points associated with the path constrains.
 Nonlinear constraint functions such as ``h`` and ``b`` need not merely constrain one variable, and in many cases will be a combination of many, but this would be more difficult to represent graphically.
 If boundary constraints were enforced, we would then consider the restrictions on the state at time ``t=0`` and ``t=1``.
 
@@ -609,19 +659,19 @@ Together they form the Bolza problem
 $$
 \begin{equation}
 \label{bolza}
-J(t,\pmb{x},\pmb{u}) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (\tau_{\rho}, \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
+J(\tau^{(\rho)},\pmb{x}(t),\pmb{u}(t)) = \underbrace{\Phi(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) }_{\text{Mayer term}} + \underbrace{\int_{t_1}^{t_F} \rho (\tau^{(\rho)}, \pmb{x}(t), \pmb{u}(t)) dt}_{\text{Lagrange term}} 
 \end{equation}
 $$
 
-The nonlinear function in equation ``\ref{bolza}`` maps directy to equation ``\ref{objectiveFunc}`` in our NLP problem.
+The nonlinear function in equation ``\ref{bolza}`` maps directly to equation ``\ref{objectiveFunc}`` in our NLP problem.
 With regards  to the Lagrange term, there are a few options for calculating the integral.
-If no interpolating function is used, we could a basic approximation
+If no interpolating function is used, we could use a basic approximation
 
 $$
-\int_{t_1}^{t_F} \rho (\tau_{\rho}, \pmb{x}(t), \pmb{u}(t)) dt \approx \sum_{k=1}^{m-1} \frac{1}{2} (h_k)\rho(\tau_{\rho k},\pmb{x}(\tau_{\rho k}),\pmb{u}(\tau_{\rho k}))
+\int_{t_1}^{t_F} \rho (\tau^{(\rho)}, \pmb{x}(t), \pmb{u}(t)) dt \approx \sum_{k=1}^{m-1} \frac{1}{2} (h_k)\rho(\tau^{(\rho)}_k,\pmb{x}(t),\pmb{u}(t))
 $$
 
-Alternatively, if the objective function is modelled with an interplating function we can calculate the exact intergral of the interplation as per equation ``\ref{lgrint}``.
+Alternatively, if the objective function is modelled with an interpolating function we can calculate the exact integral of the interpolation as per equation ``\ref{lgrint}``.
 
 This completes our formulation of the dynamic optimisation problem. 
 
@@ -631,7 +681,7 @@ This completes our formulation of the dynamic optimisation problem.
 ! Label("lagmath")
 Now we will discuss the background for the interpolating functions used to approximate state and control functions (and potentially the objective function), which will lead us to a discussion of the pseudospectral dynamic optimisation method.
 Lagrange interpolating polynomials in the barycentric form are useful for fast polynomial interpolation and are forward stable for problems with mesh points clustered towards the ends of intervals ``\cite{Higham2004TheInterpolation}``.
-Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent a function evaluations at points of ``t`` such that ``y = f(t)``, the unmodified lagrange formula is
+Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent a function evaluations at points of ``t`` such that ``y = f(t)``, the unmodified Lagrange formula is
 
 $$
 \begin{equation}
@@ -643,8 +693,8 @@ $$
 L(t) = \sum_{j=1}^n  y_j l_j(t)
 $$
 
-We take ``n`` to be the number of mesh points (as before in seciton ``\ref{dynamicsmath}``), ``t`` to be the evaluation point, ``L`` is the output of our interpolation at ``t`` and ``l_j`` are intermediary lagrange weights.
-The denominaor of equation ``\ref{lagweight}`` is a function of the mesh points and not of the evaluation point ``t``.
+We take ``n`` to be the number of mesh points (as before in section ``\ref{dynamicsmath}``), ``t`` to be the evaluation point, ``L`` is the output of our interpolation at ``t`` and ``l_j`` are intermediary lagrange weights.
+The denominator of equation ``\ref{lagweight}`` is a function of the mesh points and not of the evaluation point ``t``.
 As such, we can precompute these beforehand and use them when evaluating our polynomial interpolation.
 This gives us the barycentric form of out polynomial
 
@@ -662,7 +712,7 @@ L(t) = \frac{\displaystyle \sum_{j=1}^n \frac{w_j}{t-t_j} y_j}{ \displaystyle \s
 \end{equation}
 $$
 
-Where ``w`` are are barycentric weights.
+Where ``w`` are barycentric weights.
 Note that the weights are purely a function of the mesh points (the domain of the polynomial) and not of the reference evaluations ``y`` at the mesh points.
 This means we can calculate our polynomial weights without knowledge of the function outputs at mesh points (in this case ``y``), and thus if we want to update our polynomial approximation (providing our mesh spacing is the same) all we need do is update our output values which we use for interpolation. 
 No further computation of the weights is required, and the cost of adding additional weights is much lower than recalculating our approximation.
@@ -691,9 +741,9 @@ $$
 
 
 ## The pseudospectral method
-The pseudospectral method is of particular interest as its formulation allows us to exploit the use of the interpolating polynomial describle in section \ref{dynamicsmath}
-Using interpolating polynomials for our ``\tilde{x}`` function has the benefit of having derivative information encoded in the polynomial itself (see seciton ``\ref{lagpolyder}``).
-As such, we can use this information, along with a particular distribution of mesh points, to forumulate the pseudospectral methods for dynamic optimisation.
+The pseudospectral method is of particular interest as its formulation allows us to exploit the use of the interpolating polynomial described in section \ref{dynamicsmath}
+Using interpolating polynomials for our ``\tilde{x}`` function has the benefit of having derivative information encoded in the polynomial itself (see section ``\ref{lagpolyder}``).
+As such, we can use this information, along with a particular distribution of mesh points, to formulate the pseudospectral methods for dynamic optimisation.
 There are a few different formulations of the pseudospectral method, but to keep things simple we will assume a single polynomial approximates each state and control.
 More complex formulations include multiple piecewise polynomials approximating each state and control, but this complicates derivative formulation.
 Additionally, we will be focusing on using Legendre-Gauss-Radau (LGR) points to approximate our polynomial, which are defined on the interval ``[-1,1)``.
@@ -714,7 +764,7 @@ As the LGR points are defined on the interval ``[-1,1)``, we can use the followi
 $$
 \begin{equation}
 \label{timetrans}
-t = \frac{t_1-t_F}{2} t_{ij} + \frac{t_1+t_F}{2}.
+\bar{t} = \frac{t_1-t_F}{2} t + \frac{t_1+t_F}{2}.
 \end{equation}
 $$
 If we know our interpolating points correspond with LGR points, we can also use the LGR weights ``w_{LGR}`` to calculate the exact integral.
@@ -724,7 +774,7 @@ $$
 \int_{-1}^1 x(t)dt = \sum_{k}^m w_{LGR,k} x(t_k)
 \end{equation}
 $$
-The is useful for determining the object function, or for approximating endpoints as below.
+This is useful for determining the object function, or for approximating endpoints as below.
 
 Now we can use the derivate information of our polynomial to enforce our system dynamics
 $$
@@ -733,10 +783,10 @@ $$
 \dot{\tilde{x}}_i(\tau_i,x_i) - f_i(\tau_i,\pmb{x}(t),\pmb{u}(t)) = 0, \quad i=1,2\ldots n,
 \end{equation}
 $$
-where ``t=t_1,t_2,\ldots t_{m_i}`` is a vector of collocation points for this state and ``\dot{\tilde{x}}`` is aquired from equation ``\ref{Ldot}``.
+where ``t=t_1,t_2,\ldots t_{m_i}`` is a vector of collocation points for this state and ``\dot{\tilde{x}}`` is acquired from equation ``\ref{Ldot}``.
 As in this formulation our LGR points do not include the endpoint, we must construct an interpolating constraint for this too.
 $$
-\pmb{x}_i(t_F) = \pmb{x}_i(t_1) + \int_{-1}^1 \dot{x_{,i}}(t)dt \approx \pmb{x}_i(t_1) + w_{LGR} \pmb{f}_i(\tau_i)
+\pmb{x}_i(t_F) = \pmb{x}_i(t_1) + \int_{-1}^1 \dot{x}^{(i)}(t)dt \approx \pmb{x}_i(t_1) + w_{LGR} \pmb{f}_i(\tau_i)
 $$
 
 Here ``t_1=-1, t_F = 1``.
@@ -749,7 +799,7 @@ Finally, the full pseudospectral LGR formulation of the dynamic optimisation pro
 
 $$
 \begin{align*}
-\min & \quad J(\tau_{\rho}, \pmb{x}(t), \pmb{u}(t)) = \Phi(t_1,t_F, \pmb{x}(t_1),\pmb{x}(t_F)) + w_{LGR} \tilde{\rho}(\tau_{\rho},\pmb{x}(t),\pmb{u}(t))   \\
+\min & \quad J(\tau^{(\rho)}, \pmb{x}(t), \pmb{u}(t)) = \Phi(t_1,t_F, \pmb{x}(t_1),\pmb{x}(t_F)) + w_{LGR} \tilde{\rho}(\tau^{(\rho)},\pmb{x}(t),\pmb{u}(t))   \\
 \text{s.t.} & \quad \dot{\pmb{x}}(\pmb{\tau}) - \pmb{f}(\pmb{\tau},\pmb{x}(t),\pmb{u}(t)) = 0 \\
 & \quad  \pmb{x}(t_F) - \pmb{x}(t_1) - w_{LGR}\pmb{f}(\pmb{\tau}) = 0\\
 & \quad t_{1,L} \leq t_1 \leq t_{1,U} \\
@@ -759,7 +809,7 @@ $$
 & \quad \pmb{b}(t_1,t_F,\pmb{x}(t_1),\pmb{x}(t_F)) \leq 0 \\
 & \quad \pmb{x}_{,L} \leq \pmb{x}(\pmb{\tau}) \leq \pmb{x}_{,U} \\
 & \quad \pmb{u}_{,L} \leq \pmb{u}(\pmb{\tau}) \leq \pmb{u}_{,U} \\
-& \quad \pmb{h}( \pmb{\tau},\pmb{x}(t),\pmb{u}(t)) \leq 0 \\
+& \quad \pmb{h}( \pmb{\tau^{(h)}},\pmb{x}(t),\pmb{u}(t)) \leq 0 \\
 & \end{align*}
 $$
 
@@ -767,18 +817,18 @@ $$
 There are 2 packages which are referred to at length in this text which may be worth introducing.
 These are the Polynomials.jl and JuMP.jl packages.
 ### Polynomials.jl
+! Label("polynomialsjl")
 Polynomials.jl is a package by JuliaMath, and adds the ability to create, differentiate and integrate coefficient based polynomials.
 The interface is simple but intuitive, which is one of the key reasons for choosing it as a package to extend, the other being that it is well maintained.
 The goal of this project is to extend Polynomials.jl to cover a verity of Lagrange interpolating polynomials which can be used in dynamic optimisation, as well as add a few new features along the way.
 To summarise, Polynomials.jl is good, but we can make it better.
 ### JuMP.jl
 JuMP.jl is a package by Julia Computing which aims to provide a standard interface to a number of linear, quadratic and nonlinear programming solvers.
-JuMP.jl allows us to interface with Ipopt through a number of JuMP decision variables, constraints and user defined functions.
-Like many julia packages in their infancy, JuMP.jl is under heavy development and the interface is somewhat restrictive in its current implementation.
+JuMP.jl allows us to interface with Ipopt through a number of JuMP.jl decision variables, constraints and user defined functions.
+Like many Julia packages in their infancy, JuMP.jl is under heavy development and the interface is somewhat restrictive in its current implementation.
 Nonetheless, it abstracts well much of the complexities associated with MathOptInterface.jl, the package which acts as a wrapper for a number of solvers.
-To this end, JuMP.jl is an NLP solver wrapper wrapper, and it's here to lay down some fire beats.
+To this end, JuMP.jl is an NLP solver wrapper wrapper.
 
-! Label("polynomialsjl")
 
 
 # Project Ethos
@@ -790,18 +840,18 @@ aims = ["Code structure must be modular",
         "Code must verify data before computation",
         "The final package must be user extensible and have the ability to support multiple solvers",
         "Location of mesh points for each state must be independent of other states",
-        "The MorePolynomials package must interface well with the existing Polynomials package"];
+        "The MorePolynomials.jl package must interface well with the existing Polynomials package"];
 ```
 1) `j print(aims[1])`
 2) `j print(aims[2])`
 3) `j print(aims[3])`
 
-* JuDO 
+* JuDO.jl
 4) `j print(aims[4])`
 5) `j print(aims[5])`
     
 
-* MorePolynomials
+* MorePolynomials.jl
 6) `j print(aims[6])`
 
 ## `j print(aims[1])`
@@ -814,7 +864,7 @@ This would be far more difficult in a traditional OOP based language.
 ## `j print(aims[2])`
 When describing the dynamic optimisation problem, the use of verbose error handling and user feedback is extremely useful in guiding the user to both a solvable and well constructed problem.
 This was particular apparent in the formulation of problems in the ICLOCS package.
-Often errors in the user defined problem (UDP) would result in error traces that lead deep into the core of the code, providing little help to the user who's only course of action would be to trace the flow of data through the sourcecode of ICLOCS.
+Often errors in the user defined problem (UDP) would result in error traces that lead deep into the core of the code, providing little help to the user who's only course of action would be to trace the flow of data through the source code of ICLOCS.
 The aim of this new package is to catch errors elegantly, and give the user contextual feedback.
 
 ## `j print(aims[3])`
@@ -840,7 +890,7 @@ This can be achieved by interpolating the state at collocation points when requi
 
 ## `j print(aims[6])`
 As Polynomials.jl is a rapidly developing package, ensuring compatibility allows for easy integration of future features.
-As Julia is an ever evolving language, by building off prexisting packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on are part as Polynomials.jl is updated with Julia updates.
+As Julia is an ever evolving language, by building off pr-existing packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on are part as Polynomials.jl is updated with Julia updates.
 The disadvantage being we are then at the mercy of the Polynomials.jl package developers.
 If they decided to change their framework entirely, our package may also need to change.
 This is not necessarily an issue however as we can specify backwards compatibility.
@@ -849,17 +899,17 @@ This is not necessarily an issue however as we can specify backwards compatibili
 
 # Results and Discussion
 In order to address the goals in section ``\ref{ethos}``, two packages have been developed which address different but related goals.
-The first package, Julia dynamic optimisation (JuDO) is a dynamic optimisation toolbox in julia with the aim of supporting multiple solvers (currently only JuMP has been implemented).
-The second package, MorePolynomials.jl, is an extension of the afformentioned Polynomials.jl package (see section ``\ref{polynomialsjl}``).
+The first package, Julia dynamic optimisation (JuDO.jl) is a dynamic optimisation toolbox in Julia with the aim of supporting multiple solvers (currently only JuMP.jl has been implemented).
+The second package, MorePolynomials.jl, is an extension of the aforementioned Polynomials.jl package (see section ``\ref{polynomialsjl}``).
 
 We will begin with a discussion of the MorePolynomials.jl package.
 
 ## MorePolynomials.jl
 ! Label("morepoly")
-MorePolynomials aims to address the need for polynomial representations of state and control vectors in dynmaic optimisation problems, while being generic enough to be used with other applications.
+MorePolynomials.jl aims to address the need for polynomial representations of state and control vectors in dynamic optimisation problems, while being generic enough to be used with other applications.
 As not to reinvent the wheel (though much wheel reinventing is present in the wild west that is the Julia package library), it is built as an extension to the Polynomials.jl package.
-One advantage of this is by subtyping our polynomials from the `AbstractPolynomial` type, we can make use of many of the generic polynomial funtions without having to write additional code.
-Unfortunately much of this code 'inheritance' (though not to be taken in the traditional manner) relies in this case on having a mathcing backend data representation, which is not the case.
+One advantage of this is by subtyping our polynomials from the `AbstractPolynomial` type, we can make use of many of the generic polynomial functions without having to write additional code.
+Unfortunately much of this code 'inheritance' (though not to be taken in the traditional manner) relies in this case on having a matching backend data representation, which is not the case.
 All is not lost however, as we can dispatch on our own custom types and essentially just rewrite the necessary subroutines for our polynomials.
 Take the example of the `fit()` command from Polynomials.jl.
 ! BeginColBox()
@@ -892,7 +942,7 @@ function fit(P::Type{<:AbstractLagrangePolynomial}, x::AbstractVector{T}, y::Abs
 end
 ```
 ! EndColBox()
-Others can be direct inherited from the package without any code additions.
+Others can be directly inherited from the package without any code additions.
 For example in the case of the roots function in Polynomials.jl
 ! BeginColBox()
 ```julia;eval=false
@@ -905,7 +955,7 @@ end
 ! EndColBox()
 Here the `AbstractPolynomial` is converted to type `Polynomial` and then the roots can be found based on the internal `Polynomial` type.
 As long as we implement the `convert()` function for our polynomial and the `Polynomial` type, we need not dispatch on the `roots()` function.
-The important not is that to the user it makes no difference thanks to the power of multiple dispatch.
+The important thing is that to the user it makes no difference thanks to the power of multiple dispatch.
 
 MorePolynomials.jl adds the following additional functionality to the Polynomials.jl package.
 * Fast fitting of low order polynomials using precomputed symbolic expressions
@@ -918,7 +968,7 @@ MorePolynomials.jl adds the following additional functionality to the Polynomial
 We will now take a closer look at the backend implementation of MorePolynomials.jl.
 
 ### Lagrange implementation
-The Polynomials.jl package has the following data structure which allows polynomial to be stored using it's coefficients.
+The Polynomials.jl package has the following data structure which allows polynomial to be stored using its coefficients.
 ! BeginColBox()
 ```julia;eval=false
 struct Polynomial{T <: Number} <: StandardBasisPolynomial{T}
@@ -942,9 +992,9 @@ end
 ! EndColBox()
 
 Take note of a couple of features.
-First, we have chosen to use `x` and `y` to represent our mesh points and function evaluation points respectively, which is inconsistant with the notation in this text.
+First, we have chosen to use `x` and `y` to represent our mesh points and function evaluation points respectively, which is inconsistent with the notation in this text.
 This is by choice to maintain consistency with the Polynomials.jl package, and is mentioned here as many additional decisions of notation in this package have been chosen for similar reasons.
-Seconds, the types of all fields (excluding var) are parameterised and forced to be the same.
+Seconds, the types of all fields (excluding `var`) are parameterised and forced to be the same.
 The benefits of this are twofold: we don't have to call convert functions when execution any computation that is a function of more than one field, and the compiler is fully aware of the type at runtime, and thus can optimise operations for this type, leading to significant performance gains.
 This choice of representation is made for the benefit gain in polynomial creation and alteration, at the expense of larger memory presence and evaluation time.
 
@@ -954,25 +1004,25 @@ Note the fact that we have an exact representation should not affect the benchma
 First, let's start with polynomial fitting
 ! BeginColBox()
 ```julia
-x = [-1,-0.6,-0.2,0.2,0.6,1]
-y = @. x^5 + 3x^2 - x + 1
-# y points for a 5th order polynomial x^5 + 3x^2 - x + 1
+t = [-1,-0.6,-0.2,0.2,0.6,1]
+y = @. t^5 + 3t^2 - t + 1
+# y points for a 5th order polynomial t^5 + 3t^2 - t + 1
 
-mean(@benchmark fit(Polynomial, x, y)) # using Polynomials.jl
+mean(@benchmark fit(Polynomial, t, y)) # using Polynomials.jl
 ```
 ```julia
-mean(@benchmark fit(LagrangePoly, x, y)) # using MorePolynomials.jl
+mean(@benchmark fit(LagrangePoly, t, y)) # using MorePolynomials.jl
 ```
 ! EndColBox()
-This is perhapse an unfair comparison as Polynomials.jl has the additional step of converting to a coefficient representation.
+This is perhaps an unfair comparison as Polynomials.jl has the additional step of converting to a coefficient representation.
 A more fair comparison would be from time to polynomial creation to first evaluation.
-Let's time the creatation and evaluation of the polynomial at point `x=0.25`.
+Let's time the creation and evaluation of the polynomial at point `t=0.25`.
 ! BeginColBox()
 ```julia
-mean(@benchmark fit(Polynomial, x, y)(0.25)) # using Polynomials.jl
+mean(@benchmark fit(Polynomial, t, y)(0.25)) # using Polynomials.jl
 ```
 ```julia
-mean(@benchmark fit(LagrangePoly, x, y)(0.25)) # using MorePolynomials.jl
+mean(@benchmark fit(LagrangePoly, t, y)(0.25)) # using MorePolynomials.jl
 ```
 ! EndColBox()
 
@@ -1009,10 +1059,10 @@ We demonstrate this below using `lPoly[:] = ynew`
 
 ! BeginColBox()
 ```julia
-lPoly = fit(LagrangePoly, x, y)
-ynew = @. 5x^5 + 7x^4 - 3x - 1
-# update our y values in lPloly and evaluate at x
-updateAndEval(lPoly, ynew, x) = lPoly[:] = ynew; lPoly(x) 
+lPoly = fit(LagrangePoly, t, y)
+ynew = @. 5t^5 + 7t^4 - 3t - 1
+# update our y values in lPloly and evaluate at t
+updateAndEval(lPoly, ynew, t) = lPoly[:] = ynew; lPoly(t) 
 mean(@benchmark updateAndEval(lPoly, ynew, 0.25)) 
 ```
 ! EndColBox()
@@ -1027,16 +1077,16 @@ lPolyDer = derivative(lPoly)
 ! BeginFig()
 ```julia; echo=false;out_width="0.7\\textwidth"
 xinterp = collect([-1:0.05:1])
-plot(xinterp, lPolyDer.(xinterp), xlabel="x", ylabel="y", labels=["" ""])
+plot(xinterp, lPolyDer.(xinterp), xlabel="t", ylabel="y", labels=["" ""])
 ```
-! EndFig("lPolyDer plot i.e. Proof that I wrote code that actually works and it's not all smoke and mirrors.","lderpolyplot")
+! EndFig("lPolyDer plot","lderpolyplot")
 Once again due to the barycentric implementation the fitting to derivative time exceeds that of the Polynomials.jl package.
 ! BeginColBox()
 ```julia
-mean(@benchmark derivative(fit(Polynomial, x, y))(0.25)) # using Polynomials.jl
+mean(@benchmark derivative(fit(Polynomial, t, y))(0.25)) # using Polynomials.jl
 ```
 ```julia
-mean(@benchmark derivative(fit(LagrangePoly, x, y))(0.25)) # using MorePolynomials.jl
+mean(@benchmark derivative(fit(LagrangePoly, t, y))(0.25)) # using MorePolynomials.jl
 ```
 ! EndColBox()
 What's more, if we intend to recalculate derivatives using the same mesh spacing, MorePolynomials provides a function for the derivative matrix, which when stored saves us having to recalculate it every time we update our function interpolation points.
@@ -1044,9 +1094,9 @@ We demonstrate this below using `lPolyDer[:] = derivmatrix*ynew`
 ! BeginColBox()
 ```julia
 D = derivmatrix(lPoly)
-ynew = @. 7x^5 + 9x^4 - x - 2
+ynew = @. 7t^5 + 9t^4 - t - 2
 # update our y values and recalculate derivative
-updateDerivAndEval(lPolyDer, ynew, D, x) = lPolyDer[:] = D*ynew; lPolyDer(x) 
+updateDerivAndEval(lPolyDer, ynew, D, t) = lPolyDer[:] = D*ynew; lPolyDer(t) 
 mean(@benchmark updateDerivAndEval(lPoly, ynew, D, 0.25)) 
 ```
 ! EndColBox()
@@ -1065,7 +1115,7 @@ Let's now compare some polynomial integration between Polynomials.jl and MorePol
 ```julia
 x = lgr_points(6)
 
-mean(@benchmark integrate(fit(Polynomial, x, y)),0) # using Polynomials.jl
+mean(@benchmark integrate(fit(Polynomial, t, y)),0) # using Polynomials.jl
 ```
 ```julia
 mean(@benchmark integrate(fit(LGRPoly, y))) # using MorePolynomials.jl
@@ -1076,9 +1126,9 @@ And just for fun let's compare this to a similar implementation in matlab (outpu
 ! BeginColBox()
 ```julia
 open(`matlab -nodesktop -nosplash`, "w", stdout) do io
-    println(io,"x = $x;")
+    println(io,"t = $t;")
     println(io,"y = $y;")
-    println(io,"int = @() polyint(polyfit(x,y,5));")
+    println(io,"int = @() polyint(polyfit(t,y,5));")
     println(io,"time_taken = timeit(int)")
 end
 ```
@@ -1133,13 +1183,60 @@ mean(@benchmark vandpoly(x, y)(0.25)) # using Lagrange poly fitting
 
 ### Piecewise polynomials
 Now that we have our low order polynomials, it would be useful to have a method for assembling them into a single piecewise polynomial.
-This is achieved in the MorePolynomials package using a custom `GlobalPoly`, which allows for the assembling of multiple polynomials.
-Here we can also check for continuity between polynomials, and set bound mapping e.g. a polynomial defined over ``[-1,1]`` may be mapped to a polynomial with domain ``[t_1,t_2]``.
-Additionally we can assemble a polynomial of different types of polynomials, such that portions of the piecewise polynomial could be a high order Lagrange polynomial, while other could be low order coefficient defined polynomial.
+This is achieved in the MorePolynomials.jl package using a custom `GlobalPoly`, which allows for the assembling of multiple polynomials.
+Here we can also check for continuity between polynomials, and set doman mapping e.g. a polynomial defined over ``[-1,1]`` may be mapped to a polynomial with domain ``[t_1,t_2]``.
+Additionally, we can assemble a polynomial of different types of polynomials, such that portions of the piecewise polynomial could be a high order Lagrange polynomial, while other could be low order coefficient defined polynomial.
+To avoid confusion, we refer to the polynomials which make up the piecewise polynomial as local polynomials, and the piecewise polynomial as the global polynomial.
+This terminology makes more sense when discussing mapping of local domains to the global domain.
+Domain information of the local polynomial is defined within the polynomial type as in the example below.
+Note we use the shorthand `LagrangePoly()` notation here such that `LagrangePoly(x, y) = fit(LagrangePoly, x, y)`
 
+! BeginColBox()
+```julia
+p = LagrangePoly([-1.0, 0, 1], [1.0, 2, 3])
+print(domain(p))
+```
+! EndColBox()
+`GlobalPoly` can use this information when mapping a local polynomial to a global polynomial such that ``[t_1,t_F] \rightarrow [\bar{t}_1, \bar{t}_F]``.
+The syntax is ``\text{GlobalPoly}(\text{localPoly}, \bar{t}_1, \bar{t}_F)``
+Let's build an example `GlobalPoly` using a combination of Lagrange and coefficient polynomials.
+! BeginColBox()
+```julia;results="hidden"
+p1 = LagrangePoly([-1.0, -0.6, -0.2, 0.2, 0.6, 1], [-5.0, 2, 3 ,20, 4, 2])
+p2 = vandpoly([1, 1.5, 2], [2.0, 15, -5])
+piecewisePoly = GlobalPoly(p1, 0.0, 1.0)
+push!(piecewisePoly, p2, 1.0, 2.0)
+piecewisePoly = push!(piecewisePoly, p1, 2.0, 3.0)
+```
+! EndColBox()
+! BeginFig()
+```julia; echo=false;out_width="0.7\\textwidth"
+x = collect(0:0.01:3)
+plot(x, piecewisePoly.(x), xlabel = "t", ylabel = "y")
+```
+! EndFig("Piecewise plot","gloplot")
 Internally the implementation runs a series of checks when a new polynomial is added.
-These checks ensure bounds 
+These checks ensure the mapped domains of the polynomials do not overlap, that the mapped domain is feasible (in the case of infinite domain mappings) and that the resulting piecewise polynomial is continuous.
+With regards to infinite domain mapping, some infinite-horizon dynamic optimisation problems (where ``t_F=\infty``) require a transformation from a domain of ``[-1,1]`` to ``[0,\infty]``.
+This can be achieved by the transformation
+$$
+\bar{t} = \frac{1+t}{1-t}.
+$$
+We can achieve such a mapping using `GlobalPoly`
 
+! BeginColBox()
+```julia
+p = LagrangePoly([-1.0, 0, 1], [1.0, 2, 3])
+infPoly = GlobalPoly(p, 0.0, Inf)
+println("at (t = 1) p has value $(p(1)), at (t ≈ ∞) infPoly have value $(infPoly(exp(100)))") 
+```
+! EndColBox()
+`GlobalPoly` has a system for deciding which transformation to use when using infinite domains in either the local or global poly domains based on intuition.
+For example, for a mapping of ``[-t,t] \rightarrow [-\infty,\infty]`` `GlobalPoly` will first use te linear transform ``[-t,t] \rightarrow [-1,1]``, followed by the transform 
+$$
+\bar{t} = \tan\big(\frac{\pi t}{2}\big).
+$$
+On the other hand, the mapping ``[-\infty, \infty] \rightarrow [-t,t]`` assumes the user only wants the subset of the local polynomial between ``-t`` and ``t`` as the majority of organic polynomials defined over ``[-\infty,\infty]`` only contain useful information over a certain domain.
 
 
 ### User interface
@@ -1147,7 +1244,7 @@ The challenge of any user interface is to balance the exposure provided to the u
 This is more apparent when designing a graphical user interface, but elements of this are apparent in any interface.
 By far, one of the key elements to maintaining an intuitive interface is consistency.
 As previously stated one of the objectives of the MorePolynomials.jl package is to maintain close compatibility with Polynomials.jl.
-One aspect of maintaining this compatibility it being consistent with maintaining the intent of user functions, and Julia's multiple dispatch system is well suited for this role.
+One aspect of maintaining this compatibility is being consistent with maintaining the intent of user functions, and Julia's multiple dispatch system is well suited for this role.
 
 Take the `fit()` command for example.
 In Polynomials.jl, if we want to fit a polynomial to a set of datapoints, we have two arguments, the `x` values and the `y` values
@@ -1172,11 +1269,11 @@ fittedpoly = fit( (x) -> x^2 - 5, 7)
 As no data point spacing has been specified (only the number of points), we can also guess that the user might wish to use an LGR spacing, as this provides a good approximation when using Lagrange polynomials.
 This is not consistent with the arguments that Polynomials.jl fit command takes, but it is consistent with the intent of the user.
 The user knows what it means to fit a polynomial to a function, and so this formulation is intuitive from a human perspective.
-We employ similar patterns in our speech everyday.
-One can say "I am going to work", or "I am going to Spain" or "I am going to walk the dog".
+We employ similar patterns in our speech every day.
+One can say "I am going to work" or "I am going to Spain" or "I am going to walk the dog".
 All these actions are conducted in different manners, but the intent of the statement is the same, that one will travel from one place to another through some means.
 Here, we take ``fit()`` to mean fit some input to a polynomial representation, the internals are dependent on the context.
-As the core role of the programming language is to provide an interface between the human and the computer is makes sense (when we have the ability) to tailor the experience in a way similar to how a human would behave.
+As the core role of the programming language is to provide an interface between the human and the computer it makes sense (when we have the ability) to tailor the experience in a way similar to how a human would behave.
 
 An extension of the user interface is the ability to handle errors elegantly.
 Good error reporting is a balance between providing the used with useful information to debug the error, while not overloading the user with too much information.
@@ -1209,16 +1306,16 @@ Contextual data driven errors can be a very useful tool for debugging and especi
 
 ## JuDO.jl
 The development of the JuDO.jl package has been somewhat more staggered than the MorePolynomials.jl package.
-While MorePolynomials.jl inherists much of the design ethos from Polynomials.jl, JuDO.jl has no such counterpart.
+While MorePolynomials.jl inherits much of the design ethos from Polynomials.jl, JuDO.jl has no such counterpart.
 Additionally, one of the key learning points from ICLOCS was that a good base design facilitates easy and intuitive feature addition, and avoids problems associated with feature creep.
 As such, progress with JuDO.jl has been slow but deliberate.
-In this text we will outline a basic generic implementation of transcription methods in JuMP, and a proposed architecture to be taken forward based on the project aims.
+In this text we will outline a basic generic implementation of transcription methods in JuMP.jl, and a proposed architecture to be taken forward based on the project aims.
 
 ### Generic transcription implementation
-A transcription method which employs the use of user defined functions has been implemented in julia using the JuDO package with the Ipopt NLP solver.
+A transcription method which employs the use of user defined functions has been implemented in Julia using the JuDO.jl package with the Ipopt NLP solver.
 The key innovation here is the formatting of the problem such that the user can define any generic functions for the objective function, constraints and dynamics and, providing the functions accept a standard input and output, the solver behave as expected.
 
-The user defined problem, which also acts as an internal interface between JuMP and JuDO methods, is defined as follows.
+The user defined problem, which also acts as an internal interface between JuMP.jl and JuDO.jl methods, is defined as follows.
 ! BeginColBox()
 ```julia;eval=false
 mutable struct TrajProblem
@@ -1236,13 +1333,13 @@ end
 ```
 ! EndColBox()
 
-JuMP provides its own interface for defining functions with derivatives, the trick is formatting the interface in such a way as to work with dynamic optimisation problems.
+JuMP.jl provides its own interface for defining functions with derivatives, the trick is formatting the interface in such a way as to work with dynamic optimisation problems.
 This is accomplished using three components, a global `CurrentProblem` type, a translating layer and a derivative function.
 
 First, the global `CurrentProblem` type allows us to access the full problem definition from any location within our program. 
 This is useful as it provides a standard interface which we can access within functions, which we can used to access crucial data such as they problem functions and state and control interpolation functions.
-Moreover, the user defined functions in JuMP only allow the parsing of JuMP variables internally, so to have access to any additional data defined externally one must define such an interfaces as this.
-Within the JuDO code this `CurrentProblem` type  is defined as a global constant, which acts like a pointer to the location of the user defined `TrajProblem`.
+Moreover, the user defined functions in JuMP.jl only allow the parsing of JuMP.jl variables internally, so to have access to any additional data defined externally one must define such an interfaces as this.
+Within the JuDO.jl code this `CurrentProblem` type  is defined as a global constant, which acts like a pointer to the location of the user defined `TrajProblem`.
 The interface is defined below.
 ! BeginColBox()
 ```julia;eval=false
@@ -1255,11 +1352,11 @@ getCurrentProblem() = CURRENT_PROBLEM.nullableProblem
 ```
 ! EndColBox()
 
-Now the translational layer provides a set of functions for translating between the JuMP user defined functions, and our own custom functions and collocation methods.
-Their implementation primarily consists of translating 1D decision variable vectors from JuMP into 2D state and control vectors, and then back to 1D vectors for JuMP.
-Additionally, JuMP do not provide a robust method for determining what decision variable we're focusing on within a user defined function, so additional interfaces for state and control indexing are provided by this layer.
+Now the translational layer provides a set of functions for translating between the JuMP.jl user defined functions, and our own custom functions and collocation methods.
+Their implementation primarily consists of translating 1D decision variable vectors from JuMP.jl into 2D state and control vectors, and then back to 1D vectors for JuMP.jl.
+Additionally, JuMP.jl do not provide a robust method for determining what decision variable we're focusing on within a user defined function, so additional interfaces for state and control indexing are provided by this layer.
 
-Finally, for each user defined function we provide for JuMP, we must additionally provide the derivative information.
+Finally, for each user defined function we provide for JuMP.jl, we must additionally provide the derivative information.
 This is done using the ForwardDiff.jl package which provides forward mode automatic differentiation for Julia functions, which can be used to calculate the Jacobian and Hessian arrays.
 ForwardDiff.jl achieves this by injecting the function with a custom type which has union with the `Real` type, which has the limitation of requiring all internal operations to be compatible with the real type.
 If this is not the case however a forward difference method may be implemented in its place.
@@ -1320,7 +1417,7 @@ df1dt = jacobian[1,:]'
 ! EndColBox()
 
 
-Now that we have the core components to interface with JuMP, the rest is a matter of formulating the JuMP NLP problem and solving. 
+Now that we have the core components to interface with JuMP.jl, the rest is a matter of formulating the JuMP.jl NLP problem and solving. 
 Links to the full implementation can be found in the appendix.
 
 ### Example cart-pole swing-up
@@ -1361,7 +1458,7 @@ $$
 \end{bmatrix}_{\tau},
 $$
 $$
-J(\pmb{u}) = \int_0^{t_F} \pmb{u}^2(t)dt,
+J(\pmb{u}) = \int_0^{t_F} \pmb{u}^2_1(t)dt,
 $$
 $$
 \begin{align*}
@@ -1396,7 +1493,7 @@ problem = TrajProblem(objectiveFunc, dynamicsFunc, pathConstraintFunc, controlVe
 ```
 ! EndColBox()
 We're using 30 collocation points here, and we assume the state and control mesh points correspond exactly with the collocation points.
-Additionally we also define an initial guess for state and control.
+Additionally, we also define an initial guess for state and control.
 
 Next, we define custom functions for the dynamics, the objective function and path constraints.
 ! BeginColBox()
@@ -1429,7 +1526,7 @@ function pathConstraintFunc(stateVector, controlVector) # less than or equal to 
 end
 ```
 ! EndColBox()
-In this formulation we are not yet considering interpolated functions, but this is of little consiquene if we're using trapizoidal collocation, as we will be here.
+In this formulation we are not yet considering interpolated functions, but this is of little consequence if we're using trapezoidal collocation, as we will be here.
 The disadvantage of this is that in our function formulation we have to keep in mind the array nature of our states and controls, something present in the ICLOCS package too.
 
 Finally we define the methods for collocation and interpolations.
@@ -1447,7 +1544,7 @@ function objectiveFuncInterp(state::Array, control::Array)  # can we type union 
 end
 ```
 ! EndColBox()
-The exact implementation within the code is slightly different due to some additional translation code for JuMP as described above, but this code could nonetheless be implemented in its shown form with some wrapper functions.
+The exact implementation within the code is slightly different due to some additional translation code for JuMP.jl as described above, but this code could nonetheless be implemented in its shown form with some wrapper functions.
 The results of the solve are found below.
 
 ! BeginFig()
@@ -1455,11 +1552,11 @@ The results of the solve are found below.
 img = load("figures/cartepole.png")
 
 ```
-! EndFig("Cart-pole optimisation results using JuMP/JuDO","cartpolefig")
+! EndFig("Cart-pole optimisation results using JuMP.jl/JuDO.jl","cartpolefig")
 
 ### Example pseudospectral method
 
-The current JuDO code can be altered to accept interpolating functions generated by MorePolynomials.jl.
+The current JuDO.jl code can be altered to accept interpolating functions generated by MorePolynomials.jl.
 We will use an example problem from a paper by Garg ``\cite{Garg2011DirectMethod}`` to demonstrate this.
 $$
 J(\pmb{x},\pmb{u}) = \frac{1}{2} \int_0^{t_F} (\pmb{x}_1(t) + \pmb{u}_1^2(t))dt, \quad \dot{\pmb{x}}_1(t) = 2\pmb{x}_1(t) + 2\pmb{u}_1(t) \sqrt{\pmb{x}(t)}
@@ -1505,34 +1602,34 @@ img = load("figures/lgrplot.png")
 
 
 # Next Steps
-## JuDO architecture
-An architectural outline for JuDO is proposed in figure ``\ref{judoarc}``.
+## JuDO.jl architecture
+An architectural outline for JuDO.jl is proposed in figure ``\ref{judoarc}``.
 The generic implementation prototype already employs some of the features here, but not to the full extent.
-The methodology behind the architecture is outlined below, and the methods proposed for how to implement each component based on experience with ICLOCS and Julia.
+The methodology behind the architecture is outlined below, and the methods proposed for how to implement each component, based on experience with ICLOCS and Julia.
 ! BeginFig()
 ```julia; out_width="0.7\\textwidth";echo=false
 img = load("figures/judo.png")
 ```
-! EndFig("JuDO architecture","judoarc")
+! EndFig("JuDO.jl architecture","judoarc")
 
 The architecture has eight components, five of which are referred to as factories.
 It is proposed that, to facilitate aim ``\ref{aimmodular}``, the package should be broken up into individual factories, each of which act as an autonomous agent, with a set of standard interfaces and definitions of the problem.
 This interface is the JuDO problem type itself, which is parsed between factories.
 The role of the factory is to manage one component of the problem and provide an expected output.
-For example, the role of the derivate factory is to handle all derivative production within JuDO.
+For example, the role of the derivate factory is to handle all derivative production within JuDO.jl.
 Additionally, using multiple dispatch we can dispatch on various problem formulations within each factory and, providing the interface is standardised for a particular problem formulation, there should be minimal developer headache.
 We may also dispatch on particular solvers if they support a particular feature which may be exploited internally.
 For example a black box solver does not require derivative information, and so the derivative factory would dispatch and return nothing accordingly.
 This factory architecture is also useful from a development perspective.
-Multiple developers can work on different factories within JuDO while being confident that their interface will integrate well with the rest of the solver.
+Multiple developers can work on different factories within JuDO.jl while being confident that their interface will integrate well with the rest of the solver.
 
 ### User defined problem
 The aim here is to provide a standard intuitive interface for problem definitions which requires as little knowledge of the backend implementation as possible.
 Ideally the user would define their problem as seen in the mathematical formulation. 
 There should be little need to try and reformulate the problem in order to work with matrix operations or specific functions.
-We can leverage julia macros to reformulate dynamics functions in a format understandable by our solver.
+We can leverage Julia macros to reformulate dynamics functions in a format understandable by our solver.
 For parameters such as solver selection, it is suggested that custom types should be used, such as `struct Ipopt <: AbstractSolver end`, as an example.
-For states and controls, a julia symbol is used.
+For states and controls, a Julia symbol is used.
 The following user defined problem syntax is suggested.
 
 ! BeginColBox()
@@ -1557,12 +1654,12 @@ addboundsfunction(problem, :x, xdot) # an example function is used here
 
 ### JuDO problem
 The role of the JuDO problem is to act as an internal standard interface between all other factories.
-Internally, it is represented by a datastructure containing all relevant components of the problem.
+Internally, it is represented by a data structure containing all relevant components of the problem.
 Each factory either modifies or uses data from the JuDO problem.
 Additionally, components within the JuDO problem may have their own structures.
 An example is the `AbstractState` which may contain a vector of Lagrange interpolating polynomials, as an example.
-This abstraction allows us to generate standard interfaces for each data component, ensuring future compatibility is part of the structure changes form (if we used a package other than MorePolynomials for example).
-The following datastructure is suggested.
+This abstraction allows us to generate standard interfaces for each data component, ensuring future compatibility is part of the structure changes form (if we used a package other than MorePolynomials.jl for example).
+The following data structure is suggested.
 
 ! BeginColBox()
 ```julia;eval=false
@@ -1667,6 +1764,27 @@ function save_output(problem::AbstractJuDOProblem)
 ```
 ! EndColBox()
 
+# Conclusions
+In this work have outlined a method for implementing a generic dynamic optimisation problem in Julia with the use of interpolating polynomials.
+We have achieved this through the development of two autonomous Julia packages, one for polynomial interpolation, and one for transcribing dynamic optimisation problems and interfacing with nonlinear programming solvers.
+We have shown how barycentric interpolation and effective utilise of Julia features can significantly reduce overhead in our problem associated with the generation and interpolation of polynomials.
+Lastly, we have outlined the framework for a generic and developer friendly optimal control package based on the experiences of using JuMP.jl and ICLOCS.
 ! Bib()
 
+! BeginAppendix()
 
+# Package code
+## MorePolynomials.jl
+The code for MorePolynomials.jl can be found at 
+
+`https://github.com/sprockmonty/MorePolynomials.jl`.
+## JuDO.jl
+The code for JuDO.jl can be found at 
+
+`https://github.com/sprockmonty/JuliaFYP`.
+# Julia Thesis
+The code for this thesis as implementer in Julia can be found at 
+
+`https://github.com/sprockmonty/JuliaOptimisationThesis`.
+
+! EndAppendix()
