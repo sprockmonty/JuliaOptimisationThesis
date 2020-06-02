@@ -206,7 +206,6 @@ For to do this is more than wisdom or knowledge, it is pure love.
 ! NomItem("D","Differentiation matrix")
 ! NomItem("P_N","Legendre polynomials")
 
-
 ! NomPrint()
 
 ! Newpage()
@@ -817,7 +816,7 @@ Here ``t_1=-1, t_F = 1``.
 Use equation ``\ref{timetrans}`` to transform to the time domain of the optimisation problem.
 Additionally, ``w_{LGR}`` is a row vector, and ``\pmb{f}_i`` is a column vector, such that ``w_{LGR}\pmb{f}_i \rightarrow \mathbb{R}^{m_i}``.
 Note we can avoid this additional constraint by using a set of flipped LGR points.
-It is useful to know however as some pseudospectral methods are defined on the interval (-1,1).
+It is useful to know, however, as some pseudospectral methods are defined on the interval (-1,1).
 
 Finally, the full pseudospectral LGR formulation of the dynamic optimisation problem is
 
@@ -844,7 +843,7 @@ These are the Polynomials.jl and JuMP.jl packages.
 ! Label("polynomialsjl")
 Polynomials.jl is a package by JuliaMath, and adds the ability to create, differentiate and integrate coefficient based polynomials.
 The interface is simple but intuitive, which is one of the key reasons for choosing it as a package to extend, the other being that it is well maintained.
-The goal of this project is to extend Polynomials.jl to cover a verity of Lagrange interpolating polynomials which can be used in dynamic optimisation, as well as add a few new features along the way.
+The goal of this project is to extend Polynomials.jl to cover a veriety of Lagrange interpolating polynomials which can be used in dynamic optimisation, as well as add a few new features along the way.
 To summarise, Polynomials.jl is good, but we can make it better.
 ### JuMP.jl
 JuMP.jl is a package by Julia Computing which aims to provide a standard interface to a number of linear, quadratic and nonlinear programming solvers.
@@ -887,22 +886,22 @@ This would be far more difficult in a traditional OOP based language.
 
 ## `j print(aims[2])`
 When describing the dynamic optimisation problem, the use of verbose error handling and user feedback is extremely useful in guiding the user to both a solvable and well constructed problem.
-This was particular apparent in the formulation of problems in the ICLOCS package.
-Often errors in the user defined problem (UDP) would result in error traces that lead deep into the core of the code, providing little help to the user who's only course of action would be to trace the flow of data through the source code of ICLOCS.
+This was particularly apparent in the formulation of problems in the ICLOCS package.
+Often errors in the user defined problem (UDP) would result in error traces that lead deep into the core of the code, providing little help to the user whose only course of action would be to trace the flow of data through the source code of ICLOCS.
 The aim of this new package is to catch errors elegantly, and give the user contextual feedback.
 
 ## `j print(aims[3])`
 Closely related to well implemented error handling is the verification of the data in the first place.
-The phrase garbage in garbage out is relevant here.
+The phrase 'garbage in garbage out' is relevant here.
 If we ensure the quality of the UDP before any computation, we can ensure the speed and freedom from errors in the results.
 The reverse is true, that if no verification takes place, the UDP could result in hard to debug errors embedded in the source code, which is not where we want them.
 By leveraging Julia's explicit type system, we can remove potential conversion errors further down the line by internally specifying the types of the components of the UDP.
 Further pre solve check can ensure the quality and compatibility of the UDP with internal solver interfaces.
-This also has the added benefit of speeding up computation when the compiles is aware of the types at runtime.
+This also has the added benefit of speeding up computation when the compiler is aware of the types at runtime.
 
 ## `j print(aims[4])`
-This is particular important for the longevity of the project.
-Bespoke programs could be created for each individual solver, but a more ideal solution would be to create a generic framework from which additional solvers can be plugged in.
+This is particularly important for the longevity of the project.
+Bespoke programs could be created for each individual solver, but a more ideal solution would be to create a generic framework in which additional solvers can be plugged in.
 This is highly dependent on the nature of each solver, and additional solver specific syntax may need to be included in the UDP (e.g. if the solver is not black box, additional derivatives may need to be provided unless numerically calculated).
 However, this goal is more focused towards ease of future development, rather than the user interface.
 
@@ -914,7 +913,7 @@ This can be achieved by interpolating the state at collocation points when requi
 
 ## `j print(aims[6])`
 As Polynomials.jl is a rapidly developing package, ensuring compatibility allows for easy integration of future features.
-As Julia is an ever evolving language, by building off pre-existing packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on are part as Polynomials.jl is updated with Julia updates.
+As Julia is an ever evolving language, by building off pre-existing packages we can make the MorePolynomials.jl packages appealing for users already familiar with the framework, while reducing developer load on our part as Polynomials.jl is updated with Julia updates.
 The disadvantage being we are then at the mercy of the Polynomials.jl package developers.
 If they decided to change their framework entirely, our package may also need to change.
 This is not necessarily an issue however as we can specify backwards compatibility.
@@ -1002,7 +1001,7 @@ end
 ```
 ! EndColBox()
 
-As the standard `Polynomial` type from `Polynomials.jl` already provides and interface for storing coefficient based polynomials, an additional data structure and supporting subroutines has been introduced to implement the Lagrange polynomial.
+As the standard `Polynomial` type from `Polynomials.jl` already provides an interface for storing coefficient based polynomials, an additional data structure and supporting subroutines have been introduced to implement the Lagrange polynomial.
 ! BeginColBox()
 ```julia;eval=false
 mutable struct LagrangePoly{T<:Number} <: AbstractLagrangePolynomial{T} 
@@ -1017,9 +1016,9 @@ end
 
 Take note of a couple of features.
 First, we have chosen to use `x` and `y` to represent our mesh points and function evaluation points respectively, which is inconsistent with the notation in this text.
-This is by choice to maintain consistency with the Polynomials.jl package, and is mentioned here as many additional decisions of notation in this package have been chosen for similar reasons.
-Seconds, the types of all fields (excluding `var`) are parameterised and forced to be the same.
-The benefits of this are twofold: we don't have to call convert functions when execution any computation that is a function of more than one field, and the compiler is fully aware of the type at runtime, and thus can optimise operations for this type, leading to significant performance gains.
+This is by choice to maintain consistency with the Polynomials.jl package, and is mentioned here as many additional decisions of notation in this package have been made for similar reasons.
+Secondly, the types of all fields (excluding `var`) are parameterised and forced to be the same.
+The benefits of this are twofold: we don't have to call convert functions when executing any computation that is a function of more than one field, and the compiler is fully aware of the type at runtime, and thus can optimise operations for this type, leading to significant performance gains.
 This choice of representation is made for the benefit gain in polynomial creation and alteration, at the expense of larger memory presence and evaluation time.
 
 To illustrate the differences between the two representations, let's benchmark some polynomials.
@@ -1075,7 +1074,7 @@ end
 
 This achieves the same result as equation ``\ref{barweight}``.
 The exact number of flops required to calculate the weights is ``n\times (n - 1)``.
-We execute the same for loop twice so to take advantage of the cpu cache when indexing the final weight.
+We execute the same for loop twice in order to take advantage of the cpu cache when indexing the final weight.
 
 As mentioned in section ``\ref{lagmath}``, the barycentric representation allows us to update our interpolation points (``y_j``) without having to recompute weights if our mesh points are the same.
 This can be particularly useful for dynamic optimisation problems, where the states are perpetually changing but the mesh remains the same between solves.
@@ -1187,8 +1186,8 @@ coefs = Algebra.:*(Algebra.inv(A),symY) # invert to find coefs of polynomial
 ```
 ! EndColBox()
 
-Here we being by defining an `A` matrix, which will be our Vandermonde matrix.
-We go onto populate it with Julia symbols, which Julia can substitute in at a later stage with variables of the same name.
+Here we begin by defining an `A` matrix, which will be our Vandermonde matrix.
+We go on to populate it with Julia symbols, which Julia can substitute in at a later stage with variables of the same name.
 Finally we invert the matrix and get our analytic solution.
 The implementation within MorePolynomials.jl then uses a macro to substitute these `x` and `y` values with the user's variables, resulting in an extremely fast low order polynomial coefficient calculator.
 We can go on to calculate up to 4th order polynomials before the solution becomes too complex to calculate analytically.
@@ -1337,7 +1336,7 @@ In this text we will outline a basic generic implementation of transcription met
 
 ### Generic transcription implementation
 A transcription method which employs the use of user defined functions has been implemented in Julia using the JuDO.jl package with the Ipopt NLP solver.
-The key innovation here is the formatting of the problem such that the user can define any generic functions for the objective function, constraints and dynamics and, providing the functions accept a standard input and output, the solver behave as expected.
+The key innovation here is the formatting of the problem such that the user can define any generic functions for the objective function, constraints and dynamics and, providing the functions accept a standard input and output, the solver behaves as expected.
 
 The user defined problem, which also acts as an internal interface between JuMP.jl and JuDO.jl methods, is defined as follows.
 ! BeginColBox()
@@ -1358,11 +1357,11 @@ end
 ! EndColBox()
 
 JuMP.jl provides its own interface for defining functions with derivatives, the trick is formatting the interface in such a way as to work with dynamic optimisation problems.
-This is accomplished using three components, a global `CurrentProblem` type, a translating layer and a derivative function.
+This is accomplished using three components: a global `CurrentProblem` type, a translating layer and a derivative function.
 
 First, the global `CurrentProblem` type allows us to access the full problem definition from any location within our program. 
-This is useful as it provides a standard interface which we can access within functions, which we can used to access crucial data such as they problem functions and state and control interpolation functions.
-Moreover, the user defined functions in JuMP.jl only allow the parsing of JuMP.jl variables internally, so to have access to any additional data defined externally one must define such an interfaces as this.
+This is useful as it provides a standard interface which we can access within functions, which we can use to access crucial data such as the problem functions and state and control interpolation functions.
+Moreover, the user defined functions in JuMP.jl only allow the parsing of JuMP.jl variables internally, so to have access to any additional data defined externally one must define such an interface as this.
 Within the JuDO.jl code this `CurrentProblem` type  is defined as a global constant, which acts like a pointer to the location of the user defined `TrajProblem`.
 The interface is defined below.
 ! BeginColBox()
