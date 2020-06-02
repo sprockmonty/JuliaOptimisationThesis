@@ -6,7 +6,7 @@ options :
 ---
 
 ```julia; echo=false; results="hidden"
-using Images, Plots, Colors, Polynomials, BenchmarkTools, ForwardDiff
+using Images, Plots, Colors, Polynomials, BenchmarkTools, ForwardDiff, Reduce
 using MorePolynomials;
 plotly()
 
@@ -24,6 +24,9 @@ Base.show(io::IO, m::MIME"text/latex", e::End) = write(io, "\\end{$(e.text)}\n")
 struct Newpage end
 Base.show(io::IO, m::MIME"text/latex", n::Newpage) = write(io, "\\newpage\n ")
 
+struct Bib end
+Base.show(io::IO, m::MIME"text/latex", b::Bib) = write(io, "\\bibliography{references}\n\\bibliographystyle{vancouver}\n ")
+
 struct NomItem
     symbol
     text
@@ -34,7 +37,7 @@ struct NomPrint end
 Base.show(io::IO, m::MIME"text/latex", n::NomPrint) = write(io, "\\printnomenclature\n ")
 
 struct ContentsPrint end
-Base.show(io::IO, m::MIME"text/latex", c::ContentsPrint) = write(io, "\\printnomenclature\n ")
+Base.show(io::IO, m::MIME"text/latex", c::ContentsPrint) = write(io, "\\tableofcontents\n ")
 
 struct BeginFig end
 
@@ -96,10 +99,16 @@ Base.show(io::IO, m::MIME"text/latex", b::EndColBox) = write(io, "\\end{tcolorbo
 
 ``` 
 ! Begin("abstract")
-
-Some abstract
-
+The field of dynamic optimisation solvers is one dominated by programs of high complexity, both in implementation and user interface.
+Moreover, within the field of dynamic optimisation methods involving so-called orthogonal collocation (or pseudospectral methods) have proven achieve high accuracy with relatively few discretization points ``\cite{Huntington2001AdvancementProblems}``.
+They are well renoun in the filed of aerospace, with uses ranging from calculating the optimal path for space shuttle reentry to maximising payload delivered to orbit for vertical takeoff vertical landing spacecraft.
+In addition, more recently a numerically focused programming language by the name of Julia has gained popularity due to its lightning speed (as fast as C) and it's employment of features usually found in high level languages such as dynamic typing.
+The aim of this work is to provide a background to dynamic optimisation using polynomial approximating functions in Julia, and outline steps for developing the next generation of intuitive dynamic optimisation solvers.
+Along the way we will implement some examples and explore some of the ready to use packages developed for this purpose.
 ! End("abstract")
+! Newpage()
+
+! ContentsPrint()
 
 ! Newpage()
 
@@ -136,15 +145,14 @@ Some abstract
 
 ## Motivation
 
-### Dynamic Optimisation
+### Dynamic optimisation
 Optimisation problems are the focus of wide range of research fields, and have broad applications to almost any discipline.
 As such, effective tools for solving optimal problems are extremely desirable, and are employed in fields such as medicine, robotics and aerospace.
 Specifically, optimal problem solvers allow us to streamline the design an operation of, for example, a reusable spacecraft, or a walking robot, or the layout of a hospital.
 If the problem has a cost function and can be formulated subject to certain mathematical constraints, it can be optimised.
 <!-- add some history here init -->
 Dynamic optimisation is a subset of general optimisation problems, where the problem is best thought of as finding the optimal control input that minimises some cost function through statespace subject to system dynamics and constraints. 
-An example would be finding the optimal thrust output over time from the earth to another body which maximises the final orbital radius (as seen in ``\cite{Bryson}``). 
-<!-- add ref at bottom of page here http://www.ee.ic.ac.uk/ICLOCS/ExampleOrbitRaising.html -->
+An example would be finding the optimal thrust output over time from the earth to another body which maximises the final orbital radius (as seen in ``\cite{ICLOCS2:Raising}``). 
 
 Dynamic optimisation problems can be solved by the process of transcription.
 Transcription is the process of translating a continuous control problem into a discrete nonlinear programming problem (NLP) which can then be solved by an NLP solver.
@@ -167,11 +175,11 @@ One of the goals of this text is to outline the foundations for a method which a
 
 ### Julia
 The Julia programming language is a product of the desire to have highly performant code in a dynamic, high level format i.e. having your cake and eating it.
-Julia has been designed with numerical analysis and computational science in mind ``\cite{juliawhite}``, and aims to solve what is referred to as the two language problem.
+Julia has been designed with numerical analysis and computational science in mind ``\cite{Bezanson2014Julia:Computingb}``, and aims to solve what is referred to as the two language problem.
 The two language problem is that, with the advent of rapid prototyping languages such as python and MATLAB, code can be written and tested quickly at the cost of scalability.
 Once the code has been written, core components are translated into a low level but performant languages, e.g. C/C++ or Rust.
 Julia bridges the gap by having easy to read and prototype code which is performant and even garbage collected.
-This is achieved by a well thought out architecture and a clever just-in-time (JIT) compiler ``\cite{juliawhite}``.
+This is achieved by a well thought out architecture and a clever just-in-time (JIT) compiler ``\cite{Bezanson2014Julia:Computingb}``.
 While code must still be written with a certain level of awareness of lower level processes and implementations, and as such a certain style of programming must be adopted to achieve truly performant code, the main goals of Julia are delivered on to a more than satisfactory level.
 The gains from Julia by solving this problem is more than just faster transition to production.
 The ability to have performant, high level code can increase the shareability and modularity of code. 
@@ -216,12 +224,12 @@ The following discussion assumes the direct method i.e. transcription.
 Transcription is the process of converting a continuous dynamic optimisation problem into an array of discrete constraints (which ensure system dynamics are consistent with the state as explained in section ``\ref{sysDyn}``) which can be solved by a nonlinear programming (NLP) solver.
 The direct methods are, well, direct, because we just try and solve the problem by breaking it up into smaller constraint equations.
 Indirect methods, on the other hand, solve the problem by reformulating (analytically) the problem using a set of first-order necessary conditions for optimality, which can then be solved.
-Direct methods are currently of more interest as these conditions are often difficult to formulate, and indirect methods are more sensitive to the accuracy of the initial state guess ``\cite{mit}``.
+Direct methods are currently of more interest as these conditions are often difficult to formulate, and indirect methods are more sensitive to the accuracy of the initial state guess ``\cite{Huntington2001AdvancementProblems}``.
 Before we explore the direct method however, it may be beneficial to define what our dynamic optimisation problem will eventually become, a nonlinear programming problem.
 
 ### Nonlinear programming problem
 If we can reformulate our dynamic problem into a NLP problem, we can use a number of widely available solvers to find optimal solutions.
-The general formulation of the NLP problem is (as given by Ipopt from COIN-OR ``\ref{ipopt}``, a popular NLP solver)
+The general formulation of the NLP problem is (as given by Ipopt from COIN-OR ``\cite{Ipopt:Documentation}``, a popular NLP solver)
 
 $$
 \begin{align}
@@ -257,7 +265,7 @@ $$
 \pmb{g}(\pmb{x}) \leq 0
 \end{equation}
 $$
-Solvers such as Ipopt additionally replace nonlinear inequality constrains with an equality constraint and a slack variable ``\cite{ipopttut}`` such that equation ``\ref{gineq}`` becomes ``\pmb{g}(\pmb{x}) - s = 0`` and ``\pmb{g}^L \leq s \leq \pmb{g}^U``. 
+Solvers such as Ipopt additionally replace nonlinear inequality constrains with an equality constraint and a slack variable ``\cite{WachterShortMinutes}`` such that equation ``\ref{gineq}`` becomes ``\pmb{g}(\pmb{x}) - s = 0`` and ``\pmb{g}^L \leq s \leq \pmb{g}^U``. 
 As such it makes sense to also include in our formulation the additional equality constriants
 $$
 \begin{equation}
@@ -276,6 +284,7 @@ Another way to put it is rather than giving an input and calculating what the ou
 We will now go on to explore how the dynamics optimisation problem becomes the NLP problem.
 
 ### `j print(problemComponents[1])`
+! Label("sysDyn")
 
 The system dynamics are of key importance in the dynamic optimisation problem, and are what essentially separate it from a standard NLP problem.
 By system dynmaics, we are referring to the governing equations which describe the evolution of the state over time.
@@ -621,7 +630,7 @@ This completes our formulation of the dynamic optimisation problem.
 ## Lagrange polynomials
 ! Label("lagmath")
 Now we will discuss the background for the interpolating functions used to approximate state and control functions (and potentially the objective function), which will lead us to a discussion of the pseudospectral dynamic optimisation method.
-Lagrange interpolating polynomials in the barycentric form are useful for fast polynomial interpolation and are forward stable for problems with mesh points clustered towards the ends of intervals ``\cite{lagstable}``.
+Lagrange interpolating polynomials in the barycentric form are useful for fast polynomial interpolation and are forward stable for problems with mesh points clustered towards the ends of intervals ``\cite{Higham2004TheInterpolation}``.
 Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent a function evaluations at points of ``t`` such that ``y = f(t)``, the unmodified lagrange formula is
 
 $$
@@ -754,7 +763,7 @@ $$
 & \end{align*}
 $$
 
-## Julia Packages
+## Julia packages
 There are 2 packages which are referred to at length in this text which may be worth introducing.
 These are the Polynomials.jl and JuMP.jl packages.
 ### Polynomials.jl
@@ -1044,7 +1053,7 @@ mean(@benchmark updateDerivAndEval(lPoly, ynew, D, 0.25))
 
 An extension of the Lagrange polynomial is the Legendre-Gauss-Radau Lagrange polynomial [^1].
 This uses LGR points to generate the mesh.
-See this paper on the benefits of using LGR points of function approximation in dynamic optimisation ``\cite{lgrcomp}``.
+See this paper on the benefits of using LGR points of function approximation in dynamic optimisation ``\cite{GargAnProblems}``.
 The current implementation finds the LGR points as a function of the eigenvalues of a symmetric Legendre polynomial based matrix, but future implementations will most likely use a combination of this method and the implementation in the package FastGaussQuadrature, dynamically switching based on speed of implementation and number of points.
 For the moment, our implementation is faster at low orders.
 Additionally, if the mesh points follow the LGR formulation, we can make use of the LGR weights generated from FastGaussQuadrature for fast integration.
@@ -1076,9 +1085,51 @@ end
 ! EndColBox()
 
 ### Low order Vandermonde methods
-One method for analytically determining coefficients from data points is by inversion of the Vandermonde matrix.
+Depending on the system dynamics and constraints, it may be beneficial to, rather than having one high order, approximate states or controls using a series of low order polynomials.
+One method for analytically determining coefficients of polynomials from data points is by inversion of the Vandermonde matrix.
+Computationally, this is quite expensive, especially as the size of the matrix grows quadratic as the order of the polynomial increases.
+For low order polynomials however, it is reasonably easy to use a symbolic solver to calculate the inverse of the Vandermonde matrix analytically.
+This process is still slow, but if the analytical solution can be solved at compile time, and then somehow inserted directly into our code, we can achieve extremely fast runtime calculation of coefficient of low order polynomials.
+Thankfully Julia macros provide a useful interface for generating code at compile time and, together with the Reduce.jl package for symbolic maths, we can do just that.
+We start by generating the analytical solution to the inverse of the Vandermonde matrix.
+! BeginColBox()
+```julia
+leny = 2 # number of data points
+symX = []
+symY = []
+A = Array{Expr}(undef, leny, leny)
+for i = 1:leny
+    push!(symX, Meta.parse("x$i"))
+    push!(symY, Meta.parse("y$i"))
+end
+for i = 1:leny # Assemble A matrix
+    for j = 1:leny
+        pwr = leny-j
+        var = symX[i]
+        A[i,j] = :($var^$pwr)
+    end
+end
+coefs = Algebra.:*(Algebra.inv(A),symY) # invert to find coefs of polynomial
+```
+! EndColBox()
 
-BENCHMARK
+Here we being by defining an `A` matrix, which will be our Vandermonde matrix.
+We go onto populate it with Julia symbols, which Julia can substitute in at a later stage with variables of the same name.
+Finally we invert the matrix and get our analytic solution.
+The implementation within MorePolynomials.jl then uses a macro to substitute these `x` and `y` values with the user's variables, resulting in an extremely fast low order polynomial coefficient calculator.
+We can go on to calculate up to 4th order polynomials before the solution becomes too complex to calculate analytically.
+Let's compare this method to a Lagrange fitting method at runtime.
+
+! BeginColBox()
+```julia
+x = [0,0.2,0.4,0.6,0.8] 
+y = @. x^4 + x^3 + 2x^2 + 5
+mean(@benchmark fit(LagrangePoly, x, y)(0.25)) # using Lagrange poly fitting
+```
+```julia
+mean(@benchmark vandpoly(x, y)(0.25)) # using Lagrange poly fitting
+```
+! EndColBox()
 
 ### Piecewise polynomials
 
@@ -1177,7 +1228,7 @@ This is done using the ForwardDiff.jl package which provides forward mode automa
 ForwardDiff.jl achieves this by injecting the function with a custom type which has union with the `Real` type, which has the limitation of requiring all internal operations to be compatible with the real type.
 If this is not the case however a forward difference method may be implemented in its place.
 The differentiation functions work by calculating the fully Jacobian and then returning the row associated with the state or control in question.
-For example, in the case of the cart-pole example in section ``\ref{}`` below, we can calculate the Jacobian using command.
+For example, in the case of the cart-pole example in section ``\ref{cartpolesec}`` below, we can calculate the Jacobian using command.
 ```julia;echo=false; results="hidden"
 
 function dynamicsFunc(stateVector, controlVector) 
@@ -1237,8 +1288,9 @@ Now that we have the core components to interface with JuMP, the rest is a matte
 Links to the full implementation can be found in the appendix.
 
 ### Example cart-pole swing-up
+! Label("cartpolesec")
 An example implementation is the cart-pole swing-up problem, where the objective is to swing a mass above a cart using the minimum effort squared.
-The example is taken from Matthew Kelly's paper ``\cite{matthewkelly}`` and has the following formulation
+The example is taken from Matthew Kelly's paper ``\cite{Kelly2017AnCollocation}`` and has the following formulation
 $$
 \pmb{x}(t) = 
 \begin{bmatrix}
@@ -1372,7 +1424,7 @@ img = load("figures/cartepole.png")
 ### Example pseudospectral method
 
 The current JuDO code can be altered to accept interpolating functions generated by MorePolynomials.jl.
-We will use an example problem from a paper by Garg ``\cite{Garg}`` to demonstrate this.
+We will use an example problem from a paper by Garg ``\cite{Garg2011DirectMethod}`` to demonstrate this.
 $$
 J(\pmb{x},\pmb{u}) = \frac{1}{2} \int_0^{t_F} (\pmb{x}_1(t) + \pmb{u}_1^2(t))dt, \quad \dot{\pmb{x}}_1(t) = 2\pmb{x}_1(t) + 2\pmb{u}_1(t) \sqrt{\pmb{x}(t)}
 $$
@@ -1416,7 +1468,7 @@ img = load("figures/lgrplot.png")
 ! EndFig("Pseudospectral example solution","psufig")
 
 
-# Next steps
+# Next Steps
 ## JuDO architecture
 An architectural outline for JuDO is proposed in figure ``\ref{judoarc}``.
 The generic implementation prototype already employs some of the features here, but not to the full extent.
@@ -1438,7 +1490,7 @@ For example a black box solver does not require derivative information, and so t
 This factory architecture is also useful from a development perspective.
 Multiple developers can work on different factories within JuDO while being confident that their interface will integrate well with the rest of the solver.
 
-### User Defined Problem
+### User defined problem
 The aim here is to provide a standard intuitive interface for problem definitions which requires as little knowledge of the backend implementation as possible.
 Ideally the user would define their problem as seen in the mathematical formulation. 
 There should be little need to try and reformulate the problem in order to work with matrix operations or specific functions.
@@ -1467,7 +1519,7 @@ addboundsfunction(problem, :x, xdot) # an example function is used here
 ```
 ! EndColBox()
 
-### JuDO Problem
+### JuDO problem
 The role of the JuDO problem is to act as an internal standard interface between all other factories.
 Internally, it is represented by a datastructure containing all relevant components of the problem.
 Each factory either modifies or uses data from the JuDO problem.
@@ -1490,12 +1542,12 @@ end
 ```
 ! EndColBox()
 
-### Solver Translator
+### Solver translator
 Different solvers will have different interfaces, and while we could dispatch on each solver, this incurs a significant amount of code rewriting for each solver.
 A more elegant solution would be to standardise the interface between each solver by using a layer of abstraction.
 This requires only the rewriting of a few translation functions per solver, rather than changing the entire system architecture, and is the preferred implementation method.
 
-### Mesh Factory
+### Mesh factory
 The role of the meshing factory is to generate meshes based on the user defined problem, and refine meshes after successful solves.
 The user can either specify what type of mesh they would like, or we can generate one for them based on the problem definition.
 The following function definition is proposed for the mesh factory.
@@ -1508,7 +1560,7 @@ end
 function mesh_factory(solver::AbstractSolver, problem::AbstractJuDOProblem) # Mesh refinement
 ```
 ! EndColBox()
-### Function Factory
+### Function factory
 The aim of the function factory is to provide a standard interface for handling functions, such that various transcription methods can be employed.
 Additionally, a standard interface will ensure compatibility with derivative calculation in the derivative factory.
 The following function definition is proposed for the function factory.
@@ -1530,7 +1582,7 @@ Note also that each factory is not necessarily an object as in a traditional OOP
 This has the added benefit that these functions can be called by other functions.
 For example, it is useful in this case for the derivative factory to call some functions within the function factory to calculate derivatives.
 
-### Derivative Factory
+### Derivative factory
 The derivative factory calculates the derivatives of NLP functions to parse to the NLP solver.
 The aim here is to support multiple derivative methods, as well as sparsity patterns.
 Because of the standard JuDO problem interface, we can deduce from within the problem what the parameters to dispatch on for the function factory function calls should be.
@@ -1547,7 +1599,7 @@ function hessian(problem::AbstractJuDOProblem)
 ```
 ! EndColBox()
 
-### Error Factory
+### Error factory
 The role of the error factory is to handle any errors from the solver elegantly in a standardised manner, and to manage the analysis of errors.
 The error analysis can then be packaged and sent to the mesh factory for further mesh refinement.
 The following function definition is proposed for the error factory.
@@ -1562,7 +1614,7 @@ function calculate_error(problem::AbstractJuDOProblem)
 ```
 ! EndColBox()
 
-### Output Factory
+### Output factory
 The role of the output factory is to display the results of the optimisation problem, and proved interfaces for the user to save the problem.
 We can do this by taking the solved problem as well as the error analysis and presenting it to the user.
 The output factory should ideally handle any interactions with the user, including solver errors produced by the error factory.
@@ -1579,7 +1631,6 @@ function save_output(problem::AbstractJuDOProblem)
 ```
 ! EndColBox()
 
+! Bib()
 
 
-<!-- ipopt: https://coin-or.github.io/Ipopt/ --> 
-<!-- ipopttut: Short tutorial Ipopt.pdf --> 

@@ -1,0 +1,53 @@
+\begin{thebibliography}{1}
+
+\bibitem{ICLOCS2:Raising}
+{ICLOCS2: A MATLAB Toolbox for Optimization Based Control - Example: Orbit
+  Raising};.
+\newblock Available from:
+  \url{http://www.ee.ic.ac.uk/ICLOCS/ExampleOrbitRaising.html}.
+
+\bibitem{Bezanson2014Julia:Computingb}
+Bezanson J, Edelman A, Karpinski S, Shah VB.
+\newblock {Julia: A Fresh Approach to Numerical Computing}.
+\newblock SIAM Review. 2014 11;59(1):65--98.
+\newblock Available from: \url{http://arxiv.org/abs/1411.1607}.
+
+\bibitem{Huntington2001AdvancementProblems}
+Huntington GT, How JP.
+\newblock {Advancement and Analysis of a Gauss Pseudospectral Transcription for
+  Optimal Control Problems}; 2001.
+
+\bibitem{Ipopt:Documentation}
+{Ipopt: Documentation};.
+\newblock Available from: \url{https://coin-or.github.io/Ipopt/}.
+
+\bibitem{WachterShortMinutes}
+W{\"{a}}chter A.
+\newblock {Short Tutorial: Getting Started With Ipopt in 90 Minutes};.
+\newblock Available from: \url{www.ampl.com}.
+
+\bibitem{Higham2004TheInterpolation}
+Higham NJ.
+\newblock {The numerical stability of barycentric Lagrange interpolation};
+  2004.
+
+\bibitem{GargAnProblems}
+Garg D, Patterson M, Hager W, Rao A, Benson D, Huntington G, et~al.
+\newblock {An overview of three pseudospectral methods for the numerical
+  solution of optimal control problems};.
+\newblock Available from: \url{https://hal.archives-ouvertes.fr/hal-01615132}.
+
+\bibitem{Kelly2017AnCollocation}
+Kelly M.
+\newblock {An introduction to trajectory optimization: How to do your own
+  direct collocation∗}.
+\newblock SIAM Review. 2017;59(4):849--904.
+
+\bibitem{Garg2011DirectMethod}
+Garg D, Patterson MA, Francolin C, Darby CL, Huntington GT, Hager WW, et~al.
+\newblock {Direct trajectory optimization and costate estimation of
+  finite-horizon and infinite-horizon optimal control problems using a Radau
+  pseudospectral method}.
+\newblock Computational Optimization and Applications. 2011 6;49(2):335--358.
+
+\end{thebibliography}

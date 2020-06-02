@@ -1,0 +1,61 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/Arch Linux)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: ./pdf/thesis.aux
+The style file: vancouver.bst
+Reallocated glb_str_ptr (elt_size=8) to 20 items from 10.
+Reallocated global_strs (elt_size=20001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=8) to 20 items from 10.
+Reallocated wiz_functions (elt_size=8) to 6000 items from 3000.
+Database file #1: references.bib
+Warning--empty author in ICLOCS2:Raising
+Warning--empty author and editor in ICLOCS2:Raising
+Warning--missing publisher in ICLOCS2:Raising
+Warning--there's a month but no year in ICLOCS2:Raising
+Warning--empty author in Ipopt:Documentation
+Warning--empty author and editor in Ipopt:Documentation
+Warning--missing publisher in Ipopt:Documentation
+Warning--there's a month but no year in Ipopt:Documentation
+Warning--there's a month but no year in WachterShortMinutes
+Warning--there's a month but no year in GargAnProblems
+You've used 9 entries,
+            3170 wiz_defined-function locations,
+            697 strings with 6523 characters,
+and the built_in function-call counts, 11522 in all, are:
+= -- 1402
+> -- 94
+< -- 0
++ -- 54
+- -- 23
+* -- 961
+:= -- 1292
+add.period$ -- 27
+call.type$ -- 9
+change.case$ -- 0
+chr.to.int$ -- 0
+cite$ -- 19
+duplicate$ -- 836
+empty$ -- 1115
+format.name$ -- 27
+if$ -- 2684
+int.to.chr$ -- 0
+int.to.str$ -- 9
+missing$ -- 73
+newline$ -- 45
+num.names$ -- 7
+pop$ -- 142
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 153
+stack$ -- 0
+substring$ -- 2227
+swap$ -- 153
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 10
+while$ -- 56
+width$ -- 10
+write$ -- 93
+(There were 10 warnings)
