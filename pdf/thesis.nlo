@@ -1,11 +1,18 @@
 \nomenclatureentry{a$ J $@[{$ J $}]\begingroup Objective function\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{g} $@[{$ \pmb{g} $}]\begingroup Constraint functions\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{f} $@[{$ \pmb{f} $}]\begingroup System dynamics functions\nomeqref {0}|nompageref}{2}
-\nomenclatureentry{a$ \pmb{x} $@[{$ \pmb{x} $}]\begingroup States\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \x_{,i} $@[{$ \x_{,i} $}]\begingroup i'th continuous state variable\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ x_i $@[{$ x_i $}]\begingroup i'th state vector of state interpolating data points, decision variables\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ x_{ij} $@[{$ x_{ij} $}]\begingroup i'th state j'th decision variable / interpolating point state value\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \bar{x}_{ij} $@[{$ \bar{x}_{ij} $}]\begingroup i'th state j'th interpolating data point state time pair\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{x} $@[{$ \pmb{x} $}]\begingroup Vector of state interpolating polynomials\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \pmb{x}_i $@[{$ \pmb{x}_i $}]\begingroup i'th state interpolating polynomial\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ \tilde{x} $@[{$ \tilde{x} $}]\begingroup State interpolation function\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{u} $@[{$ \pmb{u} $}]\begingroup Controls\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{b} $@[{$ \pmb{b} $}]\begingroup Boundary constraint functions\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ \pmb{h} $@[{$ \pmb{h} $}]\begingroup Path constraint functions\nomeqref {0}|nompageref}{2}
-\nomenclatureentry{a$ t $@[{$ t $}]\begingroup Time\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ t $@[{$ t $}]\begingroup Any time\nomeqref {0}|nompageref}{2}
+\nomenclatureentry{a$ t_{ij} $@[{$ t_{ij} $}]\begingroup i'th state or control time at interpolating data point j \nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ k $@[{$ k $}]\begingroup Location of a collocation point\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ m $@[{$ m $}]\begingroup Number of mesh/collocation\nomeqref {0}|nompageref}{2}
 \nomenclatureentry{a$ i $@[{$ i $}]\begingroup State or control index\nomeqref {0}|nompageref}{2}

@@ -6,7 +6,7 @@ options :
 ---
 
 ```julia; echo=false; results="hidden"
-using Images, Plots, Colors, Polynomials, BenchmarkTools
+using Images, Plots, Colors, Polynomials, BenchmarkTools, ForwardDiff
 using MorePolynomials;
 plotly()
 
@@ -32,6 +32,9 @@ Base.show(io::IO, m::MIME"text/latex", n::NomItem) = write(io, "\\nomenclature{\
 
 struct NomPrint end
 Base.show(io::IO, m::MIME"text/latex", n::NomPrint) = write(io, "\\printnomenclature\n ")
+
+struct ContentsPrint end
+Base.show(io::IO, m::MIME"text/latex", c::ContentsPrint) = write(io, "\\printnomenclature\n ")
 
 struct BeginFig end
 
@@ -103,11 +106,18 @@ Some abstract
 ! NomItem("J","Objective function")
 ! NomItem("\\pmb{g}","Constraint functions")
 ! NomItem("\\pmb{f}","System dynamics functions")
-! NomItem("\\pmb{x}","States")
+! NomItem("\\x_{,i}","i'th continuous state variable")
+! NomItem("x_i","i'th state vector of state interpolating data points, decision variables")
+! NomItem("x_{ij}","i'th state j'th decision variable / interpolating point state value")
+! NomItem("\\bar{x}_{ij}","i'th state j'th interpolating data point state time pair")
+! NomItem("\\pmb{x}","Vector of state interpolating polynomials")
+! NomItem("\\pmb{x}_i","i'th state interpolating polynomial")
+! NomItem("\\tilde{x}","State interpolation function")
 ! NomItem("\\pmb{u}","Controls")
 ! NomItem("\\pmb{b}","Boundary constraint functions")
 ! NomItem("\\pmb{h}","Path constraint functions")
-! NomItem("t","Time")
+! NomItem("t","Any time")
+! NomItem("t_{ij}","i'th state or control time at interpolating data point j ")
 ! NomItem("k","Location of a collocation point")
 ! NomItem("m","Number of mesh/collocation")
 ! NomItem("i","State or control index")
@@ -145,6 +155,15 @@ The focus of this project is thus to lay the foundations for a simple but powerf
 As history has shown, more can be achieved when time is spent letting the tools work on the problem rather than trying to make the problem work with the tools.
 
 ### Imperial College London Optimal Control Software (ICLOCS)
+ICLOCS is the MATLAB predecessor to the package we are attempting to lay the foundations for here.
+It implements a number of collocation, mesh refinement and differentiation methods, and provides interfaces to a number solvers.
+Three areas for improvement stand out with the current implementation of ICLOCS; the user interface, the ability to maintain an ever growing codebase, and the internal representation of states and controls.
+With regards to the user interface, the user is often required to construct the problem over a number of files, and the user must often formulate the problem in a particular manner to be compatible with the ICLOCS functions.
+With regards to the state of the codebase, ICLOCS suffers from feature creep, and the ability to implement new features often requires substantial wrangling with the code. 
+With regards to the internal representation of states and controls, from the outset it was assumed that the dimensions of the state and control vectors would always be consistent.
+This assumes a fixed number of collocation points for all states and controls for a given problem.
+One of the goals of this text is to outline the foundations for a method which allows for a varying number of collocation points for each state and control using interpolating functions.
+
 
 ### Julia
 The Julia programming language is a product of the desire to have highly performant code in a dynamic, high level format i.e. having your cake and eating it.
@@ -160,6 +179,9 @@ For programs written natively in Julia, (providing the source code is easily acc
 
 Although Julia takes heavy inspiration from other languages such as C, MATLAB. Python and Lisp (to name a few), through the implementations of its main paradigm it holds its own in the world of dynamic general programming languages.
 By choosing to diverge from the commonly practiced object oriented programming (OOP) paradigm, Julia presents an alternative and more intuitive interface using multiple dispatch and strong type interfaces.
+By types we refer to the data type of variables such as `Int`, `Float64` etc., but julia also provides the ability to define types which contain other types (like structs in C), and abstract types from which other types can be subtyped.
+We can execute different subroutines depending on the combination of the types of the arguments of a function, and this ability is referred to as multiple dispatch.
+For example, the function `f(x::Int, y::Float64)` is a different function to `f(x::Int,y::Char)` or even `f(x::Float64, y::Int)`, but all three use the same `f` identifier i.e. we overload `f` for each type combination.
 
 What is very apparent in Julia is that every line of code has been scrutinised, and each feature thought about to great depth.
 The effect of this is that code feels like it makes sense, rather than a group of features bundled together into a programming language (see: PHP).
@@ -288,19 +310,20 @@ $$
 \end{equation}
 $$
 
-such that ``t`` is the evaluation time of the interpolating function, ``m \in \mathbb{R}^n`` is the number of decision variables for each discretised state and may contain a different value at each state index ``i``, and ``x_i`` is the decision variable.
+such that ``t`` is the evaluation time of the interpolating function, ``m \in \mathbb{R}^n`` is the number of decision variables for each discretised state and may contain a different value at each state index ``i``, and ``x_i`` is a vector of interpolating data points.
 As illustrated in section ``\ref{lagmath}``, function ``\tilde{x}`` can be initialised without knowledge of the specifics of ``t``.
 The number of decision variables in not to be confused with the number of collocation points, which in many cases is the same but in some is different.
 Collocation points are the points where system dynamics are enforced, but not all points where we approximate state have to comply with system dynamics.
-Additionally, in the data point formulation (as opposed to the coefficient formulation) an individual data point ``x_{ij}`` will consist of a mesh location and state value as below.
+Additionally, in the data point formulation (as opposed to the coefficient formulation) an individual data point ``\bar{x}_{ij}`` will consist of a mesh location and state value as below.
 
 $$
 \begin{equation}
 \label{meshdef}
-x_i = \big[ x_{ij} = [t_{ij}, x(t_{ij})] \big], \quad j = 1,2, \ldots m_i.
+x_i = \big[ \bar{x}_{ij} = [t_{ij}, x_{ij}] \big], \quad x(t_{ij}) = x_{ij}, \quad j = 1,2, \ldots m_i.
 \end{equation}
 $$
 
+Crucially ``x_{ij}`` are our decision variables.
 These discretised states will go onto become decision variables in our NLP formulation.
 Traditional formulations such as that in ICLOCS require states to be discretised at set mesh interval points such that ``\pmb{x} \in \mathbb{R}^{n\times m}``.
 By the introduction of and interpolating function ``\tilde{x}``, we are no longer constrained to requiring the number of decision variables in each state to be the same.
@@ -400,7 +423,7 @@ Take for example the trapizoidal method
 $$
 \begin{equation}
 \label{trap}
-\pmb{x}_{i}(t_{k+1}) - \pmb{x}_{i}(t_k) - \frac{h_k}{2} \big(\pmb{f}_{i}(t_k) + \pmb{f}_{i}(t_{k+1}\big)) = 0
+\pmb{x}_{i}(t_{k+1}) - \pmb{x}_{i}(t_k) - \frac{h_k}{2} \big(\pmb{f}_{i}(t_k) + \pmb{f}_{i}(t_{k+1})\big) = 0
 \end{equation}
 $$
 
@@ -592,11 +615,12 @@ $$
 Alternatively, if the objective function is modelled with an interplating function we can calculate the exact intergral of the interplation as per equation ``\ref{lgrint}``.
 
 This completes our formulation of the dynamic optimisation problem. 
-Now we will discuss the background for a pseudospectral representation of this method.
 
+## Example implementation in ICLOCS
 
 ## Lagrange polynomials
 ! Label("lagmath")
+Now we will discuss the background for the interpolating functions used to approximate state and control functions (and potentially the objective function), which will lead us to a discussion of the pseudospectral dynamic optimisation method.
 Lagrange interpolating polynomials in the barycentric form are useful for fast polynomial interpolation and are forward stable for problems with mesh points clustered towards the ends of intervals ``\cite{lagstable}``.
 Using ``t_k`` and ``t_j`` to represent our mesh points, and ``y`` to represent a function evaluations at points of ``t`` such that ``y = f(t)``, the unmodified lagrange formula is
 
@@ -695,7 +719,10 @@ The is useful for determining the object function, or for approximating endpoint
 
 Now we can use the derivate information of our polynomial to enforce our system dynamics
 $$
+\begin{equation}
+\label{psecoloc}
 \dot{\tilde{x}}_i(\tau_i,x_i) - f_i(\tau_i,\pmb{x}(t),\pmb{u}(t)) = 0, \quad i=1,2\ldots n,
+\end{equation}
 $$
 where ``t=t_1,t_2,\ldots t_{m_i}`` is a vector of collocation points for this state and ``\dot{\tilde{x}}`` is aquired from equation ``\ref{Ldot}``.
 As in this formulation our LGR points do not include the endpoint, we must construct an interpolating constraint for this too.
@@ -728,8 +755,20 @@ $$
 $$
 
 ## Julia Packages
-### JuMP.jl
+There are 2 packages which are referred to at length in this text which may be worth introducing.
+These are the Polynomials.jl and JuMP.jl packages.
 ### Polynomials.jl
+Polynomials.jl is a package by JuliaMath, and adds the ability to create, differentiate and integrate coefficient based polynomials.
+The interface is simple but intuitive, which is one of the key reasons for choosing it as a package to extend, the other being that it is well maintained.
+The goal of this project is to extend Polynomials.jl to cover a verity of Lagrange interpolating polynomials which can be used in dynamic optimisation, as well as add a few new features along the way.
+To summarise, Polynomials.jl is good, but we can make it better.
+### JuMP.jl
+JuMP.jl is a package by Julia Computing which aims to provide a standard interface to a number of linear, quadratic and nonlinear programming solvers.
+JuMP.jl allows us to interface with Ipopt through a number of JuMP decision variables, constraints and user defined functions.
+Like many julia packages in their infancy, JuMP.jl is under heavy development and the interface is somewhat restrictive in its current implementation.
+Nonetheless, it abstracts well much of the complexities associated with MathOptInterface.jl, the package which acts as a wrapper for a number of solvers.
+To this end, JuMP.jl is an NLP solver wrapper wrapper, and it's here to lay down some fire beats.
+
 ! Label("polynomialsjl")
 
 
@@ -785,6 +824,7 @@ This is highly dependent on the nature of each solver, and additional solver spe
 However, this goal is more focused towards ease of future development, rather than the user interface.
 
 ## `j print(aims[5])`
+! Label("indepmeshaim")
 By isolation of each state, we can vary the density of mesh points for each state.
 As such, states which can be approximated by a smaller mesh size do not occupy unnecessary space in memory due to other states requiring a larger mesh size to achieve an accurate approximation.
 This can be achieved by interpolating the state at collocation points when required.
@@ -900,6 +940,8 @@ The benefits of this are twofold: we don't have to call convert functions when e
 This choice of representation is made for the benefit gain in polynomial creation and alteration, at the expense of larger memory presence and evaluation time.
 
 To illustrate the differences between the two representations, let's benchmark some polynomials.
+We'll use 6 points for a 5th order polynomial, which will give us an exact representation.
+Note the fact that we have an exact representation should not affect the benchmarking results as the same number of operations are taking places.
 First, let's start with polynomial fitting
 ! BeginColBox()
 ```julia
@@ -952,16 +994,51 @@ This achieves the same result as equation ``\ref{barweight}``.
 The exact number of flops required to calculate the weights is ``n\times (n - 1)``.
 We execute the same for loop twice so to take advantage of the cpu cache when indexing the final weight.
 
-As mentioned in section ``\ref{lagmath}``, the barycentric representation allows us to update our representation without having to recumpute weights if our mesh points are the same.
+As mentioned in section ``\ref{lagmath}``, the barycentric representation allows us to update our interpolation points (``y_j``) without having to recompute weights if our mesh points are the same.
 This can be particularly useful for dynamic optimisation problems, where the states are perpetually changing but the mesh remains the same between solves.
-We demonstrate this below
+We demonstrate this below using `lPoly[:] = ynew`
 
 ! BeginColBox()
 ```julia
 lPoly = fit(LagrangePoly, x, y)
 ynew = @. 5x^5 + 7x^4 - 3x - 1
-updateAndEval(lPoly, ynew, x) = lPoly[:] = ynew; lPoly(x)
+# update our y values in lPloly and evaluate at x
+updateAndEval(lPoly, ynew, x) = lPoly[:] = ynew; lPoly(x) 
 mean(@benchmark updateAndEval(lPoly, ynew, 0.25)) 
+```
+! EndColBox()
+
+Differentiation as per equation ``\ref{Ldot}`` has also been implemented in the barycentric form, and works identically to the derivative function in Polynomials.jl.
+When we differentiate a polynomial, we receive a new polynomial representing the differential of the input polynomial.
+! BeginColBox();
+```julia; results="hidden"
+lPolyDer = derivative(lPoly)
+```
+! EndColBox()
+! BeginFig()
+```julia; echo=false;out_width="0.7\\textwidth"
+xinterp = collect([-1:0.05:1])
+plot(xinterp, lPolyDer.(xinterp), xlabel="x", ylabel="y", labels=["" ""])
+```
+! EndFig("lPolyDer plot i.e. Proof that I wrote code that actually works and it's not all smoke and mirrors.","lderpolyplot")
+Once again due to the barycentric implementation the fitting to derivative time exceeds that of the Polynomials.jl package.
+! BeginColBox()
+```julia
+mean(@benchmark derivative(fit(Polynomial, x, y))(0.25)) # using Polynomials.jl
+```
+```julia
+mean(@benchmark derivative(fit(LagrangePoly, x, y))(0.25)) # using MorePolynomials.jl
+```
+! EndColBox()
+What's more, if we intend to recalculate derivatives using the same mesh spacing, MorePolynomials provides a function for the derivative matrix, which when stored saves us having to recalculate it every time we update our function interpolation points.
+We demonstrate this below using `lPolyDer[:] = derivmatrix*ynew`
+! BeginColBox()
+```julia
+D = derivmatrix(lPoly)
+ynew = @. 7x^5 + 9x^4 - x - 2
+# update our y values and recalculate derivative
+updateDerivAndEval(lPolyDer, ynew, D, x) = lPolyDer[:] = D*ynew; lPolyDer(x) 
+mean(@benchmark updateDerivAndEval(lPoly, ynew, D, 0.25)) 
 ```
 ! EndColBox()
 
@@ -998,10 +1075,12 @@ end
 ```
 ! EndColBox()
 
+### Low order Vandermonde methods
+One method for analytically determining coefficients from data points is by inversion of the Vandermonde matrix.
 
-### Low order Vendemonde methods
+BENCHMARK
 
-### Piecewise Polynomials
+### Piecewise polynomials
 
 ### User interface
 The challenge of any user interface is to balance the exposure provided to the user of complex functionality with the ability to remain intuitive and simple to use.
@@ -1040,7 +1119,6 @@ Here, we take ``fit()`` to mean fit some input to a polynomial representation, t
 As the core role of the programming language is to provide an interface between the human and the computer is makes sense (when we have the ability) to tailor the experience in a way similar to how a human would behave.
 
 ### Error handling
-### Benchmarking and performance gains
 
 ## JuDO.jl
 The development of the JuDO.jl package has been somewhat more staggered than the MorePolynomials.jl package.
@@ -1050,6 +1128,8 @@ As such, progress with JuDO.jl has been slow but deliberate.
 In this text we will outline a basic generic implementation of transcription methods in JuMP, and a proposed architecture to be taken forward based on the project aims.
 
 ### Generic transcription implementation
+A transcription method which employs the use of user defined functions has been implemented in julia using the JuDO package with the Ipopt NLP solver.
+The key innovation here is the formatting of the problem such that the user can define any generic functions for the objective function, constraints and dynamics and, providing the functions accept a standard input and output, the solver behave as expected.
 
 The user defined problem, which also acts as an internal interface between JuMP and JuDO methods, is defined as follows.
 ! BeginColBox()
@@ -1068,6 +1148,93 @@ mutable struct TrajProblem
 end
 ```
 ! EndColBox()
+
+JuMP provides its own interface for defining functions with derivatives, the trick is formatting the interface in such a way as to work with dynamic optimisation problems.
+This is accomplished using three components, a global `CurrentProblem` type, a translating layer and a derivative function.
+
+First, the global `CurrentProblem` type allows us to access the full problem definition from any location within our program. 
+This is useful as it provides a standard interface which we can access within functions, which we can used to access crucial data such as they problem functions and state and control interpolation functions.
+Moreover, the user defined functions in JuMP only allow the parsing of JuMP variables internally, so to have access to any additional data defined externally one must define such an interfaces as this.
+Within the JuDO code this `CurrentProblem` type  is defined as a global constant, which acts like a pointer to the location of the user defined `TrajProblem`.
+The interface is defined below.
+! BeginColBox()
+```julia;eval=false
+mutable struct CurrentProblem
+    nullableProblem::Union{TrajProblem,Nothing}
+end
+const CURRENT_PROBLEM = CurrentProblem(nothing)
+setCurrentProblem(problem::TrajProblem) = (CURRENT_PROBLEM.nullableProblem = problem)
+getCurrentProblem() = CURRENT_PROBLEM.nullableProblem
+```
+! EndColBox()
+
+Now the translational layer provides a set of functions for translating between the JuMP user defined functions, and our own custom functions and collocation methods.
+Their implementation primarily consists of translating 1D decision variable vectors from JuMP into 2D state and control vectors, and then back to 1D vectors for JuMP.
+Additionally, JuMP do not provide a robust method for determining what decision variable we're focusing on within a user defined function, so additional interfaces for state and control indexing are provided by this layer.
+
+Finally, for each user defined function we provide for JuMP, we must additionally provide the derivative information.
+This is done using the ForwardDiff.jl package which provides forward mode automatic differentiation for Julia functions, which can be used to calculate the Jacobian and Hessian arrays.
+ForwardDiff.jl achieves this by injecting the function with a custom type which has union with the `Real` type, which has the limitation of requiring all internal operations to be compatible with the real type.
+If this is not the case however a forward difference method may be implemented in its place.
+The differentiation functions work by calculating the fully Jacobian and then returning the row associated with the state or control in question.
+For example, in the case of the cart-pole example in section ``\ref{}`` below, we can calculate the Jacobian using command.
+```julia;echo=false; results="hidden"
+
+function dynamicsFunc(stateVector, controlVector) 
+    l = 0.5
+    m1 = 1
+    m2 = 0.3
+    g = 9.81
+    x2 = stateVector[2,:]
+    u = controlVector[1,:]
+    x1dot = stateVector[3,:]  
+    x2dot = stateVector[4,:]
+    x3dot = map((x2, x2d,u) -> (l * m2 * sin(x2)*x2d^2 + u + m2 * g * cos(x2)*sin(x2) )/ (m1 + m2 *(1 - cos(x2)^2)), x2, x2dot, u)
+    x4dot = map( (x2,x2d,u) -> - (l*m2*cos(x2)*sin(x2)*x2d^2+u*cos(x2)+(m1+m2)*g*sin(x2)) / (l*m1+l*m2*(1-cos(x2)^2)) , x2, x2dot, u)
+    return [x1dot';x2dot';x3dot';x4dot']
+end
+function collocateConstraint(stateControlVector::Array) # make sure timestep vector matches length of state vector
+    # assemble state and control vector from tuple inputs
+    stateVector, controlVector = getXUFromStateControl(stateControlVector)
+
+    ΔstateVector = 0.5 .*  0.0689655.* (dynamicsFunc(stateVector[:,2:end], controlVector[:,2:end]) + dynamicsFunc(stateVector[:,1:end-1], controlVector[:,1:end-1])) # how do we ensure dynamicsFunc has the right inputs and outputs if it is user defined? also have a look at making timestep dynamic for each value
+    ζ = stateVector[:, 2:end] - stateVector[:,1:end-1] - ΔstateVector
+    return ζ
+end
+
+function getXUFromStateControl(stateControlVector::Array) # get separate state and control vector matricies from input tuple
+    stateVector = Array{Union{Missing, typeof(stateControlVector[1]) }}(missing, 4, 30)
+    controlVector = Array{Union{Missing,typeof(stateControlVector[1]) }}(missing, 1, 30)
+    stateVector[:,:] = stateControlVector[1:4, :]
+    controlVector[:,:] = stateControlVector[4 + 1, :]
+    return stateVector, controlVector
+end
+
+numCP = 30
+T = 2
+controlVector = zeros(1,numCP)
+timeStep = ones(1,numCP-1) * T/(numCP-1)
+time = pushfirst!(cumsum(timeStep';dims=1)[:,1],0.0)
+stateVector = [1 π 0 0]' * time'  /T
+```
+
+! BeginColBox()
+```julia
+jacobian = ForwardDiff.jacobian(collocateConstraint, [stateVector; controlVector])
+```
+! EndColBox()
+Take note of the sparsity pattern here.
+Julia has methods for handling sparse matrices, and one of the future goals of the project is to support sparse matrix represents for derivatives.
+If we are looking for the derivatives of the first state (or more correctly in this case the first collocation function) relative to perturbations in the other states, we can take the first row of this Jacobian.
+! BeginColBox()
+```julia
+df1dt = jacobian[1,:]'
+```
+! EndColBox()
+
+
+Now that we have the core components to interface with JuMP, the rest is a matter of formulating the JuMP NLP problem and solving. 
+Links to the full implementation can be found in the appendix.
 
 ### Example cart-pole swing-up
 An example implementation is the cart-pole swing-up problem, where the objective is to swing a mass above a cart using the minimum effort squared.
@@ -1101,12 +1268,12 @@ $$
 \begin{bmatrix}
 \pmb{x}_3\\
 \pmb{x}_4\\
-\frac{lm_2\sin(\pmb{x}_2)\pmb{x}_4^2 + u + m_2g\cos(\pmb{x}_2)\sin(\pmb{x}_2)}{m_1+m_2(1-\cos^2(\pmb{x}_2))}\\
-- \frac{lm_2\cos(\pmb{x}_2)\sin(\pmb{x}_2)\pmb{x}_4^2 + u\cos(\pmb{x}_2) + g(m_1 + m_2)\sin(\pmb{x}_2)}{lm_1+lm_2(1-\cos^2(\pmb{x}_2))}
+\frac{lm_2\sin(\pmb{x}_2)\pmb{x}_4^2 + \pmb{u}_1 + m_2g\cos(\pmb{x}_2)\sin(\pmb{x}_2)}{m_1+m_2(1-\cos^2(\pmb{x}_2))}\\
+- \frac{lm_2\cos(\pmb{x}_2)\sin(\pmb{x}_2)\pmb{x}_4^2 + \pmb{u}_1\cos(\pmb{x}_2) + g(m_1 + m_2)\sin(\pmb{x}_2)}{lm_1+lm_2(1-\cos^2(\pmb{x}_2))}
 \end{bmatrix}_{\tau},
 $$
 $$
-J(\pmb{u}) = \int_0^{t_F} u^2(t)dt,
+J(\pmb{u}) = \int_0^{t_F} \pmb{u}^2(t)dt,
 $$
 $$
 \begin{align*}
@@ -1117,20 +1284,23 @@ $$
 \end{align*}
 $$
 $$
--2 \leq \pmb{x}_1(t) \leq 2, \quad -20 \leq \pmb{u}(t) \leq 20,
+-2 \leq \pmb{x}_1(t) \leq 2, \quad -20 \leq \pmb{u}_1(t) \leq 20,
+$$
+$$
+\pmb{x} \in \mathbb{R}^4, \quad \pmb{u}_1 \in \mathbb{R}
 $$
 
-where ``q`` is the cart position, ``\theta`` is the pole angle, ``u`` is the force applied horizontally to the cart, ``m_1`` is the mass of the cart, ``m_2`` is the mass at the end of the pole, ``g`` is standard acceleration due to gravity and ``l`` is the length of the pole.
+where ``q`` is the cart position, ``\theta`` is the pole angle, ``\pmb{u}_1`` is the force applied horizontally to the cart, ``m_1`` is the mass of the cart, ``m_2`` is the mass at the end of the pole, ``g`` is standard acceleration due to gravity and ``l`` is the length of the pole.
 
 Within our code, we begin by constructing the problem definition which will be parsed to the solver.
 ! BeginColBox()
 ```julia;eval=false
 numCP = 30
 tf = 2
-timeStep = ones(1,numCP-1) * tf/(numCP-1)
+timeStep = ones(1,numCP-1) * tf / (numCP-1)
 time = pushfirst!(cumsum(timeStep';dims=1)[:,1],0.0)
 controlVectorGuess = zeros(1,numCP)
-stateVectorGuess = [1 π 0 0]' * time'  /tf
+stateVectorGuess = [1 π 0 0]' * time' / tf
 boundaryConstraints = BoundaryConstraint([0;0;0;0],[1;π;0;0])
 
 # create user defined problem
@@ -1177,7 +1347,7 @@ The disadvantage of this is that in our function formulation we have to keep in 
 Finally we define the methods for collocation and interpolations.
 ! BeginColBox()
 ```julia;eval=false
-function collocateConstraint(state::Array, control::Array) # make sure timestep vector matches length of state vector
+function collocateConstraint(state::Array, control::Array) 
     ΔstateVector = 0.5 .* problem.timeStep[1] .* (problem.dynamicsFunc(stateVector[:,2:end], controlVector[:,2:end]) + problem.dynamicsFunc(stateVector[:,1:end-1], controlVector[:,1:end-1])) 
     ζ = stateVector[:, 2:end] - stateVector[:,1:end-1] - ΔstateVector
     return ζ
@@ -1197,8 +1367,53 @@ The results of the solve are found below.
 img = load("figures/cartepole.png")
 
 ```
-! EndFig("JuDO architecture","judoarc")
+! EndFig("Cart-pole optimisation results using JuMP/JuDO","cartpolefig")
+
 ### Example pseudospectral method
+
+The current JuDO code can be altered to accept interpolating functions generated by MorePolynomials.jl.
+We will use an example problem from a paper by Garg ``\cite{Garg}`` to demonstrate this.
+$$
+J(\pmb{x},\pmb{u}) = \frac{1}{2} \int_0^{t_F} (\pmb{x}_1(t) + \pmb{u}_1^2(t))dt, \quad \dot{\pmb{x}}_1(t) = 2\pmb{x}_1(t) + 2\pmb{u}_1(t) \sqrt{\pmb{x}(t)}
+$$
+$$
+\pmb{x}_1(0) = 2, \quad \pmb{x}_1(t_F) = 1, \quad t_F = 5.
+$$
+
+The problem formulation is now as follows.
+! BeginColBox()
+```julia;eval=false
+using MorePolynomials
+
+numCP = 39
+lgrPoints = lgr_points(numCP)
+x = LagrangePoly([lgrPoints...,1],ones(numCP+1)) # state
+u = LGRPoly(ones(numCP)) # control
+boundaryConstraints = BoundaryConstraint([2],[1])
+problem = TrajProblem(x, u, derivative(x),derivmatrix(x), boundaryConstraints,[lgrPoints...,1],1,1,lgr_weights(u))
+```
+! EndColBox()
+Note we now include a derivative matrix in our formulation.
+The advantage of using fixed Lagrange mesh points is that new derivatives can be calculated by a simple matrix multiplication as per equation ``\ref{Ldot}``.
+We also provide a polynomial to represent the state derivative.
+Internally, we now collocate the state using equation ``\ref{psecoloc}``
+! BeginColBox()
+```julia;eval=false
+function collocateConstraint(k, stateVector...)
+    problem.x[:] = stateVector
+    return problem.xdot(τ[ζr]) - problem.dynamicsFunc(τ[ζr], problem.x, problem.u)
+end
+```
+! EndColBox()
+where `k` is a reference to the index of the collocation point.
+Note here we treat `ydot()` as an interpolating function, rather than indexing into an array as per the cart pole example.
+Thus we fulfil aim ``\ref{indepmeshaim}``.
+The results of the optimisation are in figure ``\ref{psufig}``.
+! BeginFig()
+```julia; out_width="0.7\\textwidth";echo=false
+img = load("figures/lgrplot.png")
+```
+! EndFig("Pseudospectral example solution","psufig")
 
 
 # Next steps
@@ -1209,7 +1424,6 @@ The methodology behind the architecture is outlined below, and the methods propo
 ! BeginFig()
 ```julia; out_width="0.7\\textwidth";echo=false
 img = load("figures/judo.png")
-
 ```
 ! EndFig("JuDO architecture","judoarc")
 
@@ -1229,7 +1443,7 @@ The aim here is to provide a standard intuitive interface for problem definition
 Ideally the user would define their problem as seen in the mathematical formulation. 
 There should be little need to try and reformulate the problem in order to work with matrix operations or specific functions.
 We can leverage julia macros to reformulate dynamics functions in a format understandable by our solver.
-For parameters such as solver selection, it is suggested that custom types should be used, such as `struct IPOPT <: AbstractSolver end`, as an example.
+For parameters such as solver selection, it is suggested that custom types should be used, such as `struct Ipopt <: AbstractSolver end`, as an example.
 For states and controls, a julia symbol is used.
 The following user defined problem syntax is suggested.
 
@@ -1365,35 +1579,6 @@ function save_output(problem::AbstractJuDOProblem)
 ```
 ! EndColBox()
 
-# Documentation
-! BeginFig()
-
-```julia; out_width="0.7\\textwidth";echo=false
-img = load("figures/gargpretransformu.png")
-
-```
-! EndFig("a","b")
-! BeginFig()
-
-```julia; out_width="0.7\\textwidth";echo=false
-img = load("figures/gargpretransformy.png")
-
-```
-! EndFig("a","b")
-! BeginFig()
-
-```julia; out_width="0.7\\textwidth";echo=false
-img = load("figures/gargposttransformu.png")
-
-```
-! EndFig("a","b")
-! BeginFig()
-
-```julia; out_width="0.7\\textwidth";echo=false
-img = load("figures/gargposttransformy.png")
-
-```
-! EndFig("a","b")
 
 
 <!-- ipopt: https://coin-or.github.io/Ipopt/ --> 

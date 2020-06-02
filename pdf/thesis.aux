@@ -23,100 +23,98 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Motivation}{3}{subsection.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {1.1.1}Dynamic Optimisation}{3}{subsubsection.1.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {1.1.2}Imperial College London Optimal Control Software (ICLOCS)}{3}{subsubsection.1.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {1.1.3}Julia}{3}{subsubsection.1.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {1.1.3}Julia}{4}{subsubsection.1.1.3}\protected@file@percent }
 \citation{mit}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Mathematical Background}{4}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Dynamic optimisation problem formulation}{4}{subsection.2.1}\protected@file@percent }
-\newlabel{dynamicsmath}{{2.1}{4}{Dynamic optimisation problem formulation}{subsection.2.1}{}}
-\citation{ipopttut}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Mathematical Background}{5}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Dynamic optimisation problem formulation}{5}{subsection.2.1}\protected@file@percent }
+\newlabel{dynamicsmath}{{2.1}{5}{Dynamic optimisation problem formulation}{subsection.2.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}Nonlinear programming problem}{5}{subsubsection.2.1.1}\protected@file@percent }
 \newlabel{objectiveFunc}{{1}{5}{Nonlinear programming problem}{equation.2.1}{}}
 \newlabel{gineq}{{2}{5}{Nonlinear programming problem}{equation.2.2}{}}
 \newlabel{xineq}{{3}{5}{Nonlinear programming problem}{equation.2.3}{}}
-\newlabel{gfunc}{{4}{5}{Nonlinear programming problem}{equation.2.4}{}}
-\newlabel{gfunceq}{{5}{5}{Nonlinear programming problem}{equation.2.5}{}}
+\citation{ipopttut}
+\newlabel{gfunc}{{4}{6}{Nonlinear programming problem}{equation.2.4}{}}
+\newlabel{gfunceq}{{5}{6}{Nonlinear programming problem}{equation.2.5}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}System dynamics}{6}{subsubsection.2.1.2}\protected@file@percent }
 \newlabel{nakeddynamics}{{6}{6}{System dynamics}{equation.2.6}{}}
-\newlabel{xState}{{7}{6}{System dynamics}{equation.2.7}{}}
-\newlabel{meshdef}{{8}{6}{System dynamics}{equation.2.8}{}}
-\newlabel{uControl}{{9}{6}{System dynamics}{equation.2.9}{}}
+\newlabel{xState}{{7}{7}{System dynamics}{equation.2.7}{}}
+\newlabel{meshdef}{{8}{7}{System dynamics}{equation.2.8}{}}
+\newlabel{uControl}{{9}{7}{System dynamics}{equation.2.9}{}}
 \newlabel{ffunc}{{10}{7}{System dynamics}{equation.2.10}{}}
 \newlabel{euler}{{11}{8}{System dynamics}{equation.2.11}{}}
 \newlabel{trap}{{12}{8}{System dynamics}{equation.2.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Collocated system dynamics for a mass spring damper}}{9}{figure.1}\protected@file@percent }
-\newlabel{massdamp}{{1}{9}{Collocated system dynamics for a mass spring damper}{figure.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Collocated system dynamics for a mass spring damper}}{10}{figure.1}\protected@file@percent }
+\newlabel{massdamp}{{1}{10}{Collocated system dynamics for a mass spring damper}{figure.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.3}Boundary and path constraints}{10}{subsubsection.2.1.3}\protected@file@percent }
-\newlabel{xpath}{{13}{10}{Boundary and path constraints}{equation.2.13}{}}
-\newlabel{upath}{{14}{10}{Boundary and path constraints}{equation.2.14}{}}
-\newlabel{bpath}{{15}{10}{Boundary and path constraints}{equation.2.15}{}}
-\newlabel{expathcon}{{16}{10}{Boundary and path constraints}{equation.2.16}{}}
-\newlabel{exhcon}{{17}{10}{Boundary and path constraints}{equation.2.17}{}}
+\newlabel{xpath}{{13}{11}{Boundary and path constraints}{equation.2.13}{}}
+\newlabel{upath}{{14}{11}{Boundary and path constraints}{equation.2.14}{}}
+\newlabel{bpath}{{15}{11}{Boundary and path constraints}{equation.2.15}{}}
+\newlabel{expathcon}{{16}{11}{Boundary and path constraints}{equation.2.16}{}}
+\newlabel{exhcon}{{17}{11}{Boundary and path constraints}{equation.2.17}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Example inequality constraints from equations \ref  {expathcon} and \ref  {exhcon}}}{11}{figure.2}\protected@file@percent }
 \newlabel{pathconfig}{{2}{11}{Example inequality constraints from equations \ref {expathcon} and \ref {exhcon}}{figure.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.4}Objective function}{11}{subsubsection.2.1.4}\protected@file@percent }
-\newlabel{bolza}{{18}{11}{Objective function}{equation.2.18}{}}
 \citation{lagstable}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Lagrange polynomials}{12}{subsection.2.2}\protected@file@percent }
-\newlabel{lagmath}{{2.2}{12}{Lagrange polynomials}{subsection.2.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.4}Objective function}{12}{subsubsection.2.1.4}\protected@file@percent }
+\newlabel{bolza}{{18}{12}{Objective function}{equation.2.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Example implementation in ICLOCS}{12}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Lagrange polynomials}{12}{subsection.2.3}\protected@file@percent }
+\newlabel{lagmath}{{2.3}{12}{Lagrange polynomials}{subsection.2.3}{}}
 \newlabel{lagweight}{{19}{12}{Lagrange polynomials}{equation.2.19}{}}
-\newlabel{barweight}{{20}{12}{Lagrange polynomials}{equation.2.20}{}}
-\newlabel{lagbar}{{21}{12}{Lagrange polynomials}{equation.2.21}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}Differentiation matrix}{12}{subsubsection.2.2.1}\protected@file@percent }
-\newlabel{lagpolyder}{{2.2.1}{12}{Differentiation matrix}{subsubsection.2.2.1}{}}
-\newlabel{Ldot}{{22}{12}{Differentiation matrix}{equation.2.22}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}The pseudospectral method}{13}{subsection.2.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Seven LGR Points}}{13}{figure.3}\protected@file@percent }
-\newlabel{lgrfig}{{3}{13}{Seven LGR Points}{figure.3}{}}
-\newlabel{timetrans}{{23}{13}{The pseudospectral method}{equation.2.23}{}}
+\newlabel{barweight}{{20}{13}{Lagrange polynomials}{equation.2.20}{}}
+\newlabel{lagbar}{{21}{13}{Lagrange polynomials}{equation.2.21}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.3.1}Differentiation matrix}{13}{subsubsection.2.3.1}\protected@file@percent }
+\newlabel{lagpolyder}{{2.3.1}{13}{Differentiation matrix}{subsubsection.2.3.1}{}}
+\newlabel{Ldot}{{22}{13}{Differentiation matrix}{equation.2.22}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}The pseudospectral method}{13}{subsection.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Seven LGR Points}}{14}{figure.3}\protected@file@percent }
+\newlabel{lgrfig}{{3}{14}{Seven LGR Points}{figure.3}{}}
+\newlabel{timetrans}{{23}{14}{The pseudospectral method}{equation.2.23}{}}
 \newlabel{lgrint}{{24}{14}{The pseudospectral method}{equation.2.24}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Julia Packages}{15}{subsection.2.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.1}JuMP.jl}{15}{subsubsection.2.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.4.2}Polynomials.jl}{15}{subsubsection.2.4.2}\protected@file@percent }
-\newlabel{polynomialsjl}{{2.4.2}{15}{Polynomials.jl}{subsubsection.2.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Project Ethos}{15}{section.3}\protected@file@percent }
-\newlabel{ethos}{{3}{15}{Project Ethos}{section.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Code structure must be modular}{15}{subsection.3.1}\protected@file@percent }
-\newlabel{aimmodular}{{3.1}{15}{Code structure must be modular}{subsection.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Code must be sufficiently verbose when handling errors}{15}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Code must verify data before computation}{16}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}The final package must be user extensible and have the ability to support multiple solvers}{16}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Location of mesh points for each state must be independent of other states}{16}{subsection.3.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}The MorePolynomials package must interface well with the existing Polynomials package}{16}{subsection.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Results and Discussion}{17}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}MorePolynomials.jl}{17}{subsection.4.1}\protected@file@percent }
-\newlabel{morepoly}{{4.1}{17}{MorePolynomials.jl}{subsection.4.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Lagrange implementation}{18}{subsubsection.4.1.1}\protected@file@percent }
+\newlabel{psecoloc}{{25}{14}{The pseudospectral method}{equation.2.25}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Julia Packages}{15}{subsection.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.5.1}Polynomials.jl}{15}{subsubsection.2.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.5.2}JuMP.jl}{15}{subsubsection.2.5.2}\protected@file@percent }
+\newlabel{polynomialsjl}{{2.5.2}{15}{JuMP.jl}{subsubsection.2.5.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Project Ethos}{16}{section.3}\protected@file@percent }
+\newlabel{ethos}{{3}{16}{Project Ethos}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Code structure must be modular}{16}{subsection.3.1}\protected@file@percent }
+\newlabel{aimmodular}{{3.1}{16}{Code structure must be modular}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Code must be sufficiently verbose when handling errors}{16}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Code must verify data before computation}{17}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}The final package must be user extensible and have the ability to support multiple solvers}{17}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Location of mesh points for each state must be independent of other states}{17}{subsection.3.5}\protected@file@percent }
+\newlabel{indepmeshaim}{{3.5}{17}{Location of mesh points for each state must be independent of other states}{subsection.3.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}The MorePolynomials package must interface well with the existing Polynomials package}{17}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Results and Discussion}{18}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}MorePolynomials.jl}{18}{subsection.4.1}\protected@file@percent }
+\newlabel{morepoly}{{4.1}{18}{MorePolynomials.jl}{subsection.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Lagrange implementation}{19}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces lPolyDer plot i.e. Proof that I wrote code that actually works and it's not all smoke and mirrors.}}{22}{figure.4}\protected@file@percent }
+\newlabel{lderpolyplot}{{4}{22}{lPolyDer plot i.e. Proof that I wrote code that actually works and it's not all smoke and mirrors}{figure.4}{}}
 \citation{lgrcomp}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Low order Vendemonde methods}{22}{subsubsection.4.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Piecewise Polynomials}{22}{subsubsection.4.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}User interface}{22}{subsubsection.4.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.5}Error handling}{23}{subsubsection.4.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.6}Benchmarking and performance gains}{23}{subsubsection.4.1.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}JuDO.jl}{23}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Generic transcription implementation}{23}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Low order Vandermonde methods}{24}{subsubsection.4.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}Piecewise polynomials}{25}{subsubsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.4}User interface}{25}{subsubsection.4.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.5}Error handling}{26}{subsubsection.4.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}JuDO.jl}{26}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Generic transcription implementation}{26}{subsubsection.4.2.1}\protected@file@percent }
 \citation{matthewkelly}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Example cart-pole swing-up}{24}{subsubsection.4.2.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces JuDO architecture}}{26}{figure.4}\protected@file@percent }
-\newlabel{judoarc}{{4}{26}{JuDO architecture}{figure.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Example pseudospectral method}{26}{subsubsection.4.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Next steps}{26}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}JuDO architecture}{26}{subsection.5.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces JuDO architecture}}{27}{figure.5}\protected@file@percent }
-\newlabel{judoarc}{{5}{27}{JuDO architecture}{figure.5}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}User Defined Problem}{28}{subsubsection.5.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}JuDO Problem}{28}{subsubsection.5.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}Solver Translator}{29}{subsubsection.5.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.4}Mesh Factory}{29}{subsubsection.5.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.5}Function Factory}{29}{subsubsection.5.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.6}Derivative Factory}{30}{subsubsection.5.1.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.7}Error Factory}{30}{subsubsection.5.1.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.8}Output Factory}{31}{subsubsection.5.1.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Documentation}{31}{section.6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces a}}{31}{figure.6}\protected@file@percent }
-\newlabel{b}{{6}{31}{a}{figure.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces a}}{32}{figure.7}\protected@file@percent }
-\newlabel{b}{{7}{32}{a}{figure.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces a}}{32}{figure.8}\protected@file@percent }
-\newlabel{b}{{8}{32}{a}{figure.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces a}}{33}{figure.9}\protected@file@percent }
-\newlabel{b}{{9}{33}{a}{figure.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Example cart-pole swing-up}{28}{subsubsection.4.2.2}\protected@file@percent }
+\citation{Garg}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Cart-pole optimisation results using JuMP/JuDO}}{30}{figure.5}\protected@file@percent }
+\newlabel{cartpolefig}{{5}{30}{Cart-pole optimisation results using JuMP/JuDO}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Example pseudospectral method}{30}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Pseudospectral example solution}}{31}{figure.6}\protected@file@percent }
+\newlabel{psufig}{{6}{31}{Pseudospectral example solution}{figure.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Next steps}{32}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}JuDO architecture}{32}{subsection.5.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces JuDO architecture}}{32}{figure.7}\protected@file@percent }
+\newlabel{judoarc}{{7}{32}{JuDO architecture}{figure.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}User Defined Problem}{33}{subsubsection.5.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}JuDO Problem}{33}{subsubsection.5.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}Solver Translator}{34}{subsubsection.5.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.4}Mesh Factory}{34}{subsubsection.5.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.5}Function Factory}{34}{subsubsection.5.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.6}Derivative Factory}{35}{subsubsection.5.1.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.7}Error Factory}{35}{subsubsection.5.1.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.8}Output Factory}{36}{subsubsection.5.1.8}\protected@file@percent }
