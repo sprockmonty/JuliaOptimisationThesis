@@ -1,51 +1,51 @@
-\contentsline {section}{\numberline {1}Introduction}{5}{section.1}% 
-\contentsline {subsection}{\numberline {1.1}Motivation}{5}{subsection.1.1}% 
-\contentsline {subsubsection}{\numberline {1.1.1}Dynamic optimisation}{5}{subsubsection.1.1.1}% 
-\contentsline {subsubsection}{\numberline {1.1.2}Imperial College London Optimal Control Software (ICLOCS)}{5}{subsubsection.1.1.2}% 
-\contentsline {subsubsection}{\numberline {1.1.3}Julia}{6}{subsubsection.1.1.3}% 
-\contentsline {section}{\numberline {2}Mathematical Background}{7}{section.2}% 
-\contentsline {subsection}{\numberline {2.1}Dynamic optimisation problem formulation}{7}{subsection.2.1}% 
-\contentsline {subsubsection}{\numberline {2.1.1}Nonlinear programming problem}{7}{subsubsection.2.1.1}% 
-\contentsline {subsubsection}{\numberline {2.1.2}System dynamics}{8}{subsubsection.2.1.2}% 
-\contentsline {subsubsection}{\numberline {2.1.3}Boundary and path constraints}{12}{subsubsection.2.1.3}% 
-\contentsline {subsubsection}{\numberline {2.1.4}Objective function}{14}{subsubsection.2.1.4}% 
-\contentsline {subsection}{\numberline {2.2}Example implementation in ICLOCS}{14}{subsection.2.2}% 
-\contentsline {subsection}{\numberline {2.3}Lagrange polynomials}{14}{subsection.2.3}% 
-\contentsline {subsubsection}{\numberline {2.3.1}Differentiation matrix}{15}{subsubsection.2.3.1}% 
-\contentsline {subsection}{\numberline {2.4}The pseudospectral method}{15}{subsection.2.4}% 
-\contentsline {subsection}{\numberline {2.5}Julia packages}{17}{subsection.2.5}% 
-\contentsline {subsubsection}{\numberline {2.5.1}Polynomials.jl}{17}{subsubsection.2.5.1}% 
-\contentsline {subsubsection}{\numberline {2.5.2}JuMP.jl}{17}{subsubsection.2.5.2}% 
-\contentsline {section}{\numberline {3}Project Ethos}{18}{section.3}% 
-\contentsline {subsection}{\numberline {3.1}Code structure must be modular}{18}{subsection.3.1}% 
-\contentsline {subsection}{\numberline {3.2}Code must be sufficiently verbose when handling errors}{18}{subsection.3.2}% 
-\contentsline {subsection}{\numberline {3.3}Code must verify data before computation}{19}{subsection.3.3}% 
-\contentsline {subsection}{\numberline {3.4}The final package must be user extensible and have the ability to support multiple solvers}{19}{subsection.3.4}% 
-\contentsline {subsection}{\numberline {3.5}Location of mesh points for each state must be independent of other states}{19}{subsection.3.5}% 
-\contentsline {subsection}{\numberline {3.6}The MorePolynomials.jl package must interface well with the existing Polynomials package}{19}{subsection.3.6}% 
-\contentsline {section}{\numberline {4}Results and Discussion}{20}{section.4}% 
-\contentsline {subsection}{\numberline {4.1}MorePolynomials.jl}{20}{subsection.4.1}% 
-\contentsline {subsubsection}{\numberline {4.1.1}Lagrange implementation}{21}{subsubsection.4.1.1}% 
-\contentsline {subsubsection}{\numberline {4.1.2}Low order Vandermonde methods}{26}{subsubsection.4.1.2}% 
-\contentsline {subsubsection}{\numberline {4.1.3}Piecewise polynomials}{28}{subsubsection.4.1.3}% 
-\contentsline {subsubsection}{\numberline {4.1.4}User interface}{30}{subsubsection.4.1.4}% 
-\contentsline {subsection}{\numberline {4.2}JuDO.jl}{31}{subsection.4.2}% 
-\contentsline {subsubsection}{\numberline {4.2.1}Generic transcription implementation}{31}{subsubsection.4.2.1}% 
-\contentsline {subsubsection}{\numberline {4.2.2}Example cart-pole swing-up}{34}{subsubsection.4.2.2}% 
-\contentsline {subsubsection}{\numberline {4.2.3}Example pseudospectral method}{36}{subsubsection.4.2.3}% 
-\contentsline {section}{\numberline {5}Next Steps}{38}{section.5}% 
-\contentsline {subsection}{\numberline {5.1}JuDO.jl architecture}{38}{subsection.5.1}% 
-\contentsline {subsubsection}{\numberline {5.1.1}User defined problem}{39}{subsubsection.5.1.1}% 
-\contentsline {subsubsection}{\numberline {5.1.2}JuDO problem}{39}{subsubsection.5.1.2}% 
-\contentsline {subsubsection}{\numberline {5.1.3}Solver translator}{40}{subsubsection.5.1.3}% 
-\contentsline {subsubsection}{\numberline {5.1.4}Mesh factory}{40}{subsubsection.5.1.4}% 
-\contentsline {subsubsection}{\numberline {5.1.5}Function factory}{40}{subsubsection.5.1.5}% 
-\contentsline {subsubsection}{\numberline {5.1.6}Derivative factory}{41}{subsubsection.5.1.6}% 
-\contentsline {subsubsection}{\numberline {5.1.7}Error factory}{41}{subsubsection.5.1.7}% 
-\contentsline {subsubsection}{\numberline {5.1.8}Output factory}{42}{subsubsection.5.1.8}% 
-\contentsline {section}{\numberline {6}Conclusions}{42}{section.6}% 
-\contentsline {section}{Appendices}{44}{section*.4}% 
-\contentsline {section}{\numberline {A}Package code}{44}{Appendix.1.A}% 
-\contentsline {subsection}{\numberline {A.1}MorePolynomials.jl}{44}{subsection.1.A.1}% 
-\contentsline {subsection}{\numberline {A.2}JuDO.jl}{44}{subsection.1.A.2}% 
-\contentsline {section}{\numberline {B}Julia Thesis}{44}{Appendix.1.B}% 
+\contentsline {section}{\numberline {1}Introduction}{7}{section.1}% 
+\contentsline {subsection}{\numberline {1.1}Motivation}{7}{subsection.1.1}% 
+\contentsline {subsubsection}{\numberline {1.1.1}Dynamic optimisation}{7}{subsubsection.1.1.1}% 
+\contentsline {subsubsection}{\numberline {1.1.2}Imperial College London Optimal Control Software (ICLOCS)}{7}{subsubsection.1.1.2}% 
+\contentsline {subsubsection}{\numberline {1.1.3}Julia}{8}{subsubsection.1.1.3}% 
+\contentsline {section}{\numberline {2}Mathematical Background}{9}{section.2}% 
+\contentsline {subsection}{\numberline {2.1}Dynamic optimisation problem formulation}{9}{subsection.2.1}% 
+\contentsline {subsubsection}{\numberline {2.1.1}Nonlinear programming problem}{9}{subsubsection.2.1.1}% 
+\contentsline {subsubsection}{\numberline {2.1.2}System dynamics}{10}{subsubsection.2.1.2}% 
+\contentsline {subsubsection}{\numberline {2.1.3}Boundary and path constraints}{14}{subsubsection.2.1.3}% 
+\contentsline {subsubsection}{\numberline {2.1.4}Objective function}{16}{subsubsection.2.1.4}% 
+\contentsline {subsection}{\numberline {2.2}Example implementation in ICLOCS}{16}{subsection.2.2}% 
+\contentsline {subsection}{\numberline {2.3}Lagrange polynomials}{16}{subsection.2.3}% 
+\contentsline {subsubsection}{\numberline {2.3.1}Differentiation matrix}{17}{subsubsection.2.3.1}% 
+\contentsline {subsection}{\numberline {2.4}The pseudospectral method}{17}{subsection.2.4}% 
+\contentsline {subsection}{\numberline {2.5}Julia packages}{19}{subsection.2.5}% 
+\contentsline {subsubsection}{\numberline {2.5.1}Polynomials.jl}{19}{subsubsection.2.5.1}% 
+\contentsline {subsubsection}{\numberline {2.5.2}JuMP.jl}{19}{subsubsection.2.5.2}% 
+\contentsline {section}{\numberline {3}Project Ethos}{20}{section.3}% 
+\contentsline {subsection}{\numberline {3.1}Code structure must be modular}{20}{subsection.3.1}% 
+\contentsline {subsection}{\numberline {3.2}Code must be sufficiently verbose when handling errors}{20}{subsection.3.2}% 
+\contentsline {subsection}{\numberline {3.3}Code must verify data before computation}{21}{subsection.3.3}% 
+\contentsline {subsection}{\numberline {3.4}The final package must be user extensible and have the ability to support multiple solvers}{21}{subsection.3.4}% 
+\contentsline {subsection}{\numberline {3.5}Location of mesh points for each state must be independent of other states}{21}{subsection.3.5}% 
+\contentsline {subsection}{\numberline {3.6}The MorePolynomials.jl package must interface well with the existing Polynomials package}{21}{subsection.3.6}% 
+\contentsline {section}{\numberline {4}Results and Discussion}{22}{section.4}% 
+\contentsline {subsection}{\numberline {4.1}MorePolynomials.jl}{22}{subsection.4.1}% 
+\contentsline {subsubsection}{\numberline {4.1.1}Lagrange implementation}{23}{subsubsection.4.1.1}% 
+\contentsline {subsubsection}{\numberline {4.1.2}Low order Vandermonde methods}{28}{subsubsection.4.1.2}% 
+\contentsline {subsubsection}{\numberline {4.1.3}Piecewise polynomials}{30}{subsubsection.4.1.3}% 
+\contentsline {subsubsection}{\numberline {4.1.4}User interface}{32}{subsubsection.4.1.4}% 
+\contentsline {subsection}{\numberline {4.2}JuDO.jl}{33}{subsection.4.2}% 
+\contentsline {subsubsection}{\numberline {4.2.1}Generic transcription implementation}{33}{subsubsection.4.2.1}% 
+\contentsline {subsubsection}{\numberline {4.2.2}Example cart-pole swing-up}{36}{subsubsection.4.2.2}% 
+\contentsline {subsubsection}{\numberline {4.2.3}Example pseudospectral method}{38}{subsubsection.4.2.3}% 
+\contentsline {section}{\numberline {5}Next Steps}{40}{section.5}% 
+\contentsline {subsection}{\numberline {5.1}JuDO.jl architecture}{40}{subsection.5.1}% 
+\contentsline {subsubsection}{\numberline {5.1.1}User defined problem}{41}{subsubsection.5.1.1}% 
+\contentsline {subsubsection}{\numberline {5.1.2}JuDO problem}{41}{subsubsection.5.1.2}% 
+\contentsline {subsubsection}{\numberline {5.1.3}Solver translator}{42}{subsubsection.5.1.3}% 
+\contentsline {subsubsection}{\numberline {5.1.4}Mesh factory}{42}{subsubsection.5.1.4}% 
+\contentsline {subsubsection}{\numberline {5.1.5}Function factory}{42}{subsubsection.5.1.5}% 
+\contentsline {subsubsection}{\numberline {5.1.6}Derivative factory}{43}{subsubsection.5.1.6}% 
+\contentsline {subsubsection}{\numberline {5.1.7}Error factory}{43}{subsubsection.5.1.7}% 
+\contentsline {subsubsection}{\numberline {5.1.8}Output factory}{44}{subsubsection.5.1.8}% 
+\contentsline {section}{\numberline {6}Conclusions}{44}{section.6}% 
+\contentsline {section}{Appendices}{46}{section*.5}% 
+\contentsline {section}{\numberline {A}Package code}{46}{Appendix.1.A}% 
+\contentsline {subsection}{\numberline {A.1}MorePolynomials.jl}{46}{subsection.1.A.1}% 
+\contentsline {subsection}{\numberline {A.2}JuDO.jl}{46}{subsection.1.A.2}% 
+\contentsline {section}{\numberline {B}Julia Thesis}{46}{Appendix.1.B}% 

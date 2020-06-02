@@ -1,0 +1,52 @@
+
+\begin{thenomenclature} 
+\nomgroup{A}
+  \item [{$ \bar{u}_{ij} $}]\begingroup i'th control j'th interpolating data point control time pair\nomeqref {0}\nompageref{5}
+  \item [{$ \bar{x}_{ij} $}]\begingroup i'th state j'th interpolating data point state time pair\nomeqref {0}\nompageref{5}
+  \item [{$ \Phi $}]\begingroup Mayer term for objective function\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{\tau} $}]\begingroup All collocation vectors for dynamics function\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{\tau}^{(h)} $}]\begingroup All vectors of collocation point times for path constraints\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{b} $}]\begingroup Vector of all boundary constraint functions\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{f} $}]\begingroup Vector of all system dynamics functions\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{g} $}]\begingroup NLP Constraint functions\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{h} $}]\begingroup Vector of all path constraint functions\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{u} $}]\begingroup Vector of control interpolating polynomials\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{u}_i $}]\begingroup i'th control interpolating polynomial\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{x} $}]\begingroup Vector of state interpolating polynomials\nomeqref {0}\nompageref{5}
+  \item [{$ \pmb{x}_i $}]\begingroup i'th state interpolating polynomial\nomeqref {0}\nompageref{5}
+  \item [{$ \rho $}]\begingroup Lagrange term for objective function\nomeqref {0}\nompageref{5}
+  \item [{$ \tau^{(\rho)} $}]\begingroup Vector of collocation point times for objective function\nomeqref {0}\nompageref{5}
+  \item [{$ \tau_i $}]\begingroup i'th state vector of collocation point times for dynamics function\nomeqref {0}\nompageref{5}
+  \item [{$ \tilde{\rho} $}]\begingroup Interpolated Lagrange term for objective function\nomeqref {0}\nompageref{5}
+  \item [{$ \tilde{u}_i $}]\begingroup i'th control interpolation function\nomeqref {0}\nompageref{5}
+  \item [{$ \tilde{x}_i $}]\begingroup i'th state interpolation function\nomeqref {0}\nompageref{5}
+  \item [{$ c $}]\begingroup Number of controls\nomeqref {0}\nompageref{5}
+  \item [{$ D $}]\begingroup Differentiation matrix\nomeqref {0}\nompageref{5}
+  \item [{$ f_i $}]\begingroup i'th state system dynamics function\nomeqref {0}\nompageref{5}
+  \item [{$ h_k $}]\begingroup timestep\nomeqref {0}\nompageref{5}
+  \item [{$ i $}]\begingroup State or control index\nomeqref {0}\nompageref{5}
+  \item [{$ J $}]\begingroup Objective function\nomeqref {0}\nompageref{5}
+  \item [{$ j $}]\begingroup Iterative variable\nomeqref {0}\nompageref{5}
+  \item [{$ k $}]\begingroup Location of a collocation point\nomeqref {0}\nompageref{5}
+  \item [{$ L $}]\begingroup Lagrange interpolating polynomial\nomeqref {0}\nompageref{5}
+  \item [{$ l $}]\begingroup Intermediate Lagrange weights\nomeqref {0}\nompageref{5}
+  \item [{$ m $}]\begingroup Number of mesh/collocation/interpolation points\nomeqref {0}\nompageref{5}
+  \item [{$ n $}]\begingroup Number of states\nomeqref {0}\nompageref{5}
+  \item [{$ P_N $}]\begingroup Legendre polynomials\nomeqref {0}\nompageref{5}
+  \item [{$ s $}]\begingroup Slack variable\nomeqref {0}\nompageref{5}
+  \item [{$ t $}]\begingroup Any time\nomeqref {0}\nompageref{5}
+  \item [{$ t_1 $}]\begingroup Start time\nomeqref {0}\nompageref{5}
+  \item [{$ t_F $}]\begingroup End time\nomeqref {0}\nompageref{5}
+  \item [{$ t_k $}]\begingroup Time at collocation point k\nomeqref {0}\nompageref{5}
+  \item [{$ t_{ij} $}]\begingroup i'th state or control time at interpolating data point j \nomeqref {0}\nompageref{5}
+  \item [{$ u^{(i)} $}]\begingroup i'th continuous control variable\nomeqref {0}\nompageref{5}
+  \item [{$ u_i $}]\begingroup i'th control vector of control interpolating data points\nomeqref {0}\nompageref{5}
+  \item [{$ u_{ij} $}]\begingroup i'th control j'th decision variable / interpolating point control value\nomeqref {0}\nompageref{5}
+  \item [{$ w $}]\begingroup Lagrange barycentric weights\nomeqref {0}\nompageref{5}
+  \item [{$ w_{LGR} $}]\begingroup Legendre-Gauss-Radau integration weights\nomeqref {0}\nompageref{5}
+  \item [{$ x^{(i)} $}]\begingroup i'th continuous state variable\nomeqref {0}\nompageref{5}
+  \item [{$ x_i $}]\begingroup i'th state vector of state interpolating data points\nomeqref {0}\nompageref{5}
+  \item [{$ x_{ij} $}]\begingroup i'th state j'th decision variable / interpolating point state value\nomeqref {0}\nompageref{5}
+  \item [{$ y $}]\begingroup Function output data points for Lagrange polynomials\nomeqref {0}\nompageref{5}
+
+\end{thenomenclature}
