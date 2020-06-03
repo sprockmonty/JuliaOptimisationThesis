@@ -1,8 +1,8 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/Arch Linux) (preloaded format=xelatex 2020.5.15)  2 JUN 2020 22:55
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019/Arch Linux) (preloaded format=xelatex 2020.5.15)  3 JUN 2020 00:56
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
-**thesis.tex -aux-directory ./jl_AHtjFL -include-directory pdf
+**thesis.tex -aux-directory ./jl_4uzHeP -include-directory pdf
 (./thesis.tex
 LaTeX2e <2019-10-01> patch level 1
 (/usr/share/texmf-dist/tex/latex/base/article.cls
@@ -890,7 +890,7 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 
 ]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 171.
+(Font)              <10.95> on input line 172.
  [1] [2]
 (./thesis.toc [3])
 \tf@toc=\write8
@@ -903,53 +903,53 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             See the microtype manual for details.
  [8] [9] [10] [11] [12]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 635.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 636.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 639.
+(Font)              <10> on input line 640.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 639.
+(Font)              <7> on input line 640.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 639.
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_4_1.
+(Font)              <5> on input line 640.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_4_1.
 pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_4_1.p
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_4_1.p
 df>
 
 [13] [14]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_5_1.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_5_1.
 pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_5_1.p
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_5_1.p
 df>
  [15] [16] [17]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_6_1.
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_6_1.
 pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_6_1.p
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_6_1.p
 df>
  [18] [19] [20] [21] [22] [23] [24] [25]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_20_1
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_20_1
 .pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_20_1.
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_20_1.
 pdf>
  [26] [27]
 [28] [29]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_32_1
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_32_1
 .pdf Graphic file (type pdf)
-<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_32_1.
+<use /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_32_1.
 pdf>
  [30] [31] [32] [33] [34] [35] [36] [37]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_47_1
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_47_1
 .png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_47_1.png>
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_47_1.png>
 
  [38]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_50_1
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_50_1
 .png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_50_1.png>
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_50_1.png>
 
  [39]
-File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_51_1
+File: /home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_51_1
 .png Graphic file (type bmp)
-</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_XPSoPJ/thesis_51_1.png>
+</home/monochromatic/FYP/JuliaOptimisationThesis/pdf/jl_kycigN/thesis_51_1.png>
 
  [40] [41] [42]
 [43] [44] (./thesis.bbl) [45] [46]
@@ -960,13 +960,13 @@ Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 2198.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 2198.
 
 Package rerunfilecheck Info: File `thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 5B8EB1B7D1AAD3CC1E5FF5E3D059B06C.
+(rerunfilecheck)             Checksum: CAD7DB97C842791177877E5F3F81E9F0.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 2198.
  ) 
 Here is how much of TeX's memory you used:
  24041 strings out of 492483
  420493 string characters out of 6134979
- 748836 words of memory out of 5000000
+ 748835 words of memory out of 5000000
  28088 multiletter control sequences out of 15000+600000
  57644 words of font info for 90 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191

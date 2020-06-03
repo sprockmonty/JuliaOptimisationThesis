@@ -698,8 +698,6 @@ Alternatively, if the objective function is modelled with an interpolating funct
 
 This completes our formulation of the dynamic optimisation problem. 
 
-## Example implementation in ICLOCS
-
 ## Lagrange polynomials
 ! Label("lagmath")
 Now we will discuss the background for the interpolating functions used to approximate state and control functions (and potentially the objective function), which will lead us to a discussion of the pseudospectral dynamic optimisation method.
