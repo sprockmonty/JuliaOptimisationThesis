@@ -762,7 +762,7 @@ $$
 
 
 ## The pseudospectral method
-The pseudospectral method is of particular interest as its formulation allows us to exploit the use of the interpolating polynomial described in section \ref{dynamicsmath}
+The pseudospectral method is of particular interest as its formulation allows us to exploit the use of the interpolating polynomial described in section ``\ref{dynamicsmath}``
 Using interpolating polynomials for our ``\tilde{x}`` function has the benefit of having derivative information encoded in the polynomial itself (see section ``\ref{lagpolyder}``).
 As such, we can use this information, along with a particular distribution of mesh points, to formulate the pseudospectral methods for dynamic optimisation.
 There are a few different formulations of the pseudospectral method, but to keep things simple we will assume a single polynomial approximates each state and control.
